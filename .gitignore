@@ -1,0 +1,14 @@
+node_modules
+.grok
+dist
+.output
+.vinxi
+.nitro
+.vercel
+*.local
+.DS_Store
+screenshots
+artifacts
+attachments
+data/walk/*.json
+!data/walk/.gitkeep

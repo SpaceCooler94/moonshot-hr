@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Cinzel", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --color-bg: #080611;
+  --color-surface: #13111c;
+  --color-surface-2: #1d1a28;
+  --color-fg: #f4e9c8;
+  --color-muted: #b8a88a;
+  --color-subtle: #7d735f;
+  --color-border: rgb(232 196 112 / 0.16);
+  --color-border-strong: rgb(232 196 112 / 0.32);
+  --color-accent: #e8c470;
+  --color-accent-fg: #140f08;
+  --color-gold: #e8c470;
+  --color-sage: #8fc97a;
+  --color-sage-dim: rgb(143 201 122 / 0.16);
+  --color-danger: #c17a6e;
+  --color-ring: #e8c470;
+
+  --shadow-hair: 0 0 0 1px rgb(232 196 112 / 0.16);
+  --shadow-hair-strong: 0 0 0 1px rgb(232 196 112 / 0.34);
+
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--color-bg);
+  }
+
+  body {
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    background-image:
+      radial-gradient(ellipse 90% 50% at 50% -18%, rgb(196 91 163 / 0.2), transparent 58%),
+      radial-gradient(ellipse 45% 32% at 100% 0%, rgb(70 180 190 / 0.1), transparent 52%),
+      radial-gradient(ellipse 40% 28% at 0% 100%, rgb(232 196 112 / 0.05), transparent 50%),
+      radial-gradient(1.1px 1.1px at 7% 14%, rgb(244 233 200 / 0.55), transparent),
+      radial-gradient(1px 1px at 18% 42%, rgb(244 233 200 / 0.32), transparent),
+      radial-gradient(1.2px 1.2px at 29% 9%, rgb(244 233 200 / 0.45), transparent),
+      radial-gradient(1px 1px at 41% 71%, rgb(244 233 200 / 0.28), transparent),
+      radial-gradient(1.1px 1.1px at 53% 23%, rgb(244 233 200 / 0.4), transparent),
+      radial-gradient(1px 1px at 64% 58%, rgb(244 233 200 / 0.3), transparent),
+      radial-gradient(1.3px 1.3px at 76% 12%, rgb(244 233 200 / 0.5), transparent),
+      radial-gradient(1px 1px at 84% 81%, rgb(244 233 200 / 0.28), transparent),
+      radial-gradient(1px 1px at 92% 36%, rgb(244 233 200 / 0.38), transparent),
+      radial-gradient(1.1px 1.1px at 12% 88%, rgb(244 233 200 / 0.26), transparent);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
