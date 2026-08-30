@@ -1,0 +1,401 @@
+{
+  "date": "2026-08-30",
+  "generatedAt": "2026-08-30T16:57:10.963Z",
+  "games": 14,
+  "slate": [
+    {
+      "gamePk": 822688,
+      "time": "2026-08-30T16:15:00Z",
+      "status": "In Progress",
+      "venue": "Nationals Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "80",
+        "wind": "10 mph, Out To RF"
+      },
+      "away": {
+        "id": 146,
+        "name": "Miami Marlins",
+        "abbr": "MIA",
+        "probable": {
+          "id": 676083,
+          "name": "Janson Junk"
+        }
+      },
+      "home": {
+        "id": 120,
+        "name": "Washington Nationals",
+        "abbr": "WSH",
+        "probable": {
+          "id": 674841,
+          "name": "Andrew Alvarez"
+        }
+      }
+    },
+    {
+      "gamePk": 824876,
+      "time": "2026-08-30T17:35:00Z",
+      "status": "Pre-Game",
+      "venue": "Truist Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "84",
+        "wind": "6 mph, L To R"
+      },
+      "away": {
+        "id": 115,
+        "name": "Colorado Rockies",
+        "abbr": "COL",
+        "probable": {
+          "id": 690279,
+          "name": "Mason Adams"
+        }
+      },
+      "home": {
+        "id": 144,
+        "name": "Atlanta Braves",
+        "abbr": "ATL",
+        "probable": {
+          "id": 641816,
+          "name": "Tyler Mahle"
+        }
+      }
+    },
+    {
+      "gamePk": 823502,
+      "time": "2026-08-30T17:35:00Z",
+      "status": "Pre-Game",
+      "venue": "Yankee Stadium",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "80",
+        "wind": "9 mph, Out To LF"
+      },
+      "away": {
+        "id": 111,
+        "name": "Boston Red Sox",
+        "abbr": "BOS",
+        "probable": {
+          "id": 624133,
+          "name": "Ranger Suarez"
+        }
+      },
+      "home": {
+        "id": 147,
+        "name": "New York Yankees",
+        "abbr": "NYY",
+        "probable": {
+          "id": 701542,
+          "name": "Will Warren"
+        }
+      }
+    },
+    {
+      "gamePk": 822766,
+      "time": "2026-08-30T17:37:00Z",
+      "status": "Pre-Game",
+      "venue": "Rogers Centre",
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "68",
+        "wind": "0 mph, None"
+      },
+      "away": {
+        "id": 136,
+        "name": "Seattle Mariners",
+        "abbr": "SEA",
+        "probable": {
+          "id": 669302,
+          "name": "Logan Gilbert"
+        }
+      },
+      "home": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "abbr": "TOR",
+        "probable": {
+          "id": 453286,
+          "name": "Max Scherzer"
+        }
+      }
+    },
+    {
+      "gamePk": 824393,
+      "time": "2026-08-30T17:40:00Z",
+      "status": "Delayed Start",
+      "venue": "Progressive Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "73",
+        "wind": "10 mph, L To R"
+      },
+      "away": {
+        "id": 118,
+        "name": "Kansas City Royals",
+        "abbr": "KC",
+        "probable": {
+          "id": 607625,
+          "name": "Seth Lugo"
+        }
+      },
+      "home": {
+        "id": 114,
+        "name": "Cleveland Guardians",
+        "abbr": "CLE",
+        "probable": {
+          "id": 800048,
+          "name": "Parker Messick"
+        }
+      }
+    },
+    {
+      "gamePk": 824232,
+      "time": "2026-08-30T17:40:00Z",
+      "status": "Pre-Game",
+      "venue": "Comerica Park",
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "73",
+        "wind": "8 mph, R To L"
+      },
+      "away": {
+        "id": 119,
+        "name": "Los Angeles Dodgers",
+        "abbr": "LAD",
+        "probable": {
+          "id": 607192,
+          "name": "Tyler Glasnow"
+        }
+      },
+      "home": {
+        "id": 116,
+        "name": "Detroit Tigers",
+        "abbr": "DET",
+        "probable": {
+          "id": 664285,
+          "name": "Framber Valdez"
+        }
+      }
+    },
+    {
+      "gamePk": 822933,
+      "time": "2026-08-30T17:40:00Z",
+      "status": "Pre-Game",
+      "venue": "Tropicana Field",
+      "weather": {
+        "condition": "Dome",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
+      "away": {
+        "id": 135,
+        "name": "San Diego Padres",
+        "abbr": "SD",
+        "probable": {
+          "id": 592662,
+          "name": "Robbie Ray"
+        }
+      },
+      "home": {
+        "id": 139,
+        "name": "Tampa Bay Rays",
+        "abbr": "TB",
+        "probable": {
+          "id": 656876,
+          "name": "Drew Rasmussen"
+        }
+      }
+    },
+    {
+      "gamePk": 823662,
+      "time": "2026-08-30T18:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Target Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "83",
+        "wind": "9 mph, In From RF"
+      },
+      "away": {
+        "id": 145,
+        "name": "Chicago White Sox",
+        "abbr": "CWS",
+        "probable": {
+          "id": 663855,
+          "name": "Jordan Hicks"
+        }
+      },
+      "home": {
+        "id": 142,
+        "name": "Minnesota Twins",
+        "abbr": "MIN",
+        "probable": {
+          "id": 805673,
+          "name": "Zebby Matthews"
+        }
+      }
+    },
+    {
+      "gamePk": 823740,
+      "time": "2026-08-30T18:10:00Z",
+      "status": "Pre-Game",
+      "venue": "American Family Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "82",
+        "wind": "15 mph, L To R"
+      },
+      "away": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "abbr": "TEX",
+        "probable": {
+          "id": 677958,
+          "name": "Kumar Rocker"
+        }
+      },
+      "home": {
+        "id": 158,
+        "name": "Milwaukee Brewers",
+        "abbr": "MIL",
+        "probable": {
+          "id": 669160,
+          "name": "Dustin May"
+        }
+      }
+    },
+    {
+      "gamePk": 823010,
+      "time": "2026-08-30T18:15:00Z",
+      "status": "Pre-Game",
+      "venue": "Busch Stadium",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "92",
+        "wind": "10 mph, Out To LF"
+      },
+      "away": {
+        "id": 134,
+        "name": "Pittsburgh Pirates",
+        "abbr": "PIT",
+        "probable": {
+          "id": 677952,
+          "name": "Braxton Ashcraft"
+        }
+      },
+      "home": {
+        "id": 138,
+        "name": "St. Louis Cardinals",
+        "abbr": "STL",
+        "probable": {
+          "id": 669461,
+          "name": "Matthew Liberatore"
+        }
+      }
+    },
+    {
+      "gamePk": 823580,
+      "time": "2026-08-30T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Citi Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "81",
+        "wind": "10 mph, Out To LF"
+      },
+      "away": {
+        "id": 117,
+        "name": "Houston Astros",
+        "abbr": "HOU",
+        "probable": {
+          "id": 814490,
+          "name": "Ethan Pecko"
+        }
+      },
+      "home": {
+        "id": 121,
+        "name": "New York Mets",
+        "abbr": "NYM",
+        "probable": {
+          "id": 804267,
+          "name": "Zac Thornton"
+        }
+      }
+    },
+    {
+      "gamePk": 824959,
+      "time": "2026-08-30T20:05:00Z",
+      "status": "Scheduled",
+      "venue": "Sutter Health Park",
+      "weather": {},
+      "away": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "abbr": "BAL",
+        "probable": {
+          "id": 605135,
+          "name": "Chris Bassitt"
+        }
+      },
+      "home": {
+        "id": 133,
+        "name": "Athletics",
+        "abbr": "ATH",
+        "probable": {
+          "id": 605488,
+          "name": "Jeffrey Springs"
+        }
+      }
+    },
+    {
+      "gamePk": 823987,
+      "time": "2026-08-30T20:07:00Z",
+      "status": "Scheduled",
+      "venue": "Angel Stadium",
+      "weather": {},
+      "away": {
+        "id": 143,
+        "name": "Philadelphia Phillies",
+        "abbr": "PHI",
+        "probable": {
+          "id": 554430,
+          "name": "Zack Wheeler"
+        }
+      },
+      "home": {
+        "id": 108,
+        "name": "Los Angeles Angels",
+        "abbr": "LAA",
+        "probable": {
+          "id": 579328,
+          "name": "Yusei Kikuchi"
+        }
+      }
+    },
+    {
+      "gamePk": 824636,
+      "time": "2026-08-30T23:20:00Z",
+      "status": "Scheduled",
+      "venue": "Wrigley Field",
+      "weather": {},
+      "away": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "abbr": "CIN",
+        "probable": {
+          "id": 695505,
+          "name": "Chase Burns"
+        }
+      },
+      "home": {
+        "id": 112,
+        "name": "Chicago Cubs",
+        "abbr": "CHC",
+        "probable": {
+          "id": 684007,
+          "name": "Shota Imanaga"
+        }
+      }
+    }
+  ]
+}
