@@ -1,6 +1,6 @@
 {
   "date": "2026-08-30",
-  "generatedAt": "2026-08-30T17:52:40.101Z",
+  "generatedAt": "2026-08-30T18:00:27.473Z",
   "games": 14,
   "slate": [
     {
@@ -209,7 +209,7 @@
     {
       "gamePk": 823662,
       "time": "2026-08-30T18:10:00Z",
-      "status": "Pre-Game",
+      "status": "Warmup",
       "venue": "Target Field",
       "weather": {
         "condition": "Cloudy",
