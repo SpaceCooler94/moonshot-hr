@@ -751,7 +751,9 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
     const pitch = iPitch >= 0 ? (cols[iPitch] ?? "").toUpperCase() : "";
     const fam = pitchFamily(pitch);
     if (fam) {
-      fam === "hard" ? bump(row.vsHard, barrel) : fam === "break" ? bump(row.vsBreak, barrel) : bump(row.vsOff, barrel);
+      if (fam === "hard") bump(row.vsHard, barrel);
+      else if (fam === "break") bump(row.vsBreak, barrel);
+      else bump(row.vsOff, barrel);
     }
     if (pitch) {
       let bp = row.byPitch[pitch];
