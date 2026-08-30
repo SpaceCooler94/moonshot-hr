@@ -12,6 +12,8 @@ import {
   todayISODateET,
 } from "@/lib/mlb/format";
 import { getWalkForward } from "@/lib/mlb/get-board";
+import { buildFindings, findingLabel, type IntelFinding } from "@/lib/mlb/findings";
+import { FollowList } from "@/components/follow-list";
 import type {
   BoardPayload,
   ConfidenceBand,
@@ -29,31 +31,39 @@ export function BoardView({
   query,
   team,
   stable,
+  loud,
 }: {
   board: BoardPayload;
   query?: string;
   team?: string;
   stable?: boolean;
+  loud?: boolean;
 }) {
   const [selected, setSelected] = useState<PlayerPrediction | null>(null);
   const [walk, setWalk] = useState<WalkForward | null>(board.walkForward);
   const [walkErr, setWalkErr] = useState(false);
+  const [showRest, setShowRest] = useState(false);
   useEffect(() => {
     let live = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let fails = 0;
     setWalkErr(false);
-    const pull = () => {
-      void getWalkForward({ data: { date: board.date } })
+    const pull = (fill: boolean) => {
+      void getWalkForward({ data: { date: board.date, fill } })
         .then((next) => {
           if (!live) return;
-          setWalk(next);
-          if (next && next.pending > 0) timer = setTimeout(pull, 1600);
+          fails = 0;
+          if (next) setWalk(next);
+          if (next && next.pending > 0) timer = setTimeout(() => pull(true), fill ? 200 : 300);
         })
         .catch(() => {
-          if (live) setWalkErr(true);
+          if (!live) return;
+          fails += 1;
+          if (fails >= 4) setWalkErr(true);
+          timer = setTimeout(() => pull(true), 2500);
         });
     };
-    pull();
+    pull(false);
     return () => {
       live = false;
       if (timer) clearTimeout(timer);
@@ -71,7 +81,7 @@ export function BoardView({
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [board.predictions]);
 
-  const filtered = useMemo(() => {
+  const pool = useMemo(() => {
     const q = (query ?? "").trim().toLowerCase();
     return board.predictions.filter((p) => {
       if (stable && p.confidenceBand !== "stable") return false;
@@ -86,6 +96,34 @@ export function BoardView({
     });
   }, [board.predictions, query, team, stable]);
 
+  const filtered = useMemo(() => {
+    return loud ? pool.filter((p) => p.signal.grade === "loud") : pool;
+  }, [pool, loud]);
+
+  const looks = useMemo(() => {
+    const clear = pool
+      .filter((p) => p.signal.decision.pass)
+      .sort(
+        (a, b) =>
+          Number(b.signal.decision.both20) - Number(a.signal.decision.both20) ||
+          b.signal.decision.bvp - a.signal.decision.bvp ||
+          b.signal.decision.push - a.signal.decision.push ||
+          b.signal.decision.score - a.signal.decision.score ||
+          b.pHr - a.pHr,
+      );
+    if (clear.length >= 3) return { clear: clear.slice(0, 12), near: [] as PlayerPrediction[], scanned: pool.length };
+    const near = pool
+      .filter((p) => !p.signal.decision.pass && p.signal.keyMatch?.loud)
+      .sort((a, b) => b.signal.decision.score - a.signal.decision.score || b.pHr - a.pHr)
+      .slice(0, 5);
+    return { clear, near, scanned: pool.length };
+  }, [pool]);
+
+  const intel = useMemo(
+    () => buildFindings(pool, board.games, board.vulnerable ?? []),
+    [pool, board.games, board.vulnerable],
+  );
+
   const top12 = filtered.slice(0, 12);
   const rest = filtered.slice(12);
   const empty = board.games.length === 0;
@@ -99,9 +137,9 @@ export function BoardView({
       ) : (
         <>
           <div className="flex flex-col gap-3">
-            <SearchRow date={board.date} query={query} team={team} stable={stable} />
+            <SearchRow date={board.date} query={query} team={team} stable={stable} loud={loud} />
             <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-              <FilterChip to="/" date={board.date} query={query} active={!team && !stable}>
+              <FilterChip to="/" date={board.date} query={query} active={!team && !stable && !loud}>
                 All
               </FilterChip>
               <FilterChip
@@ -109,9 +147,18 @@ export function BoardView({
                 date={board.date}
                 query={query}
                 stable
-                active={!!stable && !team}
+                active={!!stable && !team && !loud}
               >
                 Stable
+              </FilterChip>
+              <FilterChip
+                to="/"
+                date={board.date}
+                query={query}
+                loud
+                active={!!loud && !team && !stable}
+              >
+                Loud
               </FilterChip>
               {teams.map(([abbr, id]) => (
                 <FilterChip
@@ -121,6 +168,7 @@ export function BoardView({
                   query={query}
                   team={abbr}
                   stable={stable}
+                  loud={loud}
                   active={team === abbr}
                 >
                   <img src={teamSpot(id)} alt="" className="size-4" />
@@ -129,6 +177,25 @@ export function BoardView({
               ))}
             </div>
           </div>
+
+          <IntelBrief
+            findings={intel}
+            scanned={pool.length}
+            cleared={looks.clear.length}
+            onOpen={(id, pk) => {
+              const hit = board.predictions.find((p) => p.playerId === id && p.gamePk === pk);
+              if (hit) setSelected(hit);
+            }}
+          />
+
+          <FollowList compact />
+
+          <DecisionList
+            looks={looks.clear}
+            near={looks.near}
+            scanned={looks.scanned}
+            onOpen={setSelected}
+          />
 
           {filtered.length === 0 ? (
             <p className="text-sm text-muted">No batters match that filter.</p>
@@ -140,7 +207,9 @@ export function BoardView({
                     <h2 className="text-[11px] font-medium tracking-[0.22em] text-gold uppercase">
                       Top 12
                     </h2>
-                    <p className="text-xs text-subtle">Ranked by P(HR)</p>
+                    <p className="text-xs text-subtle">
+                      {loud ? "Loud only · still ranked by P(HR)" : "Ranked by P(HR)"}
+                    </p>
                   </div>
                   <div className="overflow-hidden rounded-3xl bg-surface shadow-hair">
                     <div className="hidden items-center gap-3 border-b border-border px-4 py-2 sm:flex">
@@ -189,8 +258,15 @@ export function BoardView({
                     <h2 className="text-xs font-medium tracking-[0.14em] text-muted uppercase">
                       Rest of slate
                     </h2>
-                    <p className="text-xs text-subtle tabular-nums">{filtered.length} batters</p>
+                    <button
+                      type="button"
+                      onClick={() => setShowRest((v) => !v)}
+                      className="text-xs text-gold underline-offset-2 hover:underline"
+                    >
+                      {showRest ? "Hide" : `Show ${rest.length}`}
+                    </button>
                   </div>
+                  {showRest ? (
                   <ul className="divide-y divide-border overflow-hidden rounded-3xl bg-surface shadow-hair">
                     {rest.map((p, i) => (
                       <li key={p.playerId + ":" + p.gamePk}>
@@ -205,6 +281,8 @@ export function BoardView({
                           <img
                             src={playerHeadshot(p.playerId)}
                             alt=""
+                            loading="lazy"
+                            decoding="async"
                             className="size-9 rounded-full bg-surface-2 object-cover outline outline-1 -outline-offset-1 outline-fg/10"
                           />
                           <span className="min-w-0 flex-1">
@@ -246,6 +324,12 @@ export function BoardView({
                       </li>
                     ))}
                   </ul>
+                  ) : (
+                    <p className="rounded-3xl bg-surface px-4 py-4 text-sm text-muted shadow-hair">
+                      {rest.length} more batters — hidden so the board stays fast. Show them if you
+                      want the full slate.
+                    </p>
+                  )}
                 </section>
               ) : null}
             </>
@@ -255,6 +339,7 @@ export function BoardView({
 
       <PlayerDetail
         player={selected}
+        date={board.date}
         open={selected != null}
         onOpenChange={(o) => {
           if (!o) setSelected(null);
@@ -279,13 +364,21 @@ function Hero({ board, walkErr }: { board: BoardPayload; walkErr?: boolean }) {
   const last10 = walkForward?.windows.find((w) => w.key === "last10");
 
   return (
-    <section className="space-y-4">
+    <section className="rise-in relative overflow-hidden rounded-xl shadow-glow">
+      <img
+        src="/brand/orbit.jpg"
+        alt=""
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[70%_40%] opacity-30 mix-blend-screen"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/80 to-bg/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-bg/40" />
+      <div className="relative space-y-4 px-4 py-5 sm:px-6 sm:py-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-xl">
           <p className="text-[11px] font-medium tracking-[0.22em] text-gold uppercase">
             Home run research
           </p>
-          <h1 className="mt-1 font-display text-4xl leading-[1.12] sm:text-5xl">
+          <h1 className="hero-title-glow mt-1 font-display text-4xl leading-[1.12] sm:text-5xl">
             {headline}
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
@@ -363,6 +456,7 @@ function Hero({ board, walkErr }: { board: BoardPayload; walkErr?: boolean }) {
           rows={summary.calibration}
         />
       ) : null}
+      </div>
     </section>
   );
 }
@@ -391,16 +485,25 @@ function LockBanner({ lock }: { lock: BoardPayload["lock"] }) {
 
 function WalkCard({ walk }: { walk: NonNullable<BoardPayload["walkForward"]> }) {
   const liftSign = walk.lift >= 0 ? "+" : "";
+  const total = Math.max(walk.totalDays, walk.days);
+  const pct = total > 0 ? Math.min(100, Math.round((100 * walk.days) / total)) : 0;
   return (
     <div className="overflow-hidden rounded-2xl bg-surface shadow-hair">
       <div className="px-4 pt-3 pb-3">
         <p className="text-[11px] tracking-[0.14em] text-gold uppercase">
           Backtest · {walk.days}
-          {walk.totalDays ? `/${walk.totalDays}` : ""} days · {formatShortDate(walk.from)} –{" "}
-          {formatShortDate(walk.to)}
-          {walk.pending > 0 ? ` · ${walk.pending} left · saving as we go` : " · saved"}
+          {walk.totalDays ? `/${walk.totalDays}` : ""} days
+          {walk.days > 0 ? ` · ${formatShortDate(walk.from)} – ${formatShortDate(walk.to)}` : ""}
+          {walk.pending > 0 ? ` · ${walk.pending} left` : " · saved"}
         </p>
-        {walk.windows.length > 0 ? (
+        {walk.pending > 0 || walk.days < total ? (
+          <div className="mt-2 h-1 overflow-hidden rounded-full bg-surface-2">
+            <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
+          </div>
+        ) : null}
+        {walk.days === 0 ? (
+          <p className="mt-3 text-sm text-muted">Scoring completed days. Numbers hold still until a night lands.</p>
+        ) : walk.windows.length > 0 ? (
           <div className="mt-3 overflow-x-auto">
             <table className="w-full min-w-[36rem] text-left text-xs">
               <thead>
@@ -452,6 +555,8 @@ function WalkCard({ walk }: { walk: NonNullable<BoardPayload["walkForward"]> }) 
             </table>
           </div>
         ) : null}
+        {walk.days > 0 ? (
+          <>
         <p className="mt-3 text-sm text-fg">
           Season Top 12{" "}
           <span className="font-mono tabular-nums">
@@ -484,6 +589,8 @@ function WalkCard({ walk }: { walk: NonNullable<BoardPayload["walkForward"]> }) 
             {" · worst "}
             {walk.worstDays.map((d) => `${formatShortDate(d.date)} ${d.top12WithHr ?? 0}/12`).join(" · ")}
           </p>
+        ) : null}
+          </>
         ) : null}
       </div>
       {walk.calibration.length > 0 ? (
@@ -563,6 +670,248 @@ function HeroStat({
   );
 }
 
+function IntelBrief({
+  findings,
+  scanned,
+  cleared,
+  onOpen,
+}: {
+  findings: IntelFinding[];
+  scanned: number;
+  cleared: number;
+  onOpen: (playerId: number, gamePk: number) => void;
+}) {
+  if (findings.length === 0) return null;
+  return (
+    <section>
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h2 className="text-[11px] font-medium tracking-[0.22em] text-gold uppercase">Findings</h2>
+        <p className="text-xs text-subtle">
+          {scanned} scanned · {cleared} clear · BvP ranked
+        </p>
+      </div>
+      <ol className="list-none divide-y divide-border overflow-hidden rounded-3xl bg-surface/90 shadow-glow p-0">
+        {findings.map((f, i) => {
+          const clickable = f.playerId != null && f.gamePk != null;
+          const inner = (
+            <>
+              <span className="w-7 shrink-0 pt-0.5 text-right font-mono text-sm tabular-nums text-muted">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-medium tracking-[0.16em] text-gold uppercase">
+                  {findingLabel(f.kind)}
+                </span>
+                <span className="mt-1 block text-sm font-medium text-fg">{f.headline}</span>
+                <span className="mt-1 block text-sm leading-relaxed text-muted">{f.body}</span>
+              </span>
+            </>
+          );
+          return (
+            <li key={f.id}>
+              {clickable ? (
+                <button
+                  type="button"
+                  onClick={() => onOpen(f.playerId!, f.gamePk!)}
+                  className="flex w-full items-start gap-3 px-3 py-3.5 text-left transition-colors hover:bg-surface-2 sm:px-4"
+                >
+                  {inner}
+                </button>
+              ) : (
+                <div className="flex items-start gap-3 px-3 py-3.5 sm:px-4">{inner}</div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
+function DecisionList({
+  looks,
+  near,
+  scanned,
+  onOpen,
+}: {
+  looks: PlayerPrediction[];
+  near: PlayerPrediction[];
+  scanned: number;
+  onOpen: (p: PlayerPrediction) => void;
+}) {
+  const rows = looks.length > 0 ? looks : near;
+  const fallback = looks.length === 0;
+  const featured = fallback ? null : looks[0];
+  const also = fallback ? [] : looks.slice(1, 3);
+  return (
+    <section className="space-y-6">
+      {featured ? (
+        <div>
+          <div className="mb-3 flex items-baseline justify-between gap-3">
+            <h2 className="text-[11px] font-medium tracking-[0.22em] text-gold uppercase">Best matchup</h2>
+            <p className="text-xs text-subtle">
+              BvP {featured.signal.decision.bvp}
+              {featured.signal.decision.bvpGrade === "best" ? " · best" : ` · ${featured.signal.decision.bvpGrade}`}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpen(featured)}
+            className="flex w-full flex-col gap-3 rounded-3xl bg-surface/90 px-4 py-4 text-left shadow-glow transition-[background-color,transform] duration-150 hover:bg-surface-2 active:scale-[0.995] sm:flex-row sm:items-center sm:px-5 sm:py-5"
+          >
+            <img
+              src={playerHeadshot(featured.playerId)}
+              alt=""
+              className="size-16 shrink-0 rounded-full bg-surface-2 object-cover outline outline-1 -outline-offset-1 outline-fg/10 sm:size-20"
+            />
+            <span className="min-w-0 flex-1">
+              <span className="block font-display text-2xl leading-tight text-fg sm:text-3xl">
+                {featured.name}
+              </span>
+              <span className="mt-1 block text-sm text-muted">
+                {featured.teamAbbr} {featured.isHome ? "vs" : "@"} {featured.opponentAbbr}
+                {featured.pitcher ? ` · ${featured.pitcher.name}` : ""} · #{featured.battingOrder}
+              </span>
+              <span className="mt-2 block text-sm leading-relaxed text-sage">
+                {featured.signal.decision.bvpLine || featured.signal.decision.line}
+              </span>
+              <span className="mt-2 flex flex-wrap gap-1.5">
+                {(featured.signal.decision.bvpLayers ?? [])
+                  .filter((l) => l.pass)
+                  .map((t) => (
+                    <span
+                      key={t.key}
+                      className="rounded-full bg-sage-dim px-2 py-0.5 text-[10px] font-medium text-sage"
+                    >
+                      {t.key}
+                    </span>
+                  ))}
+                {featured.signal.decision.tonight.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-full bg-sage-dim px-2 py-0.5 text-[10px] font-medium text-sage"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </span>
+            </span>
+            <span className="shrink-0 text-left sm:text-right">
+              <span className="block font-mono text-2xl tabular-nums text-fg">{formatPct(featured.pHr)}</span>
+              <span className="block text-[11px] text-subtle">P(HR) · size</span>
+              {featured.forecast?.score ? (
+                <span className="mt-1 block font-mono text-sm tabular-nums text-gold">
+                  {featured.forecast.score} intel · {featured.forecast.conf}%
+                </span>
+              ) : null}
+            </span>
+          </button>
+          {also.length > 0 ? (
+            <ul className="mt-3 space-y-2">
+              {also.map((p) => (
+                <li key={`also:${p.playerId}:${p.gamePk}`}>
+                  <button
+                    type="button"
+                    onClick={() => onOpen(p)}
+                    className="flex w-full items-start gap-3 rounded-2xl bg-surface/80 px-3 py-3 text-left shadow-hair hover:bg-surface-2 sm:px-4"
+                  >
+                    <img
+                      src={playerHeadshot(p.playerId)}
+                      alt=""
+                      className="mt-0.5 size-10 shrink-0 rounded-full bg-surface-2 object-cover"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-medium text-fg">{p.name}</span>
+                      <span className="mt-0.5 block text-sm leading-snug text-muted">
+                        {p.signal.decision.bvpLine ||
+                          p.signal.decision.line.replace(/^Today:\s*/, "")}
+                      </span>
+                    </span>
+                    <span className="shrink-0 font-mono text-sm tabular-nums text-fg">{formatPct(p.pHr)}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div>
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h2 className="text-[11px] font-medium tracking-[0.22em] text-gold uppercase">The cut</h2>
+        <p className="text-xs text-subtle">
+          {fallback
+            ? `None clear mix + heat + profile + 1–4 · ${scanned} scanned`
+            : `${looks.length} clear mix + heat + profile + 1–4 · ${scanned} scanned`}
+        </p>
+      </div>
+      {rows.length === 0 ? (
+        <p className="rounded-3xl bg-surface px-4 py-6 text-sm text-muted shadow-hair">
+          No batter on this slate has mix, heat, and profile on at once. Top 12 below is still size
+          only.
+        </p>
+      ) : (
+        <ol className="cut-list list-none divide-y divide-border overflow-hidden rounded-3xl bg-surface/90 shadow-glow p-0">
+          {rows.map((p, i) => (
+            <li key={`cut:${p.playerId}:${p.gamePk}`}>
+              <button
+                type="button"
+                onClick={() => onOpen(p)}
+                className="flex min-h-14 w-full items-center gap-3 px-3 py-3 text-left transition-[background-color,transform] duration-150 ease-out hover:bg-surface-2 active:scale-[0.995] sm:px-4"
+              >
+                <span className="w-7 shrink-0 text-right font-mono text-sm tabular-nums text-muted">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <img
+                  src={playerHeadshot(p.playerId)}
+                  alt=""
+                  className="size-10 shrink-0 rounded-full bg-surface-2 object-cover outline outline-1 -outline-offset-1 outline-fg/10"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium text-fg">{p.name}</span>
+                  <span className="mt-0.5 block text-sm leading-snug text-muted">
+                    {p.signal.decision.line
+                      ? p.signal.decision.line.replace(/^Today:\s*/, "")
+                      : `${p.teamAbbr} ${p.isHome ? "vs" : "@"} ${p.opponentAbbr}${p.pitcher ? ` · ${p.pitcher.name}` : ""} · #${p.battingOrder}`}
+                  </span>
+                  <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase",
+                        p.signal.decision.pass ? "cut-badge-glow bg-sage-dim text-sage" : "bg-gold/15 text-gold",
+                      )}
+                    >
+                      {p.signal.decision.pass ? "cut" : "near"} {p.signal.passed}/{p.signal.total}
+                    </span>
+                    {p.signal.decision.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full bg-sage-dim px-2 py-0.5 text-[10px] font-medium text-sage"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                    {!p.signal.decision.pass && p.signal.decision.missing ? (
+                      <span className="truncate text-[11px] text-muted">
+                        missing {p.signal.decision.missing}
+                      </span>
+                    ) : null}
+                  </span>
+                </span>
+                <span className="w-[4.5rem] shrink-0 text-right">
+                  <span className="block font-mono text-base tabular-nums text-fg">{formatPct(p.pHr)}</span>
+                  <span className="block text-[11px] text-subtle">P(HR)</span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
+      </div>
+    </section>
+  );
+}
+
 function TopRow({
   player,
   rank,
@@ -583,7 +932,7 @@ function TopRow({
       <button
         type="button"
         onClick={onOpen}
-        className="flex min-h-14 w-full items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-surface-2 sm:px-4"
+        className="flex min-h-14 w-full items-center gap-3 px-3 py-3 text-left transition-[background-color,transform] duration-150 ease-out hover:bg-surface-2 active:scale-[0.995] sm:px-4"
       >
         <span className="w-7 shrink-0 text-right font-mono text-sm tabular-nums text-muted">
           {String(rank).padStart(2, "0")}
@@ -611,6 +960,7 @@ function TopRow({
                 )}
               >
                 {player.signal.grade}
+                {player.signal.total > 0 ? ` ${player.signal.passed}/${player.signal.total}` : ""}
               </span>
               {player.signal.keyMatch?.loud ? (
                 <span className="rounded-full bg-sage-dim px-2 py-0.5 text-[10px] font-medium text-sage">
@@ -782,11 +1132,13 @@ function SearchRow({
   query,
   team,
   stable,
+  loud,
 }: {
   date: string;
   query?: string;
   team?: string;
   stable?: boolean;
+  loud?: boolean;
 }) {
   const navigate = useNavigate();
   return (
@@ -798,7 +1150,13 @@ function SearchRow({
         const q = String(fd.get("q") ?? "").trim();
         void navigate({
           to: "/",
-          search: { date, q: q || undefined, team, stable: stable ? "1" : undefined },
+          search: {
+            date,
+            q: q || undefined,
+            team,
+            stable: stable ? "1" : undefined,
+            loud: loud ? "1" : undefined,
+          },
         });
       }}
     >
@@ -822,6 +1180,7 @@ function FilterChip({
   query,
   team,
   stable,
+  loud,
   active,
 }: {
   children: React.ReactNode;
@@ -830,6 +1189,7 @@ function FilterChip({
   query?: string;
   team?: string;
   stable?: boolean;
+  loud?: boolean;
   active?: boolean;
 }) {
   return (
@@ -841,7 +1201,13 @@ function FilterChip({
     >
       <Link
         to={to}
-        search={{ date, q: query, team, stable: stable ? "1" : undefined }}
+        search={{
+          date,
+          q: query,
+          team,
+          stable: stable ? "1" : undefined,
+          loud: loud ? "1" : undefined,
+        }}
       >
         {children}
       </Link>

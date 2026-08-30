@@ -15,10 +15,10 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const board = Route.useLoaderData();
-  const { q, team, stable } = Route.useSearch();
+  const { q, team, stable, loud } = Route.useSearch();
   return (
     <Shell date={board.date}>
-      <BoardView board={board} query={q} team={team} stable={stable === "1"} />
+      <BoardView board={board} query={q} team={team} stable={stable === "1"} loud={loud === "1"} />
     </Shell>
   );
 }

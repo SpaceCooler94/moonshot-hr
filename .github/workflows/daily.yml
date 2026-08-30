@@ -1,0 +1,46 @@
+name: Daily slate
+
+on:
+  schedule:
+    # 10:00 America/New_York (14:00 UTC during EDT)
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Slate date YYYY-MM-DD (ET). Empty = today."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Typecheck + model tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: node --experimental-strip-types --test src/lib/mlb/model.test.ts
+
+  slate:
+    name: Daily MLB brief
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Fetch today's slate
+        run: node scripts/daily-slate.mjs ${{ github.event.inputs.date }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moonshot-daily-${{ github.event.inputs.date || 'today' }}
+          path: data/daily/
+          if-no-files-found: error

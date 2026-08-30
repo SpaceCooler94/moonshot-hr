@@ -8,12 +8,16 @@ const summaryCache = new Map<string, { exp: number; val: WalkForward }>();
 const dayStore = new Map<string, StoredDay>();
 
 const OPENING = "2026-03-25";
-const CHUNK = 12;
-const POOL = 3;
+const FILL_MS = 20000;
+const CHUNK = 8;
+const POOL = 4;
 const MLB = "https://statsapi.mlb.com";
 const DATA_DIR = join(process.cwd(), "data", "walk");
 
 let hydrated = false;
+let fillChain: Promise<unknown> = Promise.resolve();
+const failUntil = new Map<string, number>();
+let datesMemo: { asOf: string; exp: number; dates: string[] } | null = null;
 
 function storePath() {
   return join(DATA_DIR, `${MODEL_VERSION}.json`);
@@ -67,48 +71,85 @@ type StoredDay = {
 
 type Tagged = StoredLook & { date: string; baseline: boolean; last5: boolean; last10: boolean };
 
-export async function loadWalkForward(asOf: string): Promise<WalkForward | null> {
+function enqueueFill(fn: () => Promise<void>): Promise<void> {
+  const run = fillChain.then(fn, fn);
+  fillChain = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+export async function loadWalkForward(asOf: string, opts?: { fill?: boolean }): Promise<WalkForward | null> {
   hydrateDayStore();
   const dates = await listCompletedDates(asOf);
   if (dates.length === 0) return null;
 
+  const snapshot = summarize(dates, asOf);
+  if (snapshot.pending === 0) return snapshot;
+  if (!opts?.fill) return snapshot;
+
+  await Promise.race([enqueueFill(() => fillChunk(dates)), sleep(FILL_MS)]);
+  return summarize(dates, asOf);
+}
+
+function missingDates(dates: string[]): string[] {
+  return dates.filter((d) => {
+    if ((failUntil.get(d) ?? 0) > Date.now()) return false;
+    const hit = dayStore.get(dayKey(d));
+    return !hit || hit.looks.length === 0;
+  });
+}
+
+async function fillChunk(dates: string[]) {
   const { loadBoard } = await import("./board.server");
-  const retryAfter = shiftISODate(asOf, -3);
-  const missing = dates
-    .filter((d) => {
-      const hit = dayStore.get(dayKey(d));
-      if (!hit) return true;
-      // Empty placeholder for a day that later went final — retry the last couple.
-      if (hit.looks.length === 0 && hit.games === 0 && d >= retryAfter) return true;
-      return false;
-    })
-    .slice(0, CHUNK);
+  const missing = missingDates(dates).slice(0, CHUNK);
+  if (missing.length === 0) return;
   for (let i = 0; i < missing.length; i += POOL) {
     const batch = missing.slice(i, i + POOL);
-    const boards = await Promise.all(batch.map((date) => loadBoard(date).catch(() => null)));
+    const boards = await Promise.all(
+      batch.map((date) => loadBoard(date, { lean: true }).catch(() => null)),
+    );
     for (let j = 0; j < batch.length; j++) {
-      const board = boards[j];
       const date = batch[j];
+      const board = boards[j];
       if (!board || board.summary.completedGames === 0 || board.predictions.length === 0) {
-        dayStore.set(dayKey(date), {
-          date,
-          games: 0,
-          lockStatus: "rebuilt",
-          looks: [],
-        });
+        failUntil.set(date, Date.now() + 3 * 60_000);
         continue;
       }
-      dayStore.set(dayKey(date), storeDay(board));
+      const stored = storeDay(board);
+      if (stored.looks.length === 0) {
+        failUntil.set(date, Date.now() + 3 * 60_000);
+        continue;
+      }
+      dayStore.set(dayKey(date), stored);
     }
     flushDayStore();
   }
+}
 
+export function bustWalkForward() {
+  summaryCache.clear();
+}
+
+function dayKey(date: string) {
+  return `${MODEL_VERSION}:${date}`;
+}
+
+function summarize(dates: string[], asOf: string): WalkForward {
   const stored = dates
     .map((d) => dayStore.get(dayKey(d)))
     .filter((d): d is StoredDay => !!d && d.looks.length > 0);
-  if (stored.length === 0) return null;
+  const pending = dates.filter((d) => {
+    const hit = dayStore.get(dayKey(d));
+    return !hit || hit.looks.length === 0;
+  }).length;
+  if (stored.length === 0) return emptyWalk(asOf, dates, pending);
 
-  const pending = dates.filter((d) => !dayStore.has(dayKey(d))).length;
   const cacheKey = `walk:${MODEL_VERSION}:szn:${asOf}:${stored.length}:${pending}`;
   const hit = summaryCache.get(cacheKey);
   if (hit && hit.exp > Date.now()) return hit.val;
@@ -177,17 +218,47 @@ export async function loadWalkForward(asOf: string): Promise<WalkForward | null>
     pending,
     totalDays: dates.length,
   };
-  // Don't freeze an incomplete season for long — keep filling.
-  summaryCache.set(cacheKey, { exp: Date.now() + (pending ? 15_000 : 45 * 60_000), val });
+  summaryCache.set(cacheKey, { exp: Date.now() + (pending ? 8_000 : 45 * 60_000), val });
   return val;
 }
 
-export function bustWalkForward() {
-  summaryCache.clear();
-}
-
-function dayKey(date: string) {
-  return `${MODEL_VERSION}:${date}`;
+function emptyWalk(asOf: string, dates: string[], pending: number): WalkForward {
+  return {
+    model: MODEL_VERSION,
+    from: dates[dates.length - 1] ?? asOf,
+    to: dates[0] ?? asOf,
+    days: 0,
+    looks: 0,
+    top12Looks: 0,
+    top12Hits: 0,
+    top12Rate: 0,
+    restRate: 0,
+    meanP: 0,
+    actualRate: 0,
+    brier: 0,
+    skill: 0,
+    logLoss: 0,
+    lift: 0,
+    liftLo: 0,
+    liftHi: 0,
+    lockedDays: 0,
+    rebuiltDays: 0,
+    baselineTop12Looks: 0,
+    baselineTop12Hits: 0,
+    baselineTop12Rate: 0,
+    baselineLift: 0,
+    cut16N: 0,
+    cut16Rate: 0,
+    below16N: 0,
+    below16Rate: 0,
+    bestDays: [],
+    worstDays: [],
+    calibration: [],
+    byDay: [],
+    windows: [],
+    pending,
+    totalDays: dates.length,
+  };
 }
 
 function storeDay(board: {
@@ -364,6 +435,8 @@ async function listCompletedDates(asOf: string): Promise<string[]> {
   const start = OPENING;
   const end = shiftISODate(asOf, -1);
   if (end < start) return [];
+  const memo = datesMemo;
+  if (memo && memo.asOf === asOf && memo.exp > Date.now()) return memo.dates;
   try {
     const res = await fetch(
       `${MLB}/api/v1/schedule?sportId=1&startDate=${start}&endDate=${end}`,
@@ -381,6 +454,7 @@ async function listCompletedDates(asOf: string): Promise<string[]> {
       const finals = (day.games ?? []).some((g) => (g.status?.abstractGameState ?? "").toLowerCase() === "final");
       if (finals) dates.push(day.date);
     }
+    datesMemo = { asOf, exp: Date.now() + 10 * 60_000, dates };
     return dates;
   } catch {
     const fallback: string[] = [];
@@ -392,5 +466,3 @@ async function listCompletedDates(asOf: string): Promise<string[]> {
     return fallback;
   }
 }
-
-void POOL;

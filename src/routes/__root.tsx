@@ -15,7 +15,7 @@ export const Route = createRootRoute({
         name: "description",
         content: "Daily MLB home run research — barrels, park air, and the arm.",
       },
-      { name: "theme-color", content: "#080611" },
+      { name: "theme-color", content: "#05040c" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

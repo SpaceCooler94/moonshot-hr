@@ -1,10 +1,11 @@
-import { dailyParkAir, parkHrFactor, PARK_HR_FACTOR, shrinkYearPark, TEAM_VENUE } from "./parks";
+import { dailyParkAir, parkHrFactor, parkTrueCount, PARK_HR_FACTOR, shrinkYearPark, TEAM_VENUE, windSprayMatch } from "./parks";
 import { CAL_BANDS, MODEL_VERSION, scoreMatchup } from "./model";
 import { buildHrSignal } from "./signal";
+import { buildForecast, EMPTY_FORECAST } from "./intel";
 import { rankVulnerablePitchers } from "./vulnerable";
 import { shiftISODate, todayISODateET } from "./format";
 import { canLock, lockFromBoard, lockState, readLock, writeLock } from "./lock";
-import { fetchSavant, fetchWeekContact, fetchPitchMatrix, fetchPitchersMatrix, alignPitchRows, barrelPct, ev100Flags, pitchFamily, tankFlags, weekShape } from "./savant";
+import { fetchSavant, fetchWeekContact, fetchPitchMatrix, fetchPitchersMatrix, alignPitchRows, barrelPct, ev100Flags, filterShape, pitchFamily, rateBarrelPa, rateHrFb, tankFlags, trendShape, weekShape } from "./savant";
 import type { SavantPitcher } from "./savant";
 import type {
   ArsenalPitch,
@@ -52,6 +53,21 @@ export function bustBoardCache(date: string) {
       key === `board:${MODEL_VERSION}:sig12:${date}` ||
       key === `board:${MODEL_VERSION}:sig13:${date}` ||
       key === `board:${MODEL_VERSION}:sig14:${date}` ||
+      key === `board:${MODEL_VERSION}:sig15:${date}` ||
+      key === `board:${MODEL_VERSION}:sig16:${date}` ||
+      key === `board:${MODEL_VERSION}:sig17:${date}` ||
+      key === `board:${MODEL_VERSION}:sig18:${date}` ||
+      key === `board:${MODEL_VERSION}:sig19:${date}` ||
+      key === `board:${MODEL_VERSION}:sig20:${date}` ||
+      key === `board:${MODEL_VERSION}:sig21:${date}` ||
+      key === `board:${MODEL_VERSION}:sig22:${date}` ||
+      key === `board:${MODEL_VERSION}:sig23:${date}` ||
+      key === `board:${MODEL_VERSION}:sig24:${date}` ||
+      key === `board:${MODEL_VERSION}:sig25:${date}` ||
+      key === `board:${MODEL_VERSION}:sig26:${date}` ||
+      key === `board:${MODEL_VERSION}:sig27:${date}` ||
+      key === `board:${MODEL_VERSION}:sig28:${date}` ||
+      key === `board:${MODEL_VERSION}:sig29:${date}` ||
       key.startsWith("box:") ||
       key.startsWith("people:") ||
       key.startsWith("humid:") ||
@@ -704,13 +720,17 @@ async function fetchYearPark(season: number): Promise<Map<number, number>> {
   return map;
 }
 
-export async function loadBoard(dateInput?: string): Promise<BoardPayload> {
+export async function loadBoard(dateInput?: string, opts?: { lean?: boolean }): Promise<BoardPayload> {
   const date = dateInput && /^\d{4}-\d{2}-\d{2}$/.test(dateInput) ? dateInput : todayISODateET();
   const today = todayISODateET();
   const isToday = date === today;
   const isPast = date < today;
   const ttl = isToday ? 90_000 : isPast ? 30 * 60_000 : 3 * 60_000;
-  const built = await cached(`board:${MODEL_VERSION}:sig14:${date}`, ttl, () => buildBoard(date));
+  const lean = !!opts?.lean;
+  const cacheKey = lean
+    ? `board:${MODEL_VERSION}:lean1:${date}`
+    : `board:${MODEL_VERSION}:sig29:${date}`;
+  const built = await cached(cacheKey, ttl, () => buildBoard(date, { lean }));
   return sealBoard(built);
 }
 
@@ -839,11 +859,12 @@ function makeSummary(
   };
 }
 
-async function buildBoard(date: string): Promise<BoardPayload> {
+async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<BoardPayload> {
   const season = Number(date.slice(0, 4));
   const today = todayISODateET();
   const isToday = date === today;
   const isPast = date < today;
+  const lean = !!opts?.lean;
 
   const ttlSchedule = isToday ? 90_000 : isPast ? 30 * 60_000 : 3 * 60_000;
   const ttlSlow = 20 * 60_000;
@@ -859,10 +880,23 @@ async function buildBoard(date: string): Promise<BoardPayload> {
       cached(`league:${season}`, ttlSlow, () => fetchLeagueRates(season)),
       cached(`l10:${season}`, ttlSlow, () => fetchLastXGames(season)),
       cached(`savant:v6:${season}`, 45 * 60_000, () => fetchSavant(season)),
-      cached(`week:v7:${weekFrom}:${weekTo}`, 30 * 60_000, () => fetchWeekContact(season, weekFrom, weekTo)),
+      cached(`week:v13:${weekFrom}:${weekTo}`, 30 * 60_000, () =>
+        lean
+          ? Promise.resolve(new Map() as Awaited<ReturnType<typeof fetchWeekContact>>)
+          : fetchWeekContact(season, weekFrom, weekTo),
+      ),
       cached(`splits:${season}`, 45 * 60_000, () => fetchHandSplits(season)),
       cached(`parkYear:v1:${season}`, 45 * 60_000, () => fetchYearPark(season)),
-      cached(`pitchMx:v1:${mxFrom}:${mxTo}`, 60 * 60_000, () => fetchPitchMatrix(mxFrom, mxTo, season)),
+      cached(`pitchMx:v1:${mxFrom}:${mxTo}`, 60 * 60_000, () =>
+        lean
+          ? Promise.resolve({
+              from: mxFrom,
+              to: mxTo,
+              batters: new Map(),
+              pitchers: new Map(),
+            } as Awaited<ReturnType<typeof fetchPitchMatrix>>)
+          : fetchPitchMatrix(mxFrom, mxTo, season),
+      ),
     ]);
 
   type ResolvedGame = {
@@ -923,7 +957,9 @@ async function buildBoard(date: string): Promise<BoardPayload> {
         return [pk, box] as const;
       }),
     ),
-    cached(`humid:v1:${date}`, isToday ? 45 * 60_000 : 30 * 60_000, () => fetchHumidityMap(games)),
+    cached(`humid:v1:${date}`, isToday ? 45 * 60_000 : 30 * 60_000, () =>
+      isPast || lean ? Promise.resolve(new Map<number, HumidBits>()) : fetchHumidityMap(games),
+    ),
   ]);
   const boxMap = new Map(boxes);
 
@@ -1021,6 +1057,23 @@ async function buildBoard(date: string): Promise<BoardPayload> {
         const ev100 = ev100Flags(week);
         const tanks = tankFlags(week);
         const shape = weekShape(week);
+        const trend = trendShape(week, batSavant?.barrel ?? null, batSavant?.ev ?? null);
+        const filters = filterShape(week);
+        const parkTrue = parkTrueCount(venueId, week?.airShots);
+        const windMatch = windSprayMatch(
+          weather.wind,
+          bats,
+          shape.pullPct,
+          venueId,
+          weather.condition,
+        );
+        const qualityAhead =
+          !!week &&
+          week.barrels >= 4 &&
+          week.bbe >= 12 &&
+          week.nHr <= 1 &&
+          ((recent?.hr ?? 0) <= 1 || week.loudOuts >= 4) &&
+          (recent?.games ?? 0) >= 5;
         const mx = makePitchMatrix(pitchMx, opposingPitcher, lu.id);
         const scored = scoreMatchup({
           batterHr: hitting.hr,
@@ -1107,6 +1160,8 @@ async function buildBoard(date: string): Promise<BoardPayload> {
                 sweetSpot: batSavant.sweetSpot,
                 blast: batSavant.blast,
                 squaredUp: batSavant.squaredUp,
+                barrelPa: rateBarrelPa(batSavant),
+                hrFb: rateHrFb(batSavant, hitting.hr, hitting.pa),
               }
             : null,
           week: week
@@ -1131,6 +1186,13 @@ async function buildBoard(date: string): Promise<BoardPayload> {
                 tanks: tanks.count,
                 tanksLast1: tanks.last1,
                 tanksLast3: tanks.last3,
+                last3BarrelPct: trend.last3BarrelPct,
+                last3Ev: trend.last3Ev,
+                barrelDelta: trend.barrelDelta,
+                evDelta: trend.evDelta,
+                last3vs10: trend.last3vs10,
+                trendUp: trend.pass,
+                trendDetail: trend.detail,
                 vsL: {
                   bbe: week.vsL.bbe,
                   barrels: week.vsL.barrels,
@@ -1166,6 +1228,31 @@ async function buildBoard(date: string): Promise<BoardPayload> {
                   barrels: week.chase.barrels,
                   pct: barrelPct(week.chase),
                 },
+                shadow: {
+                  bbe: week.shadow.bbe,
+                  barrels: week.shadow.barrels,
+                  pct: barrelPct(week.shadow),
+                },
+                brl98: week.brl98,
+                brl102: week.brl102,
+                brl105: week.brl105,
+                barrelEv: week.barrels > 0 ? week.barrelEvSum / week.barrels : null,
+                cooled: filters.cooled,
+                softened: filters.softened,
+                airborneUp: filters.louder,
+                batDelta: filters.batDelta,
+                airEvDelta: filters.airDelta,
+                nHr: week.nHr,
+                nFly: week.nFly,
+                hrFb: week.nFly >= 8 ? (100 * week.nHr) / week.nFly : null,
+                parkTrue: parkTrue.n,
+                parkTrueOf: parkTrue.of,
+                qualityAhead,
+                windKind: windMatch.kind,
+                windLine: windMatch.line,
+                loudOuts: week.loudOuts,
+                maxEv: week.maxEv,
+                maxDist: week.maxDist,
                 vsPitch: Object.entries(week.byPitch)
                   .map(([code, side]) => ({
                     code,
@@ -1189,7 +1276,23 @@ async function buildBoard(date: string): Promise<BoardPayload> {
             missing: null,
             keyMatch: null,
             checks: [],
+            decision: {
+              pass: false,
+              score: 0,
+              tags: [],
+              missing: null,
+              push: 0,
+              line: "",
+              tonight: [],
+              bvp: 0,
+              bvpGrade: "fade",
+              bvpLine: "",
+              bvpLayers: [],
+              both20: false,
+              mixHr: 0,
+            },
           },
+          forecast: EMPTY_FORECAST,
         });
       });
     };
@@ -1231,7 +1334,10 @@ async function buildBoard(date: string): Promise<BoardPayload> {
   }
 
   predictions.sort((a, b) => b.pHr - a.pHr);
-  for (const p of predictions) p.signal = buildHrSignal(p);
+  for (const p of predictions) {
+    p.signal = buildHrSignal(p);
+    p.forecast = buildForecast(p);
+  }
   const sortedGames = gameCards.sort((a, b) => a.gameTime.localeCompare(b.gameTime));
   const vulnerable = rankVulnerablePitchers(sortedGames, predictions, savant.pitchers);
 

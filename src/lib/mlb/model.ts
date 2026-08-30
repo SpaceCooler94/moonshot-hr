@@ -1,80 +1,26 @@
 import { dailyParkAir, sprayPark } from "./parks";
 import type { SavantBatter, SavantLeague, SavantPitcher, SideContact, WeekContact } from "./savant";
-import { barrelPct, ev100Flags, pitchFamily, tankFlags, weekShape } from "./savant";
+import { barrelPct, ev100Flags, pitchFamily, tankFlags, trendShape, weekShape } from "./savant";
 import type { ArsenalPitch, ConfidenceBand, Factor, LineupSource, MixFamily, PitchMixRow } from "./types";
-
-export function clamp(n: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, n));
-}
-
-export function shrinkRate(
-  successes: number,
-  trials: number,
-  prior: number,
-  priorN: number,
-): number {
-  const t = trials + priorN;
-  if (t <= 0) return prior;
-  return (successes + prior * priorN) / t;
-}
-
-const PA_BY_ORDER = [4.52, 4.42, 4.32, 4.22, 4.1, 3.96, 3.82, 3.68, 3.55];
-/** League starter workload. ~6 IP, ~23 TBF. */
-export const LEAGUE_TBF_PER_START = 22.8;
-/** Share of 1–9 hitters who go yard vs the starter (not the bullpen). */
-export const STARTER_HR_RATE = 0.077;
-/** Compress stacked multipliers so a loud card cannot run away from the base rate. */
-export const DAMPING = 0.62;
-/** Monday 8/24: 16%+ printed 18–22% and hit 8% / 0%. Pull the excess back. Ranking is unchanged. */
-export const TAIL_CUT = 0.16;
-export const TAIL_KEEP = 0.55;
-export const P_HR_CAP = 0.22;
-export const MODEL_VERSION = "v13-tank";
-
-export const CAL_BANDS = [
-  { label: "Under 8%", min: 0, max: 0.08 },
-  { label: "8–12%", min: 0.08, max: 0.12 },
-  { label: "12–16%", min: 0.12, max: 0.16 },
-  { label: "16–20%", min: 0.16, max: 0.2 },
-  { label: "20%+", min: 0.2, max: 1.01 },
-] as const;
-
-export function trustWeight(conf: number): number {
-  return 0.8 + 0.18 * clamp(conf, 0.3, 0.97);
-}
-
-export function publishPHr(pHrRaw: number, conf: number): number {
-  const trust = trustWeight(conf);
-  let p = STARTER_HR_RATE + (pHrRaw - STARTER_HR_RATE) * trust;
-  if (p > TAIL_CUT) p = TAIL_CUT + (p - TAIL_CUT) * TAIL_KEEP;
-  return clamp(p, 0.02, P_HR_CAP);
-}
-
-export function expectedPa(order: number): number {
-  const idx = Math.min(8, Math.max(0, Math.round(order) - 1));
-  return PA_BY_ORDER[idx] ?? 4;
-}
-
-/** Shrink a starter's batters-faced per outing toward league ~23. */
-export function starterTbf(bf: number | null | undefined, gs: number | null | undefined): number {
-  const lg = LEAGUE_TBF_PER_START;
-  if (gs != null && gs >= 1 && bf != null && bf > 0) {
-    const raw = clamp(bf / gs, 15, 28);
-    const prior = gs >= 5 ? 6 : 10;
-    const shrunk = (raw * gs + lg * prior) / (gs + prior);
-    return clamp(shrunk, 16, 27);
-  }
-  return lg;
-}
-
-/** Expected PA vs this starter. Remainder of the TBF goes to early slots (times through). */
-export function paVsStarter(order: number, tbf: number): number {
-  const slot = Math.min(9, Math.max(1, Math.round(order)));
-  const base = Math.floor(tbf / 9);
-  const rem = tbf - base * 9;
-  const extra = clamp(rem - (slot - 1), 0, 1);
-  return clamp(base + extra, 1.2, 4.2);
-}
+export {
+  CAL_BANDS,
+  DAMPING,
+  LEAGUE_TBF_PER_START,
+  MODEL_VERSION,
+  P_HR_CAP,
+  STARTER_HR_RATE,
+  TAIL_CUT,
+  TAIL_KEEP,
+  clamp,
+  expectedPa,
+  pAtLeastOne,
+  paVsStarter,
+  publishPHr,
+  shrinkRate,
+  starterTbf,
+  trustWeight,
+} from "./prob";
+import { clamp, DAMPING, expectedPa, pAtLeastOne, paVsStarter, publishPHr, shrinkRate, starterTbf } from "./prob";
 
 export function platoonFactor(bats: string, throws: string | null): Factor {
   if (!throws) return { value: 1, label: "Pitcher TBD" };
@@ -122,11 +68,6 @@ export function weatherFactor(
     value: clamp(factor, 0.82, 1.22),
     label: bits.join(" · ") || "Neutral air",
   };
-}
-
-export function pAtLeastOne(pPa: number, pa: number): number {
-  const p = clamp(pPa, 0.0004, 0.18);
-  return 1 - Math.pow(1 - p, pa);
 }
 
 export function confidenceBand(score: number): ConfidenceBand {
@@ -711,6 +652,10 @@ function weekForm(
     const ev100 = ev100Flags(week);
     const tanks = tankFlags(week);
     const shape = weekShape(week);
+    if (week.brl105 >= 2) {
+      value = clamp(value * 1.05, 0.78, 1.22);
+      bits.push(`${week.brl105}× 105+ barrels`);
+    }
     if (tanks.count >= 5) {
       value = clamp(value * 1.07, 0.78, 1.22);
       bits.push(`${tanks.count} tanks last 10`);
@@ -760,6 +705,14 @@ function weekForm(
       value = clamp(value * 1.03, 0.78, 1.22);
       bits.push("20–30° last 5");
     }
+    const trend = trendShape(week, season?.barrel ?? null, season?.ev ?? null);
+    if (trend.last3vs10 != null && trend.last3vs10 >= 4 && trend.last3Bbe >= 6) {
+      value = clamp(value * 1.04, 0.78, 1.22);
+      bits.push(`+${Math.round(trend.last3vs10)} brl last 3`);
+    } else if (trend.barrelDelta != null && trend.barrelDelta >= 3) {
+      value = clamp(value * 1.03, 0.78, 1.22);
+      bits.push(`+${trend.barrelDelta.toFixed(1)} brl vs season`);
+    }
     return {
       value,
       label: bits.join(" · ") || "Last-week contact",
@@ -806,6 +759,10 @@ function lookReasons(input: {
   }
   if (w && w.tanks >= 3) out.push(`${w.tanks} tanks last 10`);
   else if (w && (w.games[0]?.nTanks ?? 0) > 0) out.push("tank last game");
+  if (w && s?.barrel != null && w.bbe >= 8) {
+    const delta = (100 * w.barrels) / w.bbe - s.barrel;
+    if (delta >= 3) out.push(`trending +${fmt1(delta)} brl`);
+  }
   if (input.ev100.last1 && input.ev100.maxEvLast1 != null && input.ev100.maxEvLast1 >= 100 && !(w && (w.games[0]?.nTanks ?? 0) > 0)) {
     out.push(`${fmt1(input.ev100.maxEvLast1)} last game`);
   }

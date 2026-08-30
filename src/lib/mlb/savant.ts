@@ -1,3 +1,5 @@
+import type { AirShot } from "./parks";
+
 export type SavantBatter = {
   id: number;
   pa: number;
@@ -17,6 +19,7 @@ export type SavantBatter = {
   whiff: number | null;
   blast: number | null;
   squaredUp: number | null;
+  barrels: number | null;
 };
 
 export type SavantPitcher = {
@@ -67,9 +70,16 @@ export type GameEv = {
   maxEv: number;
   n100: number;
   nTanks: number;
+  nBarrels: number;
   bbe: number;
+  evSum: number;
   launchSum: number;
   nLaunch2030: number;
+  batSpeedSum: number;
+  batSpeedN: number;
+  airBbe: number;
+  airEvSum: number;
+  nHr: number;
 };
 
 export type WeekContact = {
@@ -95,9 +105,38 @@ export type WeekContact = {
   byPitch: Record<string, SideContact>;
   heart: SideContact;
   chase: SideContact;
+  shadow: SideContact;
   games: GameEv[];
   tanks: number;
+  brl98: number;
+  brl102: number;
+  brl105: number;
+  barrelEvSum: number;
+  nHr: number;
+  nFly: number;
+  airBbe: number;
+  airEvSum: number;
+  airShots: AirShot[];
+  loudOuts: number;
+  maxEv: number;
+  maxDist: number;
 };
+
+export function rateBarrelPa(s: SavantBatter | null | undefined): number | null {
+  if (!s || s.pa < 40) return null;
+  if (s.barrels != null && s.barrels > 0) return (100 * s.barrels) / s.pa;
+  if (s.barrel == null) return null;
+  const bip = s.kPct != null ? Math.min(0.78, Math.max(0.5, 1 - s.kPct / 100 - 0.1)) : 0.67;
+  return s.barrel * bip;
+}
+
+export function rateHrFb(s: SavantBatter | null | undefined, hr: number, pa: number): number | null {
+  if (!s || s.flyBall == null || s.flyBall < 8 || pa < 40) return null;
+  const bip = s.kPct != null ? Math.min(0.78, Math.max(0.5, 1 - s.kPct / 100 - 0.1)) : 0.67;
+  const fb = pa * bip * (s.flyBall / 100);
+  if (fb < 20) return null;
+  return (100 * hr) / fb;
+}
 
 export function barrelPct(side: SideContact | WeekContact): number | null {
   if (side.bbe < 1) return null;
@@ -106,6 +145,142 @@ export function barrelPct(side: SideContact | WeekContact): number | null {
 
 export function isTank(ev: number, launch: number, pulled: boolean): boolean {
   return ev >= 102 && launch >= 20 && launch <= 38 && pulled;
+}
+
+export function isBattedOut(event: string): boolean {
+  const e = event.toLowerCase();
+  return (
+    e === "field_out" ||
+    e === "force_out" ||
+    e === "grounded_into_double_play" ||
+    e === "double_play" ||
+    e === "triple_play" ||
+    e === "sac_fly" ||
+    e === "sac_bunt" ||
+    e === "fielders_choice_out" ||
+    e === "fielders_choice"
+  );
+}
+
+export function trendShape(
+  week: WeekContact | null | undefined,
+  seasonBarrel: number | null,
+  seasonEv: number | null,
+): {
+  last3BarrelPct: number | null;
+  last3Ev: number | null;
+  last3Bbe: number;
+  barrelDelta: number | null;
+  evDelta: number | null;
+  last3vs10: number | null;
+  pass: boolean;
+  heat: number | null;
+  detail: string;
+} {
+  const empty = {
+    last3BarrelPct: null as number | null,
+    last3Ev: null as number | null,
+    last3Bbe: 0,
+    barrelDelta: null as number | null,
+    evDelta: null as number | null,
+    last3vs10: null as number | null,
+    pass: false,
+    heat: null as number | null,
+    detail: "No last-10 sample",
+  };
+  if (!week || week.bbe < 6) return empty;
+  const last3 = week.games.slice(0, 3);
+  const last3Bbe = last3.reduce((s, g) => s + g.bbe, 0);
+  const last3Barrels = last3.reduce((s, g) => s + g.nBarrels, 0);
+  const last3EvSum = last3.reduce((s, g) => s + g.evSum, 0);
+  const last3BarrelPct = last3Bbe >= 5 ? (100 * last3Barrels) / last3Bbe : null;
+  const last3Ev = last3Bbe >= 5 ? last3EvSum / last3Bbe : null;
+  const last10BarrelPct = week.bbe >= 8 ? (100 * week.barrels) / week.bbe : null;
+  const last10Ev = week.bbe >= 8 ? week.evSum / week.bbe : null;
+  const barrelDelta =
+    last10BarrelPct != null && seasonBarrel != null ? last10BarrelPct - seasonBarrel : null;
+  const evDelta = last10Ev != null && seasonEv != null ? last10Ev - seasonEv : null;
+  const last3vs10 =
+    last3BarrelPct != null && last10BarrelPct != null ? last3BarrelPct - last10BarrelPct : null;
+  const tanksLast3 = last3.reduce((s, g) => s + g.nTanks, 0);
+  const upBarrels = barrelDelta != null && barrelDelta >= 3;
+  const upEv = evDelta != null && evDelta >= 1.5;
+  const heating = last3vs10 != null && last3vs10 >= 4 && last3Bbe >= 6;
+  const tankHeat = tanksLast3 >= 2;
+  const pass = upBarrels || upEv || heating || tankHeat;
+  const cooling = barrelDelta != null && barrelDelta <= -4 && !pass;
+  const bits: string[] = [];
+  if (barrelDelta != null) bits.push(`${barrelDelta >= 0 ? "+" : ""}${barrelDelta.toFixed(1)} brl vs season`);
+  if (evDelta != null) bits.push(`${evDelta >= 0 ? "+" : ""}${evDelta.toFixed(1)} EV`);
+  if (last3vs10 != null) bits.push(`${last3vs10 >= 0 ? "+" : ""}${last3vs10.toFixed(0)} brl last 3 vs 10`);
+  if (tanksLast3 > 0) bits.push(`${tanksLast3} tank${tanksLast3 === 1 ? "" : "s"} last 3`);
+  if (cooling) bits.push("cooling vs season");
+  const heat = barrelDelta;
+  return {
+    last3BarrelPct,
+    last3Ev,
+    last3Bbe,
+    barrelDelta,
+    evDelta,
+    last3vs10,
+    pass,
+    heat,
+    detail: bits.join(" · ") || `${week.barrels}/${week.bbe} BBE last 10`,
+  };
+}
+
+export function filterShape(week: WeekContact | null | undefined): {
+  batLast3: number | null;
+  batLast10: number | null;
+  batDelta: number | null;
+  airLast3: number | null;
+  airLast10: number | null;
+  airDelta: number | null;
+  cooled: boolean;
+  softened: boolean;
+  louder: boolean;
+  nHr: number;
+} {
+  const empty = {
+    batLast3: null as number | null,
+    batLast10: null as number | null,
+    batDelta: null as number | null,
+    airLast3: null as number | null,
+    airLast10: null as number | null,
+    airDelta: null as number | null,
+    cooled: false,
+    softened: false,
+    louder: false,
+    nHr: week?.nHr ?? 0,
+  };
+  if (!week || week.games.length < 3) return empty;
+  const last3 = week.games.slice(0, 3);
+  const bat3n = last3.reduce((s, g) => s + g.batSpeedN, 0);
+  const bat3sum = last3.reduce((s, g) => s + g.batSpeedSum, 0);
+  const bat10n = week.batSpeedN;
+  const batLast3 = bat3n >= 8 ? bat3sum / bat3n : null;
+  const batLast10 = bat10n >= 15 ? week.batSpeedSum / bat10n : null;
+  const batDelta = batLast3 != null && batLast10 != null ? batLast3 - batLast10 : null;
+  const air3n = last3.reduce((s, g) => s + g.airBbe, 0);
+  const air3sum = last3.reduce((s, g) => s + g.airEvSum, 0);
+  const airLast3 = air3n >= 5 ? air3sum / air3n : null;
+  const airLast10 = week.airBbe >= 8 ? week.airEvSum / week.airBbe : null;
+  const airDelta = airLast3 != null && airLast10 != null ? airLast3 - airLast10 : null;
+  const cooled = batDelta != null && batDelta <= -1.5;
+  const softened = airDelta != null && airDelta <= -1.5;
+  const louder = airDelta != null && airDelta >= 1.5;
+  return {
+    batLast3,
+    batLast10,
+    batDelta,
+    airLast3,
+    airLast10,
+    airDelta,
+    cooled,
+    softened,
+    louder,
+    nHr: week.nHr,
+  };
 }
 
 export function tankFlags(week: WeekContact | null | undefined): {
@@ -223,6 +398,7 @@ const BAT_FIELDS = [
   "solidcontact_percent",
   "k_percent",
   "whiff_percent",
+  "barrels",
 ].join(",");
 
 const PIT_FIELDS = [
@@ -271,6 +447,7 @@ export async function fetchSavant(season: number): Promise<SavantBundle> {
         whiff: num(r.whiff_percent),
         blast: null,
         squaredUp: null,
+        barrels: barrelCount(r.barrels),
       });
     }
     const blasts = await fetchBatTracking(season);
@@ -433,6 +610,13 @@ function int(v: string | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function barrelCount(v: string | undefined): number | null {
+  const n = num(v);
+  if (n == null || n <= 0) return null;
+  if (n <= 20 && !Number.isInteger(n)) return null;
+  return Math.round(n);
+}
+
 export async function fetchWeekContact(
   season: number,
   from: string,
@@ -482,8 +666,21 @@ function emptyWeek(): WeekContact {
     byPitch: {},
     heart: emptySide(),
     chase: emptySide(),
+    shadow: emptySide(),
     games: [],
     tanks: 0,
+    brl98: 0,
+    brl102: 0,
+    brl105: 0,
+    barrelEvSum: 0,
+    nHr: 0,
+    nFly: 0,
+    airBbe: 0,
+    airEvSum: 0,
+    airShots: [],
+    loudOuts: 0,
+    maxEv: 0,
+    maxDist: 0,
   };
 }
 
@@ -507,6 +704,8 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
   const iBb = header.indexOf("bb_type");
   const iLa = header.indexOf("launch_angle");
   const iAa = header.indexOf("attack_angle");
+  const iDist = header.indexOf("hit_distance_sc");
+  const iEvents = header.indexOf("events");
   if (iBatter < 0 || iEv < 0) return map;
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i]) continue;
@@ -525,7 +724,13 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
     const barrel = code === "6";
     row.bbe += 1;
     row.evSum += ev;
-    if (barrel) row.barrels += 1;
+    if (barrel) {
+      row.barrels += 1;
+      row.barrelEvSum += ev;
+      if (ev >= 105) row.brl105 += 1;
+      else if (ev >= 102) row.brl102 += 1;
+      else row.brl98 += 1;
+    }
     if (code === "5") row.solid += 1;
     if (code === "1") row.weak += 1;
     if (iBat >= 0) {
@@ -559,6 +764,7 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
     const zone = iZone >= 0 ? int(cols[iZone]) : 0;
     if (zone >= 4 && zone <= 6) bump(row.heart, barrel);
     else if (zone >= 11 && zone <= 14) bump(row.chase, barrel);
+    else if ((zone >= 1 && zone <= 3) || (zone >= 7 && zone <= 9)) bump(row.shadow, barrel);
     if (iAa >= 0) {
       const aa = Number(cols[iAa]);
       if (Number.isFinite(aa) && aa > -90 && aa < 90) {
@@ -588,6 +794,31 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
     }
     const tank = hasLa && isTank(ev, la, pulled);
     if (tank) row.tanks += 1;
+    const bb = iBb >= 0 ? (cols[iBb] ?? "").toLowerCase().replace(/\s+/g, "_") : "";
+    const airBall = bb === "fly_ball" || bb === "line_drive";
+    const dist = iDist >= 0 ? Number(cols[iDist]) : NaN;
+    const evnt = iEvents >= 0 ? (cols[iEvents] ?? "").toLowerCase() : "";
+    const isHr = evnt === "home_run";
+    if (isHr) row.nHr += 1;
+    if (barrel && isBattedOut(evnt)) row.loudOuts += 1;
+    if (ev > row.maxEv) row.maxEv = ev;
+    if (Number.isFinite(dist) && dist > row.maxDist) row.maxDist = dist;
+    if (bb === "fly_ball") row.nFly += 1;
+    if (airBall) {
+      row.airBbe += 1;
+      row.airEvSum += ev;
+    }
+    if (airBall || isHr || (hasLa && ev >= 98 && la >= 18 && la <= 40)) {
+      if (row.airShots.length < 60) {
+        row.airShots.push({
+          dist: Number.isFinite(dist) ? dist : 0,
+          spray,
+          ev,
+          la: hasLa ? la : 0,
+          hr: isHr,
+        });
+      }
+    }
     if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       let gm = gameMaps.get(id);
       if (!gm) {
@@ -596,17 +827,46 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
       }
       let g = gm.get(date);
       if (!g) {
-        g = { date, maxEv: ev, n100: 0, nTanks: 0, bbe: 0, launchSum: 0, nLaunch2030: 0 };
+        g = {
+          date,
+          maxEv: ev,
+          n100: 0,
+          nTanks: 0,
+          nBarrels: 0,
+          bbe: 0,
+          evSum: 0,
+          launchSum: 0,
+          nLaunch2030: 0,
+          batSpeedSum: 0,
+          batSpeedN: 0,
+          airBbe: 0,
+          airEvSum: 0,
+          nHr: 0,
+        };
         gm.set(date, g);
       }
       g.bbe += 1;
+      g.evSum += ev;
       if (ev > g.maxEv) g.maxEv = ev;
       if (ev >= 100) g.n100 += 1;
       if (tank) g.nTanks += 1;
+      if (barrel) g.nBarrels += 1;
       if (hasLa) {
         g.launchSum += la;
         if (la >= 20 && la <= 30) g.nLaunch2030 += 1;
       }
+      if (iBat >= 0) {
+        const spd = Number(cols[iBat]);
+        if (Number.isFinite(spd) && spd >= 50) {
+          g.batSpeedSum += spd;
+          g.batSpeedN += 1;
+        }
+      }
+      if (airBall) {
+        g.airBbe += 1;
+        g.airEvSum += ev;
+      }
+      if (isHr) g.nHr += 1;
     }
   }
   for (const [id, row] of map) {

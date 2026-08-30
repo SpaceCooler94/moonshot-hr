@@ -1,3 +1,6 @@
+import type { Forecast } from "./intel";
+export type { Forecast };
+
 export type LineupSource = "official" | "projected";
 
 export type GameStatusKind = "preview" | "live" | "final" | "other";
@@ -44,6 +47,8 @@ export type HrCheck = {
   value: number | null;
   cut: number | null;
   unit: string;
+  invert?: boolean;
+  group: "tonight" | "profile";
 };
 
 export type KeyPitchMatch = {
@@ -56,6 +61,25 @@ export type KeyPitchMatch = {
   iso: number | null;
   hr: number;
   loud: boolean;
+  pitBarrelPct: number | null;
+  pitN: number;
+  both20: boolean;
+};
+
+export type HrDecision = {
+  pass: boolean;
+  score: number;
+  tags: string[];
+  missing: string | null;
+  push: number;
+  line: string;
+  tonight: string[];
+  bvp: number;
+  bvpGrade: "best" | "strong" | "live" | "fade";
+  bvpLine: string;
+  bvpLayers: Array<{ key: string; pass: boolean; line: string }>;
+  both20: boolean;
+  mixHr: number;
 };
 
 export type HrSignal = {
@@ -68,6 +92,7 @@ export type HrSignal = {
   missing: string | null;
   keyMatch: KeyPitchMatch | null;
   checks: HrCheck[];
+  decision: HrDecision;
 };
 
 export type PitcherInfo = {
@@ -177,6 +202,8 @@ export type PlayerPrediction = {
     sweetSpot: number | null;
     blast: number | null;
     squaredUp: number | null;
+    barrelPa: number | null;
+    hrFb: number | null;
   } | null;
   week: {
     bbe: number;
@@ -199,6 +226,13 @@ export type PlayerPrediction = {
     tanks: number;
     tanksLast1: boolean;
     tanksLast3: number;
+    last3BarrelPct: number | null;
+    last3Ev: number | null;
+    barrelDelta: number | null;
+    evDelta: number | null;
+    last3vs10: number | null;
+    trendUp: boolean;
+    trendDetail: string;
     vsL: SideBarrels;
     vsR: SideBarrels;
     vsHard: SideBarrels;
@@ -206,6 +240,27 @@ export type PlayerPrediction = {
     vsOff: SideBarrels;
     heart: SideBarrels;
     chase: SideBarrels;
+    shadow: SideBarrels;
+    brl98: number;
+    brl102: number;
+    brl105: number;
+    barrelEv: number | null;
+    cooled: boolean;
+    softened: boolean;
+    airborneUp: boolean;
+    batDelta: number | null;
+    airEvDelta: number | null;
+    nHr: number;
+    nFly: number;
+    hrFb: number | null;
+    parkTrue: number;
+    parkTrueOf: number;
+    qualityAhead: boolean;
+    windKind: "pull-out" | "pull-in" | "oppo-out" | "none";
+    windLine: string;
+    loudOuts: number;
+    maxEv: number;
+    maxDist: number;
     vsPitch: Array<{ code: string; bbe: number; barrels: number; pct: number | null }>;
   } | null;
   handSplit: {
@@ -214,6 +269,7 @@ export type PlayerPrediction = {
   } | null;
   pitchMatrix: PitchMatrix | null;
   signal: HrSignal;
+  forecast: Forecast;
 };
 
 export type GameCard = {

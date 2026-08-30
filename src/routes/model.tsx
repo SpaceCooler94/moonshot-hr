@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Shell } from "@/components/shell";
+import { FollowList } from "@/components/follow-list";
 import { todayISODateET } from "@/lib/mlb/format";
 import { PARK_HR_FACTOR } from "@/lib/mlb/parks";
 import { parseDateSearch } from "@/lib/search";
@@ -58,10 +59,23 @@ function ModelPage() {
           form stops at yesterday, and P(HR) is the chance he goes yard <em>against this starter</em>
           — leftover PA to the bullpen is off the rank. The published number is pulled toward the
           ~8% vs-starter base rate, more so when the card is projected or the sample is thin.
+          There are no odds, vig, bankroll, or sportsbooks in this engine — P is a forecast, not a ticket.
         </p>
+
+        <FollowList />
 
         <Formula />
 
+        <Section title="Forecast intelligence">
+          Each card carries an 0–100 intelligence score on eight weighted layers: batter power 20,
+          arsenal match 20, quality of contact 15, pitcher vulnerability 15, zone 10, park/weather 10,
+          PA 5, recent form 5. That score does not replace P(HR). P is still vs this starter, shrunk
+          and capped. The card also decomposes Raw → Contact → Match → Park → Game, plus Poisson 2+
+          HR. “Why the model likes it” and “why it may be wrong” are the same flags the Cut already
+          uses — explainability, not a second model. We do not run XGBoost or a fake EV/LA physics
+          sim; last-10 Statcast BBE plus the mix matrix is the contact engine. Walk-forward is
+          Brier / calibration / last-5 / last-10 / season — temporal, never a random split.
+        </Section>
         <Section title="Daily air">
           Park and weather are one number, in the Ballpark Pal sense — not a static 100-index with
           a separate wind tax. Temperature around 72°F is neutral. Wind of 5+ mph is aimed at LF,
@@ -72,6 +86,24 @@ function ModelPage() {
           lighter (Nathan); dry air is denser. The effect is small versus temperature and altitude
           — capped near ±2 index points so Coors is not taxed twice for being dry. The slate badge
           is that day's expected homer tilt for the yard.
+        </Section>
+        <Section title="Reference bars">
+          The why-card is 15 bars in two groups. Tonight: pitch match (12% BRL on a 10%+ pitch),
+          park air 108, pitcher air 1.10×, arm K% 20 or under, platoon, tanks (3 last 10, or one
+          last game), pull air 18% with 40%+ pull, trend (+3 brl last 10 vs season, +1.5 EV, or last
+          3 heating), form, 1–4 in the order, 105+ barrels (2 last 10), and heart/zone (12% BRL in
+          the heart, or the arm at 52%+ in-zone). Last-3 barrel heat vs last 10 also lifts form in
+          P(HR). Profile: 12%
+          barrels, .200 xISO, 35% sweet-spot, 91 EV, 26% fly, 75 bat. Loud is 11+ weighted bars
+          (barrels and pitch match count double). The Cut list on the board runs that checklist
+          across every batter: mix on, heat (trend / tanks / form), profile (barrels or EV+fly),
+          live/loud grade, and 1–4 in the order. Best matchup ranks every batter vs that starter:
+          mix coverage (% of the card he damages), platoon, heart vs how the arm locates, K% hole,
+          last-10 heat, tonight’s fence, and a cooled-bat veto. Barrel/PA (7%+), HR/FB (16%+),
+          and blast (16%+) sit on the BvP card — PA event, fly-ball conversion, and flush + speed.
+          Findings leads with the top BvP
+          studies. Findings scans every matrix for 20×20: same pitch, hitter BRL and pitcher
+          allowed BRL both ~20%+ on 15%+ of the card — the Lowe vs Leahy 4-seam shape.
         </Section>
         <Section title="Contact">
           Barrels still lead — Statcast barrels are batted balls at 98+ mph in a launch window that

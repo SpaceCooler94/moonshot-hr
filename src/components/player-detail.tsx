@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { formatFactor, formatGameTime, formatPct, playerHeadshot, teamSpot } from "@/lib/mlb/format";
+import { getPlayer } from "@/lib/mlb/get-board";
 import { PARK_NOTES } from "@/lib/mlb/parks";
-import type { Factor, HrCheck, HrSignal, KeyPitchMatch, PitcherInfo, PitchMixRow, PlayerPrediction } from "@/lib/mlb/types";
+import type { Factor, Forecast, HrCheck, HrSignal, KeyPitchMatch, PitcherInfo, PitchMixRow, PlayerPrediction } from "@/lib/mlb/types";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "./ui/dialog";
 
@@ -10,15 +12,36 @@ export function PlayerDetail({
   player,
   open,
   onOpenChange,
+  date,
 }: {
   player: PlayerPrediction | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  date?: string;
 }) {
+  const [full, setFull] = useState<PlayerPrediction | null>(player);
+  useEffect(() => {
+    if (!open || !player) {
+      setFull(player);
+      return;
+    }
+    setFull(player);
+    let live = true;
+    void getPlayer({ data: { date, playerId: player.playerId, gamePk: player.gamePk } })
+      .then((next) => {
+        if (!live || !next) return;
+        if (next.playerId === player.playerId && next.gamePk === player.gamePk) setFull(next);
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [open, player, date]);
+  const shown = full ?? player;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent aria-describedby={undefined}>
-        {player ? <PlayerBody player={player} /> : null}
+        {shown ? <PlayerBody player={shown} /> : null}
       </DialogContent>
     </Dialog>
   );
@@ -61,8 +84,15 @@ function PlayerBody({ player }: { player: PlayerPrediction }) {
       </div>
 
       <SignalCard player={player} />
+      <ForecastCard forecast={player.forecast} />
+      <BvpStudyCard player={player} />
 
       <TankTiles week={player.week} />
+      <BarrelVeloTiles week={player.week} />
+      <ZoneFrameTiles week={player.week} pitcher={player.pitcher} />
+      <IntelTiles week={player.week} parkName={player.park.name} />
+      <CarryTiles player={player} />
+      <TrendTiles week={player.week} />
 
       {player.pitchMatrix ? <MatchupMatrix player={player} /> : null}
 
@@ -340,6 +370,351 @@ function TankTiles({ week }: { week: PlayerPrediction["week"] }) {
   );
 }
 
+function BarrelVeloTiles({ week }: { week: PlayerPrediction["week"] }) {
+  if (!week || week.bbe < 4) return null;
+  const total = week.brl98 + week.brl102 + week.brl105;
+  const cell = (n: number, hot: boolean) =>
+    cn("rounded-2xl px-3 py-3", hot ? "bg-sage-dim" : "bg-surface-2");
+  return (
+    <div className="mt-3">
+      <p className="mb-2 text-[11px] tracking-[0.14em] text-gold uppercase">Barrel velocity</p>
+      <div className="grid grid-cols-3 gap-2">
+        <div className={cell(week.brl98, false)}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">98–101</p>
+          <p className="mt-1 font-mono text-xl tabular-nums text-fg">{week.brl98}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">soft barrels</p>
+        </div>
+        <div className={cell(week.brl102, week.brl102 >= 2)}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">102–104</p>
+          <p className="mt-1 font-mono text-xl tabular-nums text-fg">{week.brl102}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">hard barrels</p>
+        </div>
+        <div className={cell(week.brl105, week.brl105 >= 2)}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">105+</p>
+          <p className="mt-1 font-mono text-xl tabular-nums text-fg">{week.brl105}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">no-doubt EV</p>
+        </div>
+      </div>
+      <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+        {total} barrels last 10
+        {week.barrelEv != null ? ` · mean ${week.barrelEv.toFixed(0)} mph` : ""}. 105+ is the
+        velocity that carries. 98–101 still counts as a Statcast barrel.
+      </p>
+    </div>
+  );
+}
+
+function ZoneFrameTiles({
+  week,
+  pitcher,
+}: {
+  week: PlayerPrediction["week"];
+  pitcher: PlayerPrediction["pitcher"];
+}) {
+  const heart = week?.heart;
+  const shadow = week?.shadow;
+  const chase = week?.chase;
+  if ((!heart || heart.bbe < 4) && pitcher?.inZone == null) return null;
+  const pct = (s: { pct: number | null } | undefined) =>
+    s?.pct != null ? `${s.pct.toFixed(0)}%` : "—";
+  return (
+    <div className="mt-3">
+      <p className="mb-2 text-[11px] tracking-[0.14em] text-gold uppercase">Zone / framing</p>
+      <div className="grid grid-cols-3 gap-2">
+        <div className={cn("rounded-2xl px-3 py-3", (heart?.pct ?? 0) >= 12 ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Heart</p>
+          <p className="mt-1 font-mono text-xl tabular-nums text-fg">{pct(heart)}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">{heart?.bbe ?? 0} BBE last 10</p>
+        </div>
+        <div className="rounded-2xl bg-surface-2 px-3 py-3">
+          <p className="text-[11px] tracking-wide text-muted uppercase">Shadow</p>
+          <p className="mt-1 font-mono text-xl tabular-nums text-fg">{pct(shadow)}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">{shadow?.bbe ?? 0} on the black</p>
+        </div>
+        <div className="rounded-2xl bg-surface-2 px-3 py-3">
+          <p className="text-[11px] tracking-wide text-muted uppercase">Chase</p>
+          <p className="mt-1 font-mono text-xl tabular-nums text-fg">{pct(chase)}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">{chase?.bbe ?? 0} expanded</p>
+        </div>
+      </div>
+      {pitcher && (pitcher.inZone != null || pitcher.edge != null) ? (
+        <p className="mt-2 text-[11px] leading-relaxed text-muted">
+          {pitcher.name.split(" ").slice(-1)[0]} locates{" "}
+          {pitcher.inZone != null ? `${pitcher.inZone.toFixed(0)}% in-zone` : "—"}
+          {pitcher.edge != null ? ` · ${pitcher.edge.toFixed(0)}% edge` : ""}
+          {pitcher.inZone != null && pitcher.inZone >= 52
+            ? " — he comes into the heart."
+            : pitcher.edge != null && pitcher.edge >= 42
+              ? " — he nibble-frames the black."
+              : "."}{" "}
+          League is ~49% in-zone · ~38% edge. Catcher extra-strikes is too thin for HR; this is
+          attack zone.
+        </p>
+      ) : (
+        <p className="mt-2 text-[11px] leading-relaxed text-subtle">
+          Heart is Statcast zones 4–6. Shadow is 1–3 and 7–9 (the black). Chase is 11–14.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function IntelTiles({
+  week,
+  parkName,
+}: {
+  week: PlayerPrediction["week"];
+  parkName: string;
+}) {
+  if (!week || week.bbe < 6) return null;
+  const dead = week.cooled || week.softened;
+  const trueHot = week.parkTrue >= 3;
+  const windHot = week.windKind === "pull-out";
+  const windBad = week.windKind === "pull-in" || week.windKind === "oppo-out";
+  return (
+    <div className="mt-3">
+      <p className="mb-2 text-[11px] tracking-[0.14em] text-gold uppercase">Tonight filters</p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className={cn("rounded-2xl px-3 py-3", dead ? "bg-danger/15" : week.airborneUp ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Bat / air</p>
+          <p className="mt-1 font-mono text-lg tabular-nums text-fg">
+            {dead ? "Fade" : week.airborneUp ? "Louder" : "Hold"}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">
+            {week.batDelta != null ? `${week.batDelta >= 0 ? "+" : ""}${week.batDelta.toFixed(1)} bat` : "—"}
+            {week.airEvDelta != null ? ` · ${week.airEvDelta >= 0 ? "+" : ""}${week.airEvDelta.toFixed(1)} air EV` : ""}
+          </p>
+        </div>
+        <div className={cn("rounded-2xl px-3 py-3", week.qualityAhead ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Box</p>
+          <p className="mt-1 font-mono text-lg tabular-nums text-fg">
+            {week.qualityAhead ? "Ahead" : `${week.nHr} HR`}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">{week.barrels} barrels · {week.nHr} HR last 10</p>
+        </div>
+        <div className={cn("rounded-2xl px-3 py-3", windHot ? "bg-sage-dim" : windBad ? "bg-danger/15" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Wind</p>
+          <p className="mt-1 text-sm font-medium text-fg">
+            {week.windKind === "pull-out"
+              ? "Pull out"
+              : week.windKind === "pull-in"
+                ? "Pull in"
+                : week.windKind === "oppo-out"
+                  ? "Opp spray"
+                  : "Quiet"}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">{week.windLine}</p>
+        </div>
+        <div className={cn("rounded-2xl px-3 py-3", trueHot ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">This park</p>
+          <p className="mt-1 font-mono text-lg tabular-nums text-fg">
+            {week.parkTrue}/{week.parkTrueOf}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">flies that clear {parkName.split(" ").slice(0, 2).join(" ")}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CarryTiles({ player }: { player: PlayerPrediction }) {
+  const w = player.week;
+  const mixHr = player.signal.decision.mixHr ?? 0;
+  const lo = w?.loudOuts ?? 0;
+  const maxEv = w?.maxEv || w?.maxEvLast1 || 0;
+  const maxDist = w?.maxDist ?? 0;
+  if (!w && mixHr < 1) return null;
+  return (
+    <div className="mt-3">
+      <p className="mb-2 text-[11px] tracking-[0.14em] text-gold uppercase">Production vs the look</p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className={cn("rounded-2xl px-3 py-3", mixHr >= 2 ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">HR off mix</p>
+          <p className="mt-1 font-mono text-lg tabular-nums text-fg">{mixHr}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">on his pitch types</p>
+        </div>
+        <div className={cn("rounded-2xl px-3 py-3", lo >= 4 ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Loud outs</p>
+          <p className="mt-1 font-mono text-lg tabular-nums text-fg">{lo}</p>
+          <p className="mt-0.5 text-[11px] text-subtle">barreled, not HR</p>
+        </div>
+        <div className={cn("rounded-2xl px-3 py-3", maxEv >= 108 ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Max EV</p>
+          <p className="mt-1 font-mono text-lg tabular-nums text-fg">
+            {maxEv ? maxEv.toFixed(1) : "—"}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">last 10</p>
+        </div>
+        <div className={cn("rounded-2xl px-3 py-3", maxDist >= 400 ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Longest</p>
+          <p className="mt-1 font-mono text-lg tabular-nums text-fg">
+            {maxDist ? Math.round(maxDist) : "—"}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">feet last 10</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrendTiles({ week }: { week: PlayerPrediction["week"] }) {
+  if (!week || week.bbe < 6) return null;
+  const brl = week.barrelDelta;
+  const ev = week.evDelta;
+  const l3 = week.last3vs10;
+  const up = week.trendUp;
+  const fmt = (n: number | null, digits = 1) =>
+    n == null ? "—" : `${n > 0 ? "+" : ""}${n.toFixed(digits)}`;
+  return (
+    <div className="mt-2">
+      <div className="grid grid-cols-3 gap-2">
+        <div className={cn("rounded-2xl px-3 py-3", up ? "bg-sage-dim" : "bg-surface-2")}>
+          <p className="text-[11px] tracking-wide text-muted uppercase">Trend</p>
+          <p className="mt-1 font-mono text-xl tabular-nums text-fg">
+            {up ? "Up" : brl != null && brl <= -4 ? "Down" : "Flat"}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">last 10 vs season</p>
+        </div>
+        <div className="rounded-2xl bg-surface-2 px-3 py-3">
+          <p className="text-[11px] tracking-wide text-muted uppercase">Brl vs season</p>
+          <p className={cn("mt-1 font-mono text-xl tabular-nums", (brl ?? 0) >= 3 ? "text-sage" : "text-fg")}>
+            {fmt(brl)}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">{fmt(ev)} EV</p>
+        </div>
+        <div className="rounded-2xl bg-surface-2 px-3 py-3">
+          <p className="text-[11px] tracking-wide text-muted uppercase">Last 3 vs 10</p>
+          <p className={cn("mt-1 font-mono text-xl tabular-nums", (l3 ?? 0) >= 4 ? "text-sage" : "text-fg")}>
+            {fmt(l3, 0)}
+          </p>
+          <p className="mt-0.5 text-[11px] text-subtle">
+            {week.last3BarrelPct != null ? `${week.last3BarrelPct.toFixed(0)}% brl last 3` : "thin last 3"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BvpStudyCard({ player }: { player: PlayerPrediction }) {
+  const d = player.signal.decision;
+  if (!d?.bvpLine && !(d?.bvpLayers?.length)) return null;
+  const arm = player.pitcher?.name ?? "SP TBD";
+  return (
+    <div className="mt-6 rounded-2xl bg-surface-2 p-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-[11px] tracking-[0.14em] text-gold uppercase">BvP study</p>
+        <p className="text-[11px] font-medium tracking-[0.14em] text-sage uppercase">
+          {d.bvpGrade} · {d.bvp}
+        </p>
+      </div>
+      <p className="mt-2 text-sm font-medium text-fg">
+        {player.name} vs {arm}
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-muted">{d.bvpLine}</p>
+      <ul className="mt-3 space-y-2">
+        {(d.bvpLayers ?? []).map((l) => (
+          <li key={l.key} className="flex items-start gap-2">
+            <span
+              className={cn(
+                "mt-0.5 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase",
+                l.pass ? "bg-sage-dim text-sage" : "bg-surface text-muted",
+              )}
+            >
+              {l.pass ? "on" : "off"} {l.key}
+            </span>
+            <span className="text-sm leading-snug text-muted">{l.line}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ForecastCard({ forecast }: { forecast: Forecast }) {
+  if (!forecast || forecast.bars.length === 0) return null;
+  return (
+    <div className="mt-5 rounded-2xl bg-surface-2 p-3">
+      <p className="text-[11px] tracking-[0.14em] text-gold uppercase">HR forecast</p>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="rounded-xl bg-bg px-3 py-2">
+          <p className="text-[11px] tracking-wide text-muted uppercase">Game P</p>
+          <p className="mt-0.5 font-mono text-xl tabular-nums text-fg">{(100 * forecast.pGame).toFixed(1)}%</p>
+        </div>
+        <div className="rounded-xl bg-bg px-3 py-2">
+          <p className="text-[11px] tracking-wide text-muted uppercase">Intel</p>
+          <p className="mt-0.5 font-mono text-xl tabular-nums text-fg">{forecast.score}</p>
+        </div>
+        <div className="rounded-xl bg-bg px-3 py-2">
+          <p className="text-[11px] tracking-wide text-muted uppercase">Confidence</p>
+          <p className="mt-0.5 font-mono text-xl tabular-nums text-fg">{forecast.conf}%</p>
+        </div>
+      </div>
+      <dl className="mt-3 grid grid-cols-5 gap-1 text-center">
+        {[
+          ["Raw", forecast.pRaw],
+          ["Contact", forecast.pContact],
+          ["Match", forecast.pMatch],
+          ["Park", forecast.pPark],
+          ["2+", forecast.p2plus],
+        ].map(([lab, v]) => (
+          <div key={String(lab)}>
+            <dt className="text-[10px] tracking-wide text-subtle uppercase">{lab}</dt>
+            <dd className="font-mono text-xs tabular-nums text-muted">{(100 * Number(v)).toFixed(1)}%</dd>
+          </div>
+        ))}
+      </dl>
+      <ul className="mt-3 space-y-2">
+        {forecast.bars.map((b) => (
+          <li key={b.key}>
+            <div className="mb-0.5 flex items-baseline justify-between gap-2">
+              <span className="text-xs text-fg">
+                {b.label} <span className="text-subtle">{b.weight}%</span>
+              </span>
+              <span className="font-mono text-xs tabular-nums text-muted">{Math.round(b.score)}</span>
+            </div>
+            <div className="h-1 overflow-hidden rounded-full bg-bg">
+              <div
+                className={cn("h-full rounded-full", b.score >= 70 ? "bg-sage" : b.score >= 45 ? "bg-gold" : "bg-muted/50")}
+                style={{ width: `${Math.round(b.score)}%` }}
+              />
+            </div>
+            <p className="mt-0.5 text-[11px] text-subtle">{b.line}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-sm text-fg">
+        <span className="text-gold">Driver</span> {forecast.driver}
+        {forecast.secondary ? <span className="text-muted"> · {forecast.secondary}</span> : null}
+      </p>
+      {forecast.likes.length ? (
+        <div className="mt-2">
+          <p className="text-[11px] tracking-wide text-sage uppercase">Why the model likes it</p>
+          <ul className="mt-1 space-y-0.5">
+            {forecast.likes.map((l) => (
+              <li key={l} className="text-xs text-muted">
+                {l}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {forecast.risks.length ? (
+        <div className="mt-2">
+          <p className="text-[11px] tracking-wide text-gold uppercase">Why it may be wrong</p>
+          <ul className="mt-1 space-y-0.5">
+            {forecast.risks.map((l) => (
+              <li key={l} className="text-xs text-muted">
+                {l}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function SignalCard({ player }: { player: PlayerPrediction }) {
   const signal = player.signal;
   const key = signal.keyMatch;
@@ -357,14 +732,34 @@ function SignalCard({ player }: { player: PlayerPrediction }) {
         </p>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-fg">{signal.why}</p>
+      {signal.decision?.bvpLine ? (
+        <p className="mt-2 rounded-xl bg-sage-dim px-3 py-2 text-sm text-sage">
+          BvP {signal.decision.bvp} · {signal.decision.bvpGrade}. {signal.decision.bvpLine}
+        </p>
+      ) : signal.decision?.line ? (
+        <p className="mt-2 rounded-xl bg-sage-dim px-3 py-2 text-sm text-sage">{signal.decision.line}</p>
+      ) : signal.decision?.pass ? (
+        <p className="mt-2 rounded-xl bg-sage-dim px-3 py-2 text-sm text-sage">
+          Clears the cut — mix + heat + profile. {signal.decision.tags.join(" · ")}.
+        </p>
+      ) : signal.decision?.missing ? (
+        <p className="mt-2 text-sm text-muted">Does not clear the cut — missing {signal.decision.missing}.</p>
+      ) : null}
       {key ? <KeyMatchTile match={key} lastName={player.lastName || player.name} /> : null}
-      <ul className="mt-3 space-y-2">
-        {signal.checks.map((c) => (
-          <li key={c.key}>
-            <RefRow check={c} />
-          </li>
-        ))}
-      </ul>
+      {signal.checks.some((c) => c.group) ? (
+        <>
+          <RefGroup title="Tonight" checks={signal.checks.filter((c) => c.group === "tonight")} />
+          <RefGroup title="Profile" checks={signal.checks.filter((c) => c.group === "profile")} />
+        </>
+      ) : (
+        <ul className="mt-3 space-y-2">
+          {signal.checks.map((c) => (
+            <li key={c.key}>
+              <RefRow check={c} />
+            </li>
+          ))}
+        </ul>
+      )}
       <p className="mt-3 text-[11px] leading-relaxed text-subtle">
         Reference: 12% barrels · .200 xISO · 12% BRL on a 10%+ pitch · 108 air · 1–4 in the order.
         P(HR) is the size. This is why it is a home-run candidate.
@@ -391,6 +786,7 @@ function KeyMatchTile({ match, lastName }: { match: KeyPitchMatch; lastName: str
         )}
       >
         {match.loud ? "Key match" : "Pitch to watch"}
+        {match.both20 ? " · 20×20" : ""}
       </p>
       <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-sm font-medium text-fg">
         <span>{match.name}</span>
@@ -398,12 +794,37 @@ function KeyMatchTile({ match, lastName }: { match: KeyPitchMatch; lastName: str
       </p>
       <p className={cn("mt-0.5 text-xs", match.loud ? "text-sage" : "text-muted")}>
         {lastName} {brl}
+        {match.both20 && match.pitBarrelPct != null
+          ? ` × ${match.pitBarrelPct.toFixed(0)}% allowed`
+          : ""}
         {match.n >= 4 && match.iso != null ? ` · ${match.iso.toFixed(2)} ISO` : ""}
         {match.n >= 4 && match.ev != null ? ` · ${match.ev.toFixed(0)} EV` : ""}
         {match.hr > 0 ? ` · ${match.hr} HR` : ""}
         {match.n > 0 ? ` · n=${match.n}` : ""}
         {match.loud ? "" : " · 12% cut"}
       </p>
+    </div>
+  );
+}
+
+function RefGroup({ title, checks }: { title: string; checks: HrCheck[] }) {
+  if (checks.length === 0) return null;
+  const on = checks.filter((c) => c.pass).length;
+  return (
+    <div className="mt-3">
+      <p className="text-[10px] font-medium tracking-[0.14em] text-muted uppercase">
+        {title}
+        <span className="ml-2 font-mono text-subtle">
+          {on}/{checks.length}
+        </span>
+      </p>
+      <ul className="mt-2 space-y-2">
+        {checks.map((c) => (
+          <li key={c.key}>
+            <RefRow check={c} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -437,9 +858,9 @@ function RefRow({ check }: { check: HrCheck }) {
 function CutBar({ check }: { check: HrCheck }) {
   const value = check.value ?? 0;
   const cut = check.cut ?? 1;
-  const inverted = check.key === "order";
+  const inverted = !!check.invert || check.key === "order";
   const fill = inverted
-    ? Math.min(100, Math.max(0, (1 - (value - 1) / Math.max(cut, 1)) * 100))
+    ? Math.min(100, Math.max(0, ((2 * cut - value) / Math.max(2 * cut, 1)) * 100))
     : Math.min(100, Math.max(0, (value / (cut * 2)) * 100));
   return (
     <div className="relative mt-1 mb-1 h-1 overflow-hidden rounded-full bg-bg">
@@ -466,9 +887,14 @@ function fmtCut(c: HrCheck): string {
   if (c.cut == null) return "";
   if (c.unit === "%") return `${c.cut}%`;
   if (c.unit === "×") return c.cut.toFixed(2);
+  if (c.unit === "%") return `${c.invert ? "≤" : ""}${c.cut}%`;
+  if (c.unit === "×") return c.cut.toFixed(2);
   if (c.unit === " air") return `${c.cut}`;
+  if (c.unit === " mph") return String(c.cut);
   if (c.key === "xiso") return c.cut.toFixed(3);
   if (c.key === "order") return `≤${c.cut}`;
+  if (c.key === "tanks") return String(c.cut);
+  if (c.key === "trend") return `+${c.cut}`;
   return String(c.cut);
 }
 

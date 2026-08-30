@@ -287,3 +287,109 @@ export function sprayPark(
     label: pts > 0 ? "pull × porch" : "spray vs wall",
   };
 }
+
+/** Typical wall distances, LF / CF / RF in feet. */
+export const PARK_FENCE: Record<number, { lf: number; cf: number; rf: number }> = {
+  1: { lf: 347, cf: 396, rf: 350 },
+  2: { lf: 333, cf: 400, rf: 318 },
+  3: { lf: 310, cf: 420, rf: 302 },
+  4: { lf: 330, cf: 400, rf: 335 },
+  5: { lf: 325, cf: 405, rf: 325 },
+  7: { lf: 330, cf: 410, rf: 330 },
+  12: { lf: 315, cf: 404, rf: 322 },
+  14: { lf: 328, cf: 400, rf: 328 },
+  15: { lf: 330, cf: 407, rf: 335 },
+  17: { lf: 355, cf: 400, rf: 353 },
+  19: { lf: 347, cf: 415, rf: 350 },
+  22: { lf: 330, cf: 395, rf: 330 },
+  31: { lf: 325, cf: 399, rf: 320 },
+  32: { lf: 344, cf: 400, rf: 345 },
+  680: { lf: 331, cf: 401, rf: 326 },
+  2392: { lf: 315, cf: 409, rf: 326 },
+  2394: { lf: 345, cf: 420, rf: 330 },
+  2395: { lf: 339, cf: 399, rf: 309 },
+  2529: { lf: 330, cf: 400, rf: 325 },
+  2602: { lf: 328, cf: 404, rf: 325 },
+  2680: { lf: 336, cf: 396, rf: 322 },
+  2681: { lf: 329, cf: 401, rf: 330 },
+  2889: { lf: 336, cf: 400, rf: 335 },
+  3289: { lf: 335, cf: 408, rf: 330 },
+  3309: { lf: 337, cf: 402, rf: 335 },
+  3312: { lf: 339, cf: 411, rf: 328 },
+  3313: { lf: 318, cf: 408, rf: 314 },
+  4169: { lf: 344, cf: 407, rf: 335 },
+  4705: { lf: 335, cf: 400, rf: 325 },
+  5325: { lf: 329, cf: 407, rf: 326 },
+};
+
+export type AirShot = {
+  dist: number;
+  spray: number | null;
+  ev: number;
+  la: number;
+  hr: boolean;
+};
+
+export function fenceAt(venueId: number, spray: number): number {
+  const f = PARK_FENCE[venueId] ?? { lf: 330, cf: 400, rf: 330 };
+  const a = Math.max(-45, Math.min(45, spray));
+  if (a <= 0) {
+    const t = (a + 45) / 45;
+    return f.lf + t * (f.cf - f.lf);
+  }
+  return f.cf + (a / 45) * (f.rf - f.cf);
+}
+
+export function shotClearsPark(venueId: number, shot: AirShot): boolean {
+  if (shot.hr && shot.dist >= 300) return true;
+  if (shot.dist >= 280) {
+    const need = fenceAt(venueId, shot.spray ?? 0);
+    return shot.dist >= need - 3;
+  }
+  if (shot.ev >= 102 && shot.la >= 22 && shot.la <= 36) {
+    const pullSpray = shot.spray ?? 0;
+    const need = fenceAt(venueId, pullSpray);
+    return need <= 338 && shot.ev >= 104;
+  }
+  return false;
+}
+
+export function parkTrueCount(venueId: number, shots: AirShot[] | null | undefined): { n: number; of: number } {
+  if (!shots || shots.length === 0) return { n: 0, of: 0 };
+  const usable = shots.filter((s) => s.dist >= 250 || s.hr || (s.ev >= 100 && s.la >= 18));
+  const n = usable.filter((s) => shotClearsPark(venueId, s)).length;
+  return { n, of: usable.length };
+}
+
+export function windSprayMatch(
+  windStr: string | null | undefined,
+  bats: string | undefined,
+  pullPct: number | null | undefined,
+  venueId: number,
+  condition: string | null | undefined,
+): { kind: "pull-out" | "pull-in" | "oppo-out" | "none"; line: string } {
+  if (roofClosed(venueId, condition)) {
+    return { kind: "none", line: "Roof closed — wind is off." };
+  }
+  const wind = parseWind(windStr);
+  if (wind.mph < 6 || wind.dir === "none") {
+    return { kind: "none", line: wind.mph ? `${wind.mph} mph, no pull-side tell` : "No wind posted" };
+  }
+  const pull = bats === "L" ? "RF" : bats === "R" ? "LF" : "CF";
+  const toPull = wind.field === pull || (wind.field === "unk" && wind.dir === "out");
+  const pullHitter = pullPct != null && pullPct >= 40;
+  const oppo = pullPct != null && pullPct < 33;
+  const field = wind.field === "unk" ? "" : `${wind.field} `;
+  const way = wind.dir === "out" ? "out" : wind.dir === "in" ? "in" : "cross";
+  const bit = `${way} ${field}${wind.mph} mph`;
+  if (wind.dir === "out" && toPull && pullHitter) {
+    return { kind: "pull-out", line: `${bit} — pull-side out, and he pulls ${pullPct!.toFixed(0)}%` };
+  }
+  if (wind.dir === "in" && toPull && pullHitter) {
+    return { kind: "pull-in", line: `${bit} — in from the pull side. Carry dies.` };
+  }
+  if (wind.dir === "out" && toPull && oppo) {
+    return { kind: "oppo-out", line: `${bit} to the pull side, but spray is oppo (${pullPct!.toFixed(0)}% pull)` };
+  }
+  return { kind: "none", line: bit };
+}
