@@ -684,8 +684,8 @@ async function fetchYearPark(season: number): Promise<Map<number, number>> {
     );
     type Row = { hr: number; pa: number };
     const byTeam = new Map<number, { h: Row; a: Row }>();
-    let lgH = { hr: 0, pa: 0 };
-    let lgA = { hr: 0, pa: 0 };
+    const lgH = { hr: 0, pa: 0 };
+    const lgA = { hr: 0, pa: 0 };
     for (const s of data.stats?.[0]?.splits ?? []) {
       const id = s.team?.id;
       if (!id) continue;
