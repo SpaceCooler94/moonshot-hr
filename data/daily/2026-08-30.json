@@ -1,6 +1,6 @@
 {
   "date": "2026-08-30",
-  "generatedAt": "2026-08-30T16:57:10.963Z",
+  "generatedAt": "2026-08-30T17:52:40.101Z",
   "games": 14,
   "slate": [
     {
@@ -35,11 +35,11 @@
     {
       "gamePk": 824876,
       "time": "2026-08-30T17:35:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Truist Park",
       "weather": {
         "condition": "Partly Cloudy",
-        "temp": "84",
+        "temp": "86",
         "wind": "6 mph, L To R"
       },
       "away": {
@@ -64,12 +64,12 @@
     {
       "gamePk": 823502,
       "time": "2026-08-30T17:35:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Yankee Stadium",
       "weather": {
-        "condition": "Partly Cloudy",
-        "temp": "80",
-        "wind": "9 mph, Out To LF"
+        "condition": "Cloudy",
+        "temp": "77",
+        "wind": "10 mph, Out To LF"
       },
       "away": {
         "id": 111,
@@ -93,12 +93,12 @@
     {
       "gamePk": 822766,
       "time": "2026-08-30T17:37:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Rogers Centre",
       "weather": {
-        "condition": "Roof Closed",
-        "temp": "68",
-        "wind": "0 mph, None"
+        "condition": "Cloudy",
+        "temp": "65",
+        "wind": "2 mph, Out To LF"
       },
       "away": {
         "id": 136,
@@ -122,7 +122,7 @@
     {
       "gamePk": 824393,
       "time": "2026-08-30T17:40:00Z",
-      "status": "Delayed Start",
+      "status": "Warmup",
       "venue": "Progressive Field",
       "weather": {
         "condition": "Partly Cloudy",
@@ -151,7 +151,7 @@
     {
       "gamePk": 824232,
       "time": "2026-08-30T17:40:00Z",
-      "status": "Pre-Game",
+      "status": "Delayed Start",
       "venue": "Comerica Park",
       "weather": {
         "condition": "Cloudy",
@@ -180,7 +180,7 @@
     {
       "gamePk": 822933,
       "time": "2026-08-30T17:40:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Tropicana Field",
       "weather": {
         "condition": "Dome",
@@ -212,9 +212,9 @@
       "status": "Pre-Game",
       "venue": "Target Field",
       "weather": {
-        "condition": "Partly Cloudy",
-        "temp": "83",
-        "wind": "9 mph, In From RF"
+        "condition": "Cloudy",
+        "temp": "77",
+        "wind": "9 mph, In From LF"
       },
       "away": {
         "id": 145,
@@ -238,12 +238,12 @@
     {
       "gamePk": 823740,
       "time": "2026-08-30T18:10:00Z",
-      "status": "Pre-Game",
+      "status": "Warmup",
       "venue": "American Family Field",
       "weather": {
         "condition": "Partly Cloudy",
         "temp": "82",
-        "wind": "15 mph, L To R"
+        "wind": "15 mph, R To L"
       },
       "away": {
         "id": 140,
@@ -267,12 +267,12 @@
     {
       "gamePk": 823010,
       "time": "2026-08-30T18:15:00Z",
-      "status": "Pre-Game",
+      "status": "Warmup",
       "venue": "Busch Stadium",
       "weather": {
-        "condition": "Partly Cloudy",
-        "temp": "92",
-        "wind": "10 mph, Out To LF"
+        "condition": "Sunny",
+        "temp": "89",
+        "wind": "9 mph, Out To LF"
       },
       "away": {
         "id": 134,
@@ -325,9 +325,13 @@
     {
       "gamePk": 824959,
       "time": "2026-08-30T20:05:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Sutter Health Park",
-      "weather": {},
+      "weather": {
+        "condition": "Sunny",
+        "temp": "83",
+        "wind": "3 mph, Out To CF"
+      },
       "away": {
         "id": 110,
         "name": "Baltimore Orioles",
@@ -350,9 +354,13 @@
     {
       "gamePk": 823987,
       "time": "2026-08-30T20:07:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Angel Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Sunny",
+        "temp": "87",
+        "wind": "9 mph, Out To CF"
+      },
       "away": {
         "id": 143,
         "name": "Philadelphia Phillies",
