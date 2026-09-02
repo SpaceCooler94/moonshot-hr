@@ -1,0 +1,403 @@
+{
+  "date": "2026-09-02",
+  "generatedAt": "2026-09-02T17:48:31.430Z",
+  "games": 15,
+  "slate": [
+    {
+      "gamePk": 824470,
+      "time": "2026-09-02T16:40:00Z",
+      "status": "In Progress",
+      "venue": "Great American Ball Park",
+      "weather": {
+        "condition": "Sunny",
+        "temp": "94",
+        "wind": "6 mph, Out To LF"
+      },
+      "away": {
+        "id": 135,
+        "name": "San Diego Padres",
+        "abbr": "SD",
+        "probable": {
+          "id": 663554,
+          "name": "Casey Mize"
+        }
+      },
+      "home": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "abbr": "CIN",
+        "probable": {
+          "id": 682227,
+          "name": "Brandon Williamson"
+        }
+      }
+    },
+    {
+      "gamePk": 822686,
+      "time": "2026-09-02T17:05:00Z",
+      "status": "In Progress",
+      "venue": "Nationals Park",
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "88",
+        "wind": "7 mph, In From RF"
+      },
+      "away": {
+        "id": 144,
+        "name": "Atlanta Braves",
+        "abbr": "ATL",
+        "probable": {
+          "id": 656550,
+          "name": "Grant Holmes"
+        }
+      },
+      "home": {
+        "id": 120,
+        "name": "Washington Nationals",
+        "abbr": "WSH",
+        "probable": {
+          "id": 695418,
+          "name": "Brad Lord"
+        }
+      }
+    },
+    {
+      "gamePk": 822851,
+      "time": "2026-09-02T18:35:00Z",
+      "status": "Pre-Game",
+      "venue": "Globe Life Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
+      "away": {
+        "id": 133,
+        "name": "Athletics",
+        "abbr": "ATH",
+        "probable": {
+          "id": 682052,
+          "name": "Jacob Lopez"
+        }
+      },
+      "home": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "abbr": "TEX",
+        "probable": {
+          "id": 674003,
+          "name": "Cody Bradford"
+        }
+      }
+    },
+    {
+      "gamePk": 824312,
+      "time": "2026-09-02T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Coors Field",
+      "weather": {
+        "condition": "Sunny",
+        "temp": "85",
+        "wind": "8 mph, Out To LF"
+      },
+      "away": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "abbr": "BAL",
+        "probable": {
+          "id": 669432,
+          "name": "Trevor Rogers"
+        }
+      },
+      "home": {
+        "id": 115,
+        "name": "Colorado Rockies",
+        "abbr": "COL",
+        "probable": {
+          "id": 608372,
+          "name": "Tomoyuki Sugano"
+        }
+      }
+    },
+    {
+      "gamePk": 825037,
+      "time": "2026-09-02T19:40:00Z",
+      "status": "Pre-Game",
+      "venue": "Chase Field",
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
+      "away": {
+        "id": 143,
+        "name": "Philadelphia Phillies",
+        "abbr": "PHI",
+        "probable": {
+          "id": 691725,
+          "name": "Andrew Painter"
+        }
+      },
+      "home": {
+        "id": 109,
+        "name": "Arizona Diamondbacks",
+        "abbr": "AZ",
+        "probable": {
+          "id": 664199,
+          "name": "Taylor Clarke"
+        }
+      }
+    },
+    {
+      "gamePk": 824717,
+      "time": "2026-09-02T20:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Fenway Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "72",
+        "wind": "11 mph, In From RF"
+      },
+      "away": {
+        "id": 136,
+        "name": "Seattle Mariners",
+        "abbr": "SEA",
+        "probable": {
+          "id": 682243,
+          "name": "Bryce Miller"
+        }
+      },
+      "home": {
+        "id": 111,
+        "name": "Boston Red Sox",
+        "abbr": "BOS",
+        "probable": {
+          "id": 663776,
+          "name": "Patrick Sandoval"
+        }
+      }
+    },
+    {
+      "gamePk": 823339,
+      "time": "2026-09-02T22:40:00Z",
+      "status": "Scheduled",
+      "venue": "PNC Park",
+      "weather": {},
+      "away": {
+        "id": 137,
+        "name": "San Francisco Giants",
+        "abbr": "SF",
+        "probable": {
+          "id": 694738,
+          "name": "Landen Roupp"
+        }
+      },
+      "home": {
+        "id": 134,
+        "name": "Pittsburgh Pirates",
+        "abbr": "PIT",
+        "probable": {
+          "id": 696149,
+          "name": "Bubba Chandler"
+        }
+      }
+    },
+    {
+      "gamePk": 822931,
+      "time": "2026-09-02T22:40:00Z",
+      "status": "Scheduled",
+      "venue": "Tropicana Field",
+      "weather": {},
+      "away": {
+        "id": 121,
+        "name": "New York Mets",
+        "abbr": "NYM",
+        "probable": {
+          "id": 663795,
+          "name": "Justin Hagenman"
+        }
+      },
+      "home": {
+        "id": 139,
+        "name": "Tampa Bay Rays",
+        "abbr": "TB",
+        "probable": {
+          "id": 643377,
+          "name": "Griffin Jax"
+        }
+      }
+    },
+    {
+      "gamePk": 824390,
+      "time": "2026-09-02T22:40:00Z",
+      "status": "Scheduled",
+      "venue": "Progressive Field",
+      "weather": {},
+      "away": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "abbr": "TOR",
+        "probable": {
+          "id": 656302,
+          "name": "Dylan Cease"
+        }
+      },
+      "home": {
+        "id": 114,
+        "name": "Cleveland Guardians",
+        "abbr": "CLE",
+        "probable": {
+          "id": 676282,
+          "name": "Joey Cantillo"
+        }
+      }
+    },
+    {
+      "gamePk": 823660,
+      "time": "2026-09-02T23:40:00Z",
+      "status": "Scheduled",
+      "venue": "Target Field",
+      "weather": {},
+      "away": {
+        "id": 116,
+        "name": "Detroit Tigers",
+        "abbr": "DET",
+        "probable": {
+          "id": 623454,
+          "name": "Drew Anderson"
+        }
+      },
+      "home": {
+        "id": 142,
+        "name": "Minnesota Twins",
+        "abbr": "MIN",
+        "probable": {
+          "id": 665152,
+          "name": "Dean Kremer"
+        }
+      }
+    },
+    {
+      "gamePk": 824068,
+      "time": "2026-09-02T23:40:00Z",
+      "status": "Scheduled",
+      "venue": "Kauffman Stadium",
+      "weather": {},
+      "away": {
+        "id": 146,
+        "name": "Miami Marlins",
+        "abbr": "MIA",
+        "probable": {
+          "id": 691587,
+          "name": "Eury Pérez"
+        }
+      },
+      "home": {
+        "id": 118,
+        "name": "Kansas City Royals",
+        "abbr": "KC",
+        "probable": {
+          "id": 702070,
+          "name": "Noah Cameron"
+        }
+      }
+    },
+    {
+      "gamePk": 824634,
+      "time": "2026-09-02T23:40:00Z",
+      "status": "Scheduled",
+      "venue": "Wrigley Field",
+      "weather": {},
+      "away": {
+        "id": 158,
+        "name": "Milwaukee Brewers",
+        "abbr": "MIL",
+        "probable": {
+          "id": 694819,
+          "name": "Jacob Misiorowski"
+        }
+      },
+      "home": {
+        "id": 112,
+        "name": "Chicago Cubs",
+        "abbr": "CHC",
+        "probable": {
+          "id": 656849,
+          "name": "David Peterson"
+        }
+      }
+    },
+    {
+      "gamePk": 824147,
+      "time": "2026-09-03T00:10:00Z",
+      "status": "Scheduled",
+      "venue": "Daikin Park",
+      "weather": {},
+      "away": {
+        "id": 145,
+        "name": "Chicago White Sox",
+        "abbr": "CWS",
+        "probable": {
+          "id": 663436,
+          "name": "Davis Martin"
+        }
+      },
+      "home": {
+        "id": 117,
+        "name": "Houston Astros",
+        "abbr": "HOU",
+        "probable": {
+          "id": 669713,
+          "name": "Hayden Wesneski"
+        }
+      }
+    },
+    {
+      "gamePk": 823983,
+      "time": "2026-09-03T01:38:00Z",
+      "status": "Scheduled",
+      "venue": "Angel Stadium",
+      "weather": {},
+      "away": {
+        "id": 147,
+        "name": "New York Yankees",
+        "abbr": "NYY",
+        "probable": {
+          "id": 693645,
+          "name": "Cam Schlittler"
+        }
+      },
+      "home": {
+        "id": 108,
+        "name": "Los Angeles Angels",
+        "abbr": "LAA",
+        "probable": {
+          "id": 672282,
+          "name": "Reid Detmers"
+        }
+      }
+    },
+    {
+      "gamePk": 823906,
+      "time": "2026-09-03T02:10:00Z",
+      "status": "Scheduled",
+      "venue": "UNIQLO Field at Dodger Stadium",
+      "weather": {},
+      "away": {
+        "id": 138,
+        "name": "St. Louis Cardinals",
+        "abbr": "STL",
+        "probable": null
+      },
+      "home": {
+        "id": 119,
+        "name": "Los Angeles Dodgers",
+        "abbr": "LAD",
+        "probable": {
+          "id": 808967,
+          "name": "Yoshinobu Yamamoto"
+        }
+      }
+    }
+  ]
+}
