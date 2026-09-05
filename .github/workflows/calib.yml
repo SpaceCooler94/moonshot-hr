@@ -1,0 +1,14 @@
+name: Calibration
+on:
+  workflow_dispatch:
+    inputs:
+      start: { description: "Start YYYY-MM-DD (optional)", required: false, default: "" }
+      end:   { description: "End YYYY-MM-DD (optional)",   required: false, default: "" }
+jobs:
+  calib:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/calib-check.mjs "${{ inputs.start }}" "${{ inputs.end }}"
