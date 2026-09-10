@@ -1,0 +1,144 @@
+{
+  "date": "2026-09-10",
+  "generatedAt": "2026-09-10T17:37:16.413Z",
+  "games": 5,
+  "slate": [
+    {
+      "gamePk": 824872,
+      "time": "2026-09-10T16:15:00Z",
+      "status": "In Progress",
+      "venue": "Truist Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "83",
+        "wind": "3 mph, L To R"
+      },
+      "away": {
+        "id": 139,
+        "name": "Tampa Bay Rays",
+        "abbr": "TB",
+        "probable": {
+          "id": 607259,
+          "name": "Nick Martinez"
+        }
+      },
+      "home": {
+        "id": 144,
+        "name": "Atlanta Braves",
+        "abbr": "ATL",
+        "probable": {
+          "id": 527048,
+          "name": "Martín Pérez"
+        }
+      }
+    },
+    {
+      "gamePk": 823413,
+      "time": "2026-09-10T17:05:00Z",
+      "status": "In Progress",
+      "venue": "Citizens Bank Park",
+      "weather": {
+        "condition": "Sunny",
+        "temp": "86",
+        "wind": "9 mph, Out To RF"
+      },
+      "away": {
+        "id": 117,
+        "name": "Houston Astros",
+        "abbr": "HOU",
+        "probable": {
+          "id": 664299,
+          "name": "Cristian Javier"
+        }
+      },
+      "home": {
+        "id": 143,
+        "name": "Philadelphia Phillies",
+        "abbr": "PHI",
+        "probable": {
+          "id": 554430,
+          "name": "Zack Wheeler"
+        }
+      }
+    },
+    {
+      "gamePk": 823088,
+      "time": "2026-09-10T20:10:00Z",
+      "status": "Pre-Game",
+      "venue": "T-Mobile Park",
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "67",
+        "wind": "5 mph, Out To CF"
+      },
+      "away": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "abbr": "TEX",
+        "probable": {
+          "id": 594798,
+          "name": "Jacob deGrom"
+        }
+      },
+      "home": {
+        "id": 136,
+        "name": "Seattle Mariners",
+        "abbr": "SEA",
+        "probable": {
+          "id": 669302,
+          "name": "Logan Gilbert"
+        }
+      }
+    },
+    {
+      "gamePk": 823499,
+      "time": "2026-09-10T23:05:00Z",
+      "status": "Scheduled",
+      "venue": "Yankee Stadium",
+      "weather": {},
+      "away": {
+        "id": 115,
+        "name": "Colorado Rockies",
+        "abbr": "COL",
+        "probable": {
+          "id": 663372,
+          "name": "Ryan Feltner"
+        }
+      },
+      "home": {
+        "id": 147,
+        "name": "New York Yankees",
+        "abbr": "NYY",
+        "probable": {
+          "id": 608331,
+          "name": "Max Fried"
+        }
+      }
+    },
+    {
+      "gamePk": 824550,
+      "time": "2026-09-10T23:40:00Z",
+      "status": "Scheduled",
+      "venue": "Rate Field",
+      "weather": {},
+      "away": {
+        "id": 134,
+        "name": "Pittsburgh Pirates",
+        "abbr": "PIT",
+        "probable": {
+          "id": 683003,
+          "name": "Jared Jones"
+        }
+      },
+      "home": {
+        "id": 145,
+        "name": "Chicago White Sox",
+        "abbr": "CWS",
+        "probable": {
+          "id": 696146,
+          "name": "Hagen Smith"
+        }
+      }
+    }
+  ]
+}
