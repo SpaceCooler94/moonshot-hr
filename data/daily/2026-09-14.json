@@ -1,0 +1,273 @@
+{
+  "date": "2026-09-14",
+  "generatedAt": "2026-09-14T19:10:17.115Z",
+  "games": 10,
+  "slate": [
+    {
+      "gamePk": 824465,
+      "time": "2026-09-14T22:40:00Z",
+      "status": "Pre-Game",
+      "venue": "Great American Ball Park",
+      "weather": {
+        "condition": "Clear",
+        "temp": "75",
+        "wind": "6 mph, In From LF"
+      },
+      "away": {
+        "id": 119,
+        "name": "Los Angeles Dodgers",
+        "abbr": "LAD",
+        "probable": {
+          "id": 669373,
+          "name": "Tarik Skubal"
+        }
+      },
+      "home": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "abbr": "CIN",
+        "probable": {
+          "id": 666157,
+          "name": "Nick Lodolo"
+        }
+      }
+    },
+    {
+      "gamePk": 824386,
+      "time": "2026-09-14T22:40:00Z",
+      "status": "Pre-Game",
+      "venue": "Progressive Field",
+      "weather": {
+        "condition": "Clear",
+        "temp": "66",
+        "wind": "6 mph, In From RF"
+      },
+      "away": {
+        "id": 145,
+        "name": "Chicago White Sox",
+        "abbr": "CWS",
+        "probable": {
+          "id": 656794,
+          "name": "Sean Newcomb"
+        }
+      },
+      "home": {
+        "id": 114,
+        "name": "Cleveland Guardians",
+        "abbr": "CLE",
+        "probable": {
+          "id": 668909,
+          "name": "Gavin Williams"
+        }
+      }
+    },
+    {
+      "gamePk": 822765,
+      "time": "2026-09-14T23:07:00Z",
+      "status": "Scheduled",
+      "venue": "Rogers Centre",
+      "weather": {},
+      "away": {
+        "id": 116,
+        "name": "Detroit Tigers",
+        "abbr": "DET",
+        "probable": {
+          "id": 675512,
+          "name": "Troy Melton"
+        }
+      },
+      "home": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "abbr": "TOR",
+        "probable": {
+          "id": 667755,
+          "name": "José Soriano"
+        }
+      }
+    },
+    {
+      "gamePk": 823575,
+      "time": "2026-09-14T23:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Citi Field",
+      "weather": {
+        "condition": "Clear",
+        "temp": "70",
+        "wind": "10 mph, In From LF"
+      },
+      "away": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "abbr": "BAL",
+        "probable": {
+          "id": 687064,
+          "name": "Brandon Young"
+        }
+      },
+      "home": {
+        "id": 121,
+        "name": "New York Mets",
+        "abbr": "NYM",
+        "probable": {
+          "id": 804636,
+          "name": "Jonah Tong"
+        }
+      }
+    },
+    {
+      "gamePk": 824629,
+      "time": "2026-09-14T23:40:00Z",
+      "status": "Scheduled",
+      "venue": "Wrigley Field",
+      "weather": {},
+      "away": {
+        "id": 144,
+        "name": "Atlanta Braves",
+        "abbr": "ATL",
+        "probable": {
+          "id": 625643,
+          "name": "Reynaldo López"
+        }
+      },
+      "home": {
+        "id": 112,
+        "name": "Chicago Cubs",
+        "abbr": "CHC",
+        "probable": {
+          "id": 656849,
+          "name": "David Peterson"
+        }
+      }
+    },
+    {
+      "gamePk": 823656,
+      "time": "2026-09-14T23:40:00Z",
+      "status": "Scheduled",
+      "venue": "Target Field",
+      "weather": {},
+      "away": {
+        "id": 147,
+        "name": "New York Yankees",
+        "abbr": "NYY",
+        "probable": {
+          "id": 701542,
+          "name": "Will Warren"
+        }
+      },
+      "home": {
+        "id": 142,
+        "name": "Minnesota Twins",
+        "abbr": "MIN",
+        "probable": {
+          "id": 665152,
+          "name": "Dean Kremer"
+        }
+      }
+    },
+    {
+      "gamePk": 823006,
+      "time": "2026-09-14T23:45:00Z",
+      "status": "Scheduled",
+      "venue": "Busch Stadium",
+      "weather": {},
+      "away": {
+        "id": 137,
+        "name": "San Francisco Giants",
+        "abbr": "SF",
+        "probable": {
+          "id": 694738,
+          "name": "Landen Roupp"
+        }
+      },
+      "home": {
+        "id": 138,
+        "name": "St. Louis Cardinals",
+        "abbr": "STL",
+        "probable": {
+          "id": 687273,
+          "name": "Quinn Mathews"
+        }
+      }
+    },
+    {
+      "gamePk": 824308,
+      "time": "2026-09-15T00:40:00Z",
+      "status": "Pre-Game",
+      "venue": "Coors Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "84",
+        "wind": "9 mph, L To R"
+      },
+      "away": {
+        "id": 135,
+        "name": "San Diego Padres",
+        "abbr": "SD",
+        "probable": {
+          "id": 663554,
+          "name": "Casey Mize"
+        }
+      },
+      "home": {
+        "id": 115,
+        "name": "Colorado Rockies",
+        "abbr": "COL",
+        "probable": {
+          "id": 608372,
+          "name": "Tomoyuki Sugano"
+        }
+      }
+    },
+    {
+      "gamePk": 823981,
+      "time": "2026-09-15T01:38:00Z",
+      "status": "Scheduled",
+      "venue": "Angel Stadium",
+      "weather": {},
+      "away": {
+        "id": 136,
+        "name": "Seattle Mariners",
+        "abbr": "SEA",
+        "probable": {
+          "id": 807739,
+          "name": "Kade Anderson"
+        }
+      },
+      "home": {
+        "id": 108,
+        "name": "Los Angeles Angels",
+        "abbr": "LAA",
+        "probable": {
+          "id": 672282,
+          "name": "Reid Detmers"
+        }
+      }
+    },
+    {
+      "gamePk": 825034,
+      "time": "2026-09-15T01:40:00Z",
+      "status": "Scheduled",
+      "venue": "Chase Field",
+      "weather": {},
+      "away": {
+        "id": 146,
+        "name": "Miami Marlins",
+        "abbr": "MIA",
+        "probable": {
+          "id": 645261,
+          "name": "Sandy Alcantara"
+        }
+      },
+      "home": {
+        "id": 109,
+        "name": "Arizona Diamondbacks",
+        "abbr": "AZ",
+        "probable": {
+          "id": 669203,
+          "name": "Corbin Burnes"
+        }
+      }
+    }
+  ]
+}
