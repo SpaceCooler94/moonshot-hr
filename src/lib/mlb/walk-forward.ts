@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { CAL_BANDS, MODEL_VERSION, STARTER_HR_RATE } from "./model";
 import { shiftISODate } from "./format";
+import { readLock } from "./lock";
 import type { LockState, PlayerPrediction, WalkDay, WalkForward, WalkWindow } from "./types";
 
 const summaryCache = new Map<string, { exp: number; val: WalkForward }>();
@@ -267,14 +268,20 @@ function storeDay(board: {
   lock: { status: LockState["status"] };
   predictions: PlayerPrediction[];
 }): StoredDay {
-  const topIds = new Set(board.predictions.slice(0, 12).map((p) => `${p.playerId}:${p.gamePk}`));
+  const lock = readLock(board.date);
+  const lockByKey = new Map((lock?.looks ?? []).map((l) => [`${l.playerId}:${l.gamePk}`, l] as const));
+  const ranked = lock
+    ? [...lock.looks].sort((a, b) => a.rank - b.rank)
+    : [...board.predictions].sort((a, b) => b.pHr - a.pHr);
+  const topIds = new Set(ranked.slice(0, 12).map((p) => `${p.playerId}:${p.gamePk}`));
   const looks: StoredLook[] = [];
   for (const p of board.predictions) {
     if (p.actualHr == null) continue;
+    const frozen = lockByKey.get(`${p.playerId}:${p.gamePk}`);
     looks.push({
       playerId: p.playerId,
       gamePk: p.gamePk,
-      pHr: p.pHr,
+      pHr: frozen?.pHr ?? p.pHr,
       y: p.actualHr > 0 ? 1 : 0,
       hr: p.actualHr,
       top12: topIds.has(`${p.playerId}:${p.gamePk}`),
@@ -286,7 +293,7 @@ function storeDay(board: {
   return {
     date: board.date,
     games: board.summary.completedGames,
-    lockStatus: board.lock.status,
+    lockStatus: lock ? "locked" : board.lock.status,
     looks,
   };
 }
