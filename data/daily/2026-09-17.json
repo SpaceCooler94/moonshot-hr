@@ -1,0 +1,245 @@
+{
+  "date": "2026-09-17",
+  "generatedAt": "2026-09-17T18:05:09.550Z",
+  "games": 9,
+  "slate": [
+    {
+      "gamePk": 823334,
+      "time": "2026-09-17T16:35:00Z",
+      "status": "In Progress",
+      "venue": "PNC Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "77",
+        "wind": "5 mph, Out To LF"
+      },
+      "away": {
+        "id": 158,
+        "name": "Milwaukee Brewers",
+        "abbr": "MIL",
+        "probable": {
+          "id": 690986,
+          "name": "Kyle Harrison"
+        }
+      },
+      "home": {
+        "id": 134,
+        "name": "Pittsburgh Pirates",
+        "abbr": "PIT",
+        "probable": {
+          "id": 696062,
+          "name": "Wilber Dotel"
+        }
+      }
+    },
+    {
+      "gamePk": 824464,
+      "time": "2026-09-17T16:40:00Z",
+      "status": "In Progress",
+      "venue": "Great American Ball Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "90",
+        "wind": "7 mph, Out To LF"
+      },
+      "away": {
+        "id": 119,
+        "name": "Los Angeles Dodgers",
+        "abbr": "LAD",
+        "probable": {
+          "id": 680736,
+          "name": "Justin Wrobleski"
+        }
+      },
+      "home": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "abbr": "CIN",
+        "probable": {
+          "id": 663903,
+          "name": "Brady Singer"
+        }
+      }
+    },
+    {
+      "gamePk": 822924,
+      "time": "2026-09-17T17:10:00Z",
+      "status": "In Progress",
+      "venue": "Tropicana Field",
+      "weather": {
+        "condition": "Dome",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
+      "away": {
+        "id": 133,
+        "name": "Athletics",
+        "abbr": "ATH",
+        "probable": {
+          "id": 605488,
+          "name": "Jeffrey Springs"
+        }
+      },
+      "home": {
+        "id": 139,
+        "name": "Tampa Bay Rays",
+        "abbr": "TB",
+        "probable": {
+          "id": 656876,
+          "name": "Drew Rasmussen"
+        }
+      }
+    },
+    {
+      "gamePk": 824305,
+      "time": "2026-09-17T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Coors Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "77",
+        "wind": "5 mph, Out To LF"
+      },
+      "away": {
+        "id": 135,
+        "name": "San Diego Padres",
+        "abbr": "SD",
+        "probable": {
+          "id": 650633,
+          "name": "Michael King"
+        }
+      },
+      "home": {
+        "id": 115,
+        "name": "Colorado Rockies",
+        "abbr": "COL",
+        "probable": {
+          "id": 685299,
+          "name": "Tanner Gordon"
+        }
+      }
+    },
+    {
+      "gamePk": 824141,
+      "time": "2026-09-17T23:15:00Z",
+      "status": "Scheduled",
+      "venue": "Daikin Park",
+      "weather": {},
+      "away": {
+        "id": 118,
+        "name": "Kansas City Royals",
+        "abbr": "KC",
+        "probable": {
+          "id": 607625,
+          "name": "Seth Lugo"
+        }
+      },
+      "home": {
+        "id": 117,
+        "name": "Houston Astros",
+        "abbr": "HOU",
+        "probable": null
+      }
+    },
+    {
+      "gamePk": 823573,
+      "time": "2026-09-17T23:15:00Z",
+      "status": "Scheduled",
+      "venue": "Citi Field",
+      "weather": {},
+      "away": {
+        "id": 143,
+        "name": "Philadelphia Phillies",
+        "abbr": "PHI",
+        "probable": {
+          "id": 605400,
+          "name": "Aaron Nola"
+        }
+      },
+      "home": {
+        "id": 121,
+        "name": "New York Mets",
+        "abbr": "NYM",
+        "probable": {
+          "id": 690997,
+          "name": "Nolan McLean"
+        }
+      }
+    },
+    {
+      "gamePk": 824548,
+      "time": "2026-09-17T23:40:00Z",
+      "status": "Scheduled",
+      "venue": "Rate Field",
+      "weather": {},
+      "away": {
+        "id": 116,
+        "name": "Detroit Tigers",
+        "abbr": "DET",
+        "probable": {
+          "id": 664285,
+          "name": "Framber Valdez"
+        }
+      },
+      "home": {
+        "id": 145,
+        "name": "Chicago White Sox",
+        "abbr": "CWS",
+        "probable": {
+          "id": 607200,
+          "name": "Erick Fedde"
+        }
+      }
+    },
+    {
+      "gamePk": 822845,
+      "time": "2026-09-18T00:05:00Z",
+      "status": "Scheduled",
+      "venue": "Globe Life Field",
+      "weather": {},
+      "away": {
+        "id": 111,
+        "name": "Boston Red Sox",
+        "abbr": "BOS",
+        "probable": {
+          "id": 543243,
+          "name": "Sonny Gray"
+        }
+      },
+      "home": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "abbr": "TEX",
+        "probable": {
+          "id": 641302,
+          "name": "Tyler Alexander"
+        }
+      }
+    },
+    {
+      "gamePk": 823978,
+      "time": "2026-09-18T01:38:00Z",
+      "status": "Scheduled",
+      "venue": "Angel Stadium",
+      "weather": {},
+      "away": {
+        "id": 142,
+        "name": "Minnesota Twins",
+        "abbr": "MIN",
+        "probable": {
+          "id": 671737,
+          "name": "Taj Bradley"
+        }
+      },
+      "home": {
+        "id": 108,
+        "name": "Los Angeles Angels",
+        "abbr": "LAA",
+        "probable": {
+          "id": 700712,
+          "name": "Walbert Ureña"
+        }
+      }
+    }
+  ]
+}
