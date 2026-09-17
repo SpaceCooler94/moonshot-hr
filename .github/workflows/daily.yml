@@ -2,8 +2,10 @@ name: Daily slate
 
 on:
   schedule:
-    # 10:00 America/New_York (14:00 UTC during EDT)
-    - cron: "0 14 * * *"
+    # 09:00 America/New_York during EDT — lock day games before first pitch
+    - cron: "0 13 * * *"
+    # 16:00 America/New_York during EDT — refresh night temps / nines, keep locked P
+    - cron: "0 20 * * *"
   workflow_dispatch:
     inputs:
       date:
@@ -54,6 +56,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/daily/*.json
+          git add data/daily/*.json data/daily/lock-*.json || git add data/daily/*.json
           git diff --cached --quiet || git commit -m "Daily slate + board: $(date -u +%F)"
           git push
