@@ -47,7 +47,13 @@ Columns: P vs SP, park-neutral P, full-game sketch, regression weight `PA/(PA+14
 
 ### Scriptable (iOS)
 
-[`scripts/scriptable-phr.js`](scripts/scriptable-phr.js) — paste into Scriptable. Widget + table + JSON/CSV on iCloud. Same raw board URL.
+[`scripts/scriptable-phr.js`](scripts/scriptable-phr.js) — paste into Scriptable.
+
+- **Widget** — compact P(HR) vs starter list.
+- **Run in the app** — Steamer-lens WebUI (park-neutral P, full-game sketch, regress-w, recency, platoon). JSON/CSV saved under Scriptable iCloud `moonshot/`.
+- Parameter examples: `n=12 min=0.12`, `grade=loud night official`, `ui=table` for the native table instead of the WebView.
+
+Same raw board URL as the HTML view.
 
 ### GitHub Actions
 
