@@ -96,7 +96,9 @@ export function mergeLock(
   board: BoardPayload,
   predictions: PlayerPrediction[],
 ): LockRecord {
-  const byKey = new Map(existing.looks.map((l) => [`${l.playerId}:${l.gamePk}`, l] as const));
+  const byKey = new Map<string, LockLook>(
+    existing.looks.map((l) => [`${l.playerId}:${l.gamePk}`, l]),
+  );
   const lockable = new Set(board.games.filter(gameIsLockable).map((g) => g.gamePk));
   let added = 0;
   for (const p of predictions) {
@@ -125,7 +127,9 @@ export function mergeLock(
 }
 
 export function applyLock(predictions: PlayerPrediction[], lock: LockRecord): void {
-  const byKey = new Map(lock.looks.map((l) => [`${l.playerId}:${l.gamePk}`, l] as const));
+  const byKey = new Map<string, LockLook>(
+    lock.looks.map((l) => [`${l.playerId}:${l.gamePk}`, l]),
+  );
   for (const p of predictions) {
     const hit = byKey.get(`${p.playerId}:${p.gamePk}`);
     if (hit) {
