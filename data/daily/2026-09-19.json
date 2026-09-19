@@ -1,14 +1,18 @@
 {
   "date": "2026-09-19",
-  "generatedAt": "2026-09-19T14:05:00.910Z",
+  "generatedAt": "2026-09-19T16:18:24.480Z",
   "games": 15,
   "slate": [
     {
       "gamePk": 824545,
       "time": "2026-09-19T18:10:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Rate Field",
-      "weather": {},
+      "weather": {
+        "condition": "Rain",
+        "temp": "65",
+        "wind": "5 mph, Varies"
+      },
       "away": {
         "id": 116,
         "name": "Detroit Tigers",
