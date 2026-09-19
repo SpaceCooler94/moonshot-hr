@@ -1,16 +1,16 @@
 {
   "date": "2026-09-19",
-  "generatedAt": "2026-09-19T16:18:24.480Z",
+  "generatedAt": "2026-09-19T22:16:57.602Z",
   "games": 15,
   "slate": [
     {
       "gamePk": 824545,
       "time": "2026-09-19T18:10:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Rate Field",
       "weather": {
-        "condition": "Rain",
-        "temp": "65",
+        "condition": "Overcast",
+        "temp": "69",
         "wind": "5 mph, Varies"
       },
       "away": {
@@ -35,9 +35,13 @@
     {
       "gamePk": 824788,
       "time": "2026-09-19T20:05:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Oriole Park at Camden Yards",
-      "weather": {},
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "77",
+        "wind": "7 mph, R To L"
+      },
       "away": {
         "id": 158,
         "name": "Milwaukee Brewers",
@@ -60,14 +64,21 @@
     {
       "gamePk": 822921,
       "time": "2026-09-19T20:10:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Tropicana Field",
-      "weather": {},
+      "weather": {
+        "condition": "Dome",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
       "away": {
         "id": 111,
         "name": "Boston Red Sox",
         "abbr": "BOS",
-        "probable": null
+        "probable": {
+          "id": 678394,
+          "name": "Brayan Bello"
+        }
       },
       "home": {
         "id": 139,
@@ -82,9 +93,13 @@
     {
       "gamePk": 823571,
       "time": "2026-09-19T20:10:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Citi Field",
-      "weather": {},
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "68",
+        "wind": "6 mph, In From RF"
+      },
       "away": {
         "id": 143,
         "name": "Philadelphia Phillies",
@@ -107,9 +122,13 @@
     {
       "gamePk": 824380,
       "time": "2026-09-19T22:10:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Progressive Field",
-      "weather": {},
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "71",
+        "wind": "11 mph, R To L"
+      },
       "away": {
         "id": 133,
         "name": "Athletics",
@@ -132,9 +151,13 @@
     {
       "gamePk": 824461,
       "time": "2026-09-19T22:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Great American Ball Park",
-      "weather": {},
+      "weather": {
+        "condition": "Overcast",
+        "temp": "87",
+        "wind": "6 mph, Out To LF"
+      },
       "away": {
         "id": 112,
         "name": "Chicago Cubs",
@@ -157,9 +180,13 @@
     {
       "gamePk": 823330,
       "time": "2026-09-19T22:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "PNC Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "72",
+        "wind": "6 mph, In From CF"
+      },
       "away": {
         "id": 118,
         "name": "Kansas City Royals",
@@ -182,9 +209,13 @@
     {
       "gamePk": 822843,
       "time": "2026-09-19T23:05:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Globe Life Field",
-      "weather": {},
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "74",
+        "wind": "0 mph, None"
+      },
       "away": {
         "id": 141,
         "name": "Toronto Blue Jays",
@@ -207,9 +238,13 @@
     {
       "gamePk": 824137,
       "time": "2026-09-19T23:10:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Daikin Park",
-      "weather": {},
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "73",
+        "wind": "0 mph, None"
+      },
       "away": {
         "id": 144,
         "name": "Atlanta Braves",
@@ -232,9 +267,13 @@
     {
       "gamePk": 823003,
       "time": "2026-09-19T23:15:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Busch Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "94",
+        "wind": "5 mph, R To L"
+      },
       "away": {
         "id": 120,
         "name": "Washington Nationals",
@@ -257,9 +296,13 @@
     {
       "gamePk": 824304,
       "time": "2026-09-20T00:10:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Coors Field",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "67",
+        "wind": "8 mph, R To L"
+      },
       "away": {
         "id": 136,
         "name": "Seattle Mariners",
@@ -282,9 +325,13 @@
     {
       "gamePk": 825029,
       "time": "2026-09-20T00:10:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Chase Field",
-      "weather": {},
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
       "away": {
         "id": 147,
         "name": "New York Yankees",
@@ -307,9 +354,13 @@
     {
       "gamePk": 823249,
       "time": "2026-09-20T00:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Petco Park",
-      "weather": {},
+      "weather": {
+        "condition": "Clear",
+        "temp": "74",
+        "wind": "9 mph, L To R"
+      },
       "away": {
         "id": 146,
         "name": "Miami Marlins",
@@ -332,14 +383,21 @@
     {
       "gamePk": 823899,
       "time": "2026-09-20T01:10:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "UNIQLO Field at Dodger Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "74",
+        "wind": "8 mph, Out To CF"
+      },
       "away": {
         "id": 137,
         "name": "San Francisco Giants",
         "abbr": "SF",
-        "probable": null
+        "probable": {
+          "id": 805074,
+          "name": "Yunior Marte"
+        }
       },
       "home": {
         "id": 119,
