@@ -1,0 +1,67 @@
+{
+  "model": "v14-cal",
+  "target": "P(HR vs starter), not full-game HR",
+  "sample": {
+    "from": "2026-08-30",
+    "to": "2026-09-17",
+    "looks": 4503,
+    "days": 19,
+    "source": "locked board P joined to MLB Stats API play-by-play",
+    "label": "HR against the first pitcher of that club in the game"
+  },
+  "observed": {
+    "meanPublishedP": 0.0821,
+    "actualVsStarter": 0.0666,
+    "actualFullGame": 0.1055,
+    "top12MeanP": 0.156,
+    "top12ActualVsStarter": 0.1096,
+    "olsIntercept": -0.0098,
+    "olsSlope": 0.931,
+    "brierVsStarter": 0.06147,
+    "starterShareOfHRs": 0.589
+  },
+  "league2026": {
+    "hr": 5281,
+    "pa": 173958,
+    "hrPa": 0.03036
+  },
+  "from": {
+    "MODEL_VERSION": "v13-tank",
+    "STARTER_HR_RATE": 0.077,
+    "DAMPING": 0.62,
+    "TAIL_CUT": 0.16,
+    "TAIL_KEEP": 0.55,
+    "P_HR_CAP": 0.22,
+    "BATTER_PRIOR_N": 140,
+    "PITCHER_PRIOR_N": 220,
+    "CONTACT_HR_WEIGHT": 0.35,
+    "CONTACT_QS_WEIGHT": 0.65,
+    "STAFF_PRIOR": 1.08,
+    "TRUST_BASE": 0.8,
+    "TRUST_SPAN": 0.18,
+    "LEAGUE_HR_PA_FALLBACK": 0.031
+  },
+  "to": {
+    "MODEL_VERSION": "v14-cal",
+    "STARTER_HR_RATE": 0.067,
+    "DAMPING": 0.58,
+    "TAIL_CUT": 0.14,
+    "TAIL_KEEP": 0.42,
+    "P_HR_CAP": 0.2,
+    "BATTER_PRIOR_N": 160,
+    "PITCHER_PRIOR_N": 240,
+    "CONTACT_HR_WEIGHT": 0.3,
+    "CONTACT_QS_WEIGHT": 0.7,
+    "STAFF_PRIOR": 1.06,
+    "TRUST_BASE": 0.62,
+    "TRUST_SPAN": 0.28,
+    "LEAGUE_HR_PA": 0.0304,
+    "LEAGUE_HR_BF": 0.0276
+  },
+  "why": [
+    "Published P ran 1.5 pts hot vs starter HR and 4.6 pts hot on the daily top 12.",
+    "Full-game box HR is 10.6% because it includes the bullpen; do not retune the ranked look to that number.",
+    "Raw HR/PA is noisier than barrels/xISO, so the contact mix moves 35/65 → 30/70 and shrink N 140/220 → 160/240.",
+    "publishPHr now starts at the empirical 6.7% base and keeps less of the raw tail."
+  ]
+}

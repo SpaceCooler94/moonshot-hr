@@ -43,7 +43,9 @@ Static overlay on the published board. Posted `pHr` is unchanged.
 - File: [`public/moonshot-steamer.html`](public/moonshot-steamer.html)
 - Source boards: GitHub raw `data/daily/board-YYYY-MM-DD.json` (or drop a local board JSON on the header)
 
-Columns: P vs SP, park-neutral P, full-game sketch, regression weight `PA/(PA+140)`, recency (`factors.form`), platoon, park. No FanGraphs / Steamer feed is fetched.
+Columns: P vs SP, park-neutral P, full-game sketch, regression weight `PA/(PA+160)`, recency (`factors.form`), platoon, park. No FanGraphs / Steamer feed is fetched.
+
+Posted P is **vs the starter**. Model `v14-cal` coefficients live in `src/lib/mlb/prob.ts`. The lock-window grade that produced them is `data/cal/v14-cal.json`.
 
 ### Scriptable (iOS)
 

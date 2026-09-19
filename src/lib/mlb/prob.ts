@@ -14,13 +14,39 @@ export function shrinkRate(
 }
 
 const PA_BY_ORDER = [4.52, 4.42, 4.32, 4.22, 4.1, 3.96, 3.82, 3.68, 3.55];
+
+/**
+ * v14-cal — locked-board vs starter HR, 2026-08-30..2026-09-17.
+ * 4,503 lineup looks joined to MLB play-by-play. A HR counts only if the
+ * pitcher was that club's first pitcher of the game (starter / opener).
+ *
+ *   mean published P   8.21%
+ *   actual vs starter  6.66%
+ *   actual full game  10.55%   (not the target)
+ *   top-12 mean P     15.60%
+ *   top-12 actual SP  10.96%
+ *   OLS  y ~ -0.010 + 0.93 p
+ *
+ * Published P was hot, especially above 14%. Full-game box HR must not be
+ * used to inflate this number — leftover PA to the bullpen is a separate
+ * sketch, not the ranked look.
+ */
+export const LEAGUE_HR_PA = 0.0304; // 2026 team totals 5281 HR / 173958 PA
+export const LEAGUE_HR_BF = 0.0276;
 export const LEAGUE_TBF_PER_START = 22.8;
-export const STARTER_HR_RATE = 0.077;
-export const DAMPING = 0.62;
-export const TAIL_CUT = 0.16;
-export const TAIL_KEEP = 0.55;
-export const P_HR_CAP = 0.22;
-export const MODEL_VERSION = "v13-tank";
+export const STARTER_HR_RATE = 0.067;
+export const DAMPING = 0.58;
+export const TAIL_CUT = 0.14;
+export const TAIL_KEEP = 0.42;
+export const P_HR_CAP = 0.2;
+export const BATTER_PRIOR_N = 160;
+export const PITCHER_PRIOR_N = 240;
+export const CONTACT_HR_WEIGHT = 0.3;
+export const CONTACT_QS_WEIGHT = 0.7;
+export const STAFF_PRIOR = 1.06;
+export const TRUST_BASE = 0.62;
+export const TRUST_SPAN = 0.28;
+export const MODEL_VERSION = "v14-cal";
 
 export const CAL_BANDS = [
   { label: "Under 8%", min: 0, max: 0.08 },
@@ -31,7 +57,7 @@ export const CAL_BANDS = [
 ] as const;
 
 export function trustWeight(conf: number): number {
-  return 0.8 + 0.18 * clamp(conf, 0.3, 0.97);
+  return TRUST_BASE + TRUST_SPAN * clamp(conf, 0.3, 0.97);
 }
 
 export function publishPHr(pHrRaw: number, conf: number): number {
