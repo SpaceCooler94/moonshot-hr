@@ -1,17 +1,17 @@
 {
   "date": "2026-09-20",
-  "generatedAt": "2026-09-20T16:42:57.304Z",
+  "generatedAt": "2026-09-20T22:20:40.798Z",
   "games": 15,
   "slate": [
     {
       "gamePk": 823570,
       "time": "2026-09-20T17:10:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Citi Field",
       "weather": {
-        "condition": "Cloudy",
+        "condition": "Drizzle",
         "temp": "68",
-        "wind": "13 mph, R To L"
+        "wind": "8 mph, Out To LF"
       },
       "away": {
         "id": 143,
@@ -35,7 +35,7 @@
     {
       "gamePk": 823329,
       "time": "2026-09-20T17:35:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "PNC Park",
       "weather": {
         "condition": "Partly Cloudy",
@@ -64,11 +64,11 @@
     {
       "gamePk": 824462,
       "time": "2026-09-20T17:40:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Great American Ball Park",
       "weather": {
         "condition": "Partly Cloudy",
-        "temp": "87",
+        "temp": "86",
         "wind": "6 mph, R To L"
       },
       "away": {
@@ -93,7 +93,7 @@
     {
       "gamePk": 824381,
       "time": "2026-09-20T17:40:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Progressive Field",
       "weather": {
         "condition": "Cloudy",
@@ -122,7 +122,7 @@
     {
       "gamePk": 822922,
       "time": "2026-09-20T17:40:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Tropicana Field",
       "weather": {
         "condition": "Dome",
@@ -151,11 +151,11 @@
     {
       "gamePk": 824139,
       "time": "2026-09-20T18:10:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Daikin Park",
       "weather": {
         "condition": "Roof Closed",
-        "temp": "72",
+        "temp": "73",
         "wind": "0 mph, None"
       },
       "away": {
@@ -180,12 +180,12 @@
     {
       "gamePk": 824546,
       "time": "2026-09-20T18:10:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Rate Field",
       "weather": {
-        "condition": "Cloudy",
-        "temp": "67",
-        "wind": "15 mph, L To R"
+        "condition": "Rain",
+        "temp": "65",
+        "wind": "10 mph, L To R"
       },
       "away": {
         "id": 116,
@@ -209,12 +209,12 @@
     {
       "gamePk": 823001,
       "time": "2026-09-20T18:15:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Busch Stadium",
       "weather": {
         "condition": "Partly Cloudy",
-        "temp": "89",
-        "wind": "7 mph, Out To RF"
+        "temp": "81",
+        "wind": "1 mph, Out To LF"
       },
       "away": {
         "id": 120,
@@ -238,11 +238,11 @@
     {
       "gamePk": 822844,
       "time": "2026-09-20T18:35:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Globe Life Field",
       "weather": {
         "condition": "Roof Closed",
-        "temp": "72",
+        "temp": "74",
         "wind": "0 mph, None"
       },
       "away": {
@@ -267,12 +267,12 @@
     {
       "gamePk": 824300,
       "time": "2026-09-20T19:10:00Z",
-      "status": "Pre-Game",
+      "status": "Final",
       "venue": "Coors Field",
       "weather": {
-        "condition": "Partly Cloudy",
-        "temp": "70",
-        "wind": "9 mph, In From RF"
+        "condition": "Sunny",
+        "temp": "71",
+        "wind": "9 mph, In From CF"
       },
       "away": {
         "id": 136,
@@ -296,9 +296,13 @@
     {
       "gamePk": 823975,
       "time": "2026-09-20T20:07:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Angel Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Sunny",
+        "temp": "80",
+        "wind": "4 mph, R To L"
+      },
       "away": {
         "id": 142,
         "name": "Minnesota Twins",
@@ -321,12 +325,12 @@
     {
       "gamePk": 823896,
       "time": "2026-09-20T20:10:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "UNIQLO Field at Dodger Stadium",
       "weather": {
         "condition": "Partly Cloudy",
-        "temp": "77",
-        "wind": "8 mph, Out To CF"
+        "temp": "79",
+        "wind": "5 mph, Out To CF"
       },
       "away": {
         "id": 137,
@@ -341,15 +345,22 @@
         "id": 119,
         "name": "Los Angeles Dodgers",
         "abbr": "LAD",
-        "probable": null
+        "probable": {
+          "id": 676263,
+          "name": "Jack Dreyer"
+        }
       }
     },
     {
       "gamePk": 823247,
       "time": "2026-09-20T20:10:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Petco Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "76",
+        "wind": "9 mph, L To R"
+      },
       "away": {
         "id": 146,
         "name": "Miami Marlins",
@@ -372,9 +383,13 @@
     {
       "gamePk": 825028,
       "time": "2026-09-20T20:10:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Chase Field",
-      "weather": {},
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "73",
+        "wind": "0 mph, None"
+      },
       "away": {
         "id": 147,
         "name": "New York Yankees",
@@ -397,9 +412,13 @@
     {
       "gamePk": 824789,
       "time": "2026-09-20T23:20:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Oriole Park at Camden Yards",
-      "weather": {},
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "77",
+        "wind": "6 mph, Out To RF"
+      },
       "away": {
         "id": 158,
         "name": "Milwaukee Brewers",
