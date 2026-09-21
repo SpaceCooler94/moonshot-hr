@@ -1,14 +1,18 @@
 {
   "date": "2026-09-21",
-  "generatedAt": "2026-09-21T18:32:39.548Z",
+  "generatedAt": "2026-09-21T23:08:02.494Z",
   "games": 3,
   "slate": [
     {
       "gamePk": 824787,
       "time": "2026-09-21T22:35:00Z",
-      "status": "Scheduled",
+      "status": "Warmup",
       "venue": "Oriole Park at Camden Yards",
-      "weather": {},
+      "weather": {
+        "condition": "Overcast",
+        "temp": "65",
+        "wind": "3 mph, In From RF"
+      },
       "away": {
         "id": 141,
         "name": "Toronto Blue Jays",
@@ -31,9 +35,13 @@
     {
       "gamePk": 824221,
       "time": "2026-09-21T22:40:00Z",
-      "status": "Scheduled",
+      "status": "In Progress",
       "venue": "Comerica Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "60",
+        "wind": "11 mph, L To R"
+      },
       "away": {
         "id": 120,
         "name": "Washington Nationals",
@@ -56,9 +64,13 @@
     {
       "gamePk": 823169,
       "time": "2026-09-22T01:45:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Oracle Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "60",
+        "wind": "15 mph, Out To CF"
+      },
       "away": {
         "id": 142,
         "name": "Minnesota Twins",
