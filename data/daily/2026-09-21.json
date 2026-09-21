@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-21",
+  "generatedAt": "2026-09-21T18:32:39.548Z",
+  "games": 3,
+  "slate": [
+    {
+      "gamePk": 824787,
+      "time": "2026-09-21T22:35:00Z",
+      "status": "Scheduled",
+      "venue": "Oriole Park at Camden Yards",
+      "weather": {},
+      "away": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "abbr": "TOR",
+        "probable": {
+          "id": 702056,
+          "name": "Trey Yesavage"
+        }
+      },
+      "home": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "abbr": "BAL",
+        "probable": {
+          "id": 669358,
+          "name": "Shane Baz"
+        }
+      }
+    },
+    {
+      "gamePk": 824221,
+      "time": "2026-09-21T22:40:00Z",
+      "status": "Scheduled",
+      "venue": "Comerica Park",
+      "weather": {},
+      "away": {
+        "id": 120,
+        "name": "Washington Nationals",
+        "abbr": "WSH",
+        "probable": {
+          "id": 687792,
+          "name": "DJ Herz"
+        }
+      },
+      "home": {
+        "id": 116,
+        "name": "Detroit Tigers",
+        "abbr": "DET",
+        "probable": {
+          "id": 689981,
+          "name": "River Ryan"
+        }
+      }
+    },
+    {
+      "gamePk": 823169,
+      "time": "2026-09-22T01:45:00Z",
+      "status": "Scheduled",
+      "venue": "Oracle Park",
+      "weather": {},
+      "away": {
+        "id": 142,
+        "name": "Minnesota Twins",
+        "abbr": "MIN",
+        "probable": {
+          "id": 805673,
+          "name": "Zebby Matthews"
+        }
+      },
+      "home": {
+        "id": 137,
+        "name": "San Francisco Giants",
+        "abbr": "SF",
+        "probable": {
+          "id": 694918,
+          "name": "Blade Tidwell"
+        }
+      }
+    }
+  ]
+}
