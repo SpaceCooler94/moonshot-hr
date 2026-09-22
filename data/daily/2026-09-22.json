@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "generatedAt": "2026-09-22T17:33:39.510Z",
+  "generatedAt": "2026-09-22T18:17:03.116Z",
   "games": 16,
   "slate": [
     {
@@ -54,31 +54,6 @@
         "probable": {
           "id": 608331,
           "name": "Max Fried"
-        }
-      }
-    },
-    {
-      "gamePk": 824785,
-      "time": "2026-09-22T22:35:00Z",
-      "status": "Scheduled",
-      "venue": "Oriole Park at Camden Yards",
-      "weather": {},
-      "away": {
-        "id": 141,
-        "name": "Toronto Blue Jays",
-        "abbr": "TOR",
-        "probable": {
-          "id": 453286,
-          "name": "Max Scherzer"
-        }
-      },
-      "home": {
-        "id": 110,
-        "name": "Baltimore Orioles",
-        "abbr": "BAL",
-        "probable": {
-          "id": 605135,
-          "name": "Chris Bassitt"
         }
       }
     },
@@ -285,9 +260,13 @@
     {
       "gamePk": 824302,
       "time": "2026-09-23T00:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Coors Field",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "76",
+        "wind": "9 mph, Out To CF"
+      },
       "away": {
         "id": 109,
         "name": "Arizona Diamondbacks",
@@ -402,6 +381,31 @@
         "name": "Los Angeles Dodgers",
         "abbr": "LAD",
         "probable": null
+      }
+    },
+    {
+      "gamePk": 824785,
+      "time": "2026-09-22T22:35:00Z",
+      "status": "Postponed",
+      "venue": "Oriole Park at Camden Yards",
+      "weather": {},
+      "away": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "abbr": "TOR",
+        "probable": {
+          "id": 453286,
+          "name": "Max Scherzer"
+        }
+      },
+      "home": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "abbr": "BAL",
+        "probable": {
+          "id": 605135,
+          "name": "Chris Bassitt"
+        }
       }
     }
   ]
