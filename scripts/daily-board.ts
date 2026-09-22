@@ -3,7 +3,7 @@
  * Headless full HR board — same model as the live site, no Vite/TanStack.
  * Fetches the scored board for a date and writes a slimmed
  * data/daily/board-YYYY-MM-DD.json (drops per-player detail arrays that
- * only the interactive site needs — pitchMatrix, week, statcast, factors,
+ * only the interactive site needs — pitchMatrix, week, statcast,
  * signal.checks/decision — so a day's file stays small enough to commit).
  */
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -26,6 +26,17 @@ function slimPrediction(p: PlayerPrediction) {
     bats: p.bats,
     pHr: p.pHr,
     xHr: p.xHr,
+    pHrPa: p.pHrPa,
+    expectedPa: p.expectedPa,
+    gamePa: p.gamePa,
+    season: { pa: p.season.pa, hr: p.season.hr },
+    factors: {
+      batter: { value: p.factors.batter.value },
+      pitcher: { value: p.factors.pitcher.value },
+      park: { value: p.factors.park.value },
+      platoon: { value: p.factors.platoon.value },
+      form: { value: p.factors.form.value },
+    },
     confidence: p.confidence,
     confidenceBand: p.confidenceBand,
     pitcher: p.pitcher ? { name: p.pitcher.name, throws: p.pitcher.throws } : null,
@@ -67,6 +78,7 @@ function slimBoard(board: BoardPayload) {
     date: board.date,
     season: board.season,
     generatedAt: board.generatedAt,
+    league: board.league,
     summary: board.summary,
     games: board.games.map(slimGame),
     predictions: board.predictions.map(slimPrediction),
