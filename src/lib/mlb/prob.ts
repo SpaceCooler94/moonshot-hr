@@ -30,6 +30,12 @@ const PA_BY_ORDER = [4.52, 4.42, 4.32, 4.22, 4.1, 3.96, 3.82, 3.68, 3.55];
  * Published P was hot, especially above 14%. Full-game box HR must not be
  * used to inflate this number — leftover PA to the bullpen is a separate
  * sketch, not the ranked look.
+ *
+ * grade-slates.ts, trailing 8 days (2026-09-14..09-21), n=1746:
+ *   overall meanP 8.13% vs actual 11.34%  (+3.2pp)
+ *   top-12  meanP 14.13% vs actual 20.83% (+6.7pp)
+ * Model has flipped cold, worst at the top end where TAIL_KEEP engages.
+ * TAIL_KEEP raised 0.42 -> 0.65 to let more top-tier signal through.
  */
 export const LEAGUE_HR_PA = 0.0304; // 2026 team totals 5281 HR / 173958 PA
 export const LEAGUE_HR_BF = 0.0276;
@@ -37,7 +43,7 @@ export const LEAGUE_TBF_PER_START = 22.8;
 export const STARTER_HR_RATE = 0.067;
 export const DAMPING = 0.58;
 export const TAIL_CUT = 0.14;
-export const TAIL_KEEP = 0.42;
+export const TAIL_KEEP = 0.65;
 export const P_HR_CAP = 0.2;
 export const BATTER_PRIOR_N = 160;
 export const PITCHER_PRIOR_N = 240;
