@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "generatedAt": "2026-09-22T21:07:40.506Z",
+  "generatedAt": "2026-09-22T22:51:23.276Z",
   "games": 16,
   "slate": [
     {
@@ -35,9 +35,13 @@
     {
       "gamePk": 823494,
       "time": "2026-09-22T23:05:00Z",
-      "status": "Scheduled",
+      "status": "Warmup",
       "venue": "Yankee Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "65",
+        "wind": "13 mph, In From LF"
+      },
       "away": {
         "id": 139,
         "name": "Tampa Bay Rays",
@@ -60,12 +64,12 @@
     {
       "gamePk": 824222,
       "time": "2026-09-22T22:40:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Comerica Park",
       "weather": {
         "condition": "Partly Cloudy",
-        "temp": "63",
-        "wind": "14 mph, L To R"
+        "temp": "64",
+        "wind": "7 mph, L To R"
       },
       "away": {
         "id": 120,
@@ -89,12 +93,12 @@
     {
       "gamePk": 823328,
       "time": "2026-09-22T22:40:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "PNC Park",
       "weather": {
-        "condition": "Partly Cloudy",
-        "temp": "59",
-        "wind": "14 mph, In From CF"
+        "condition": "Overcast",
+        "temp": "60",
+        "wind": "11 mph, In From CF"
       },
       "away": {
         "id": 138,
@@ -118,12 +122,12 @@
     {
       "gamePk": 823412,
       "time": "2026-09-22T22:40:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Citizens Bank Park",
       "weather": {
-        "condition": "Partly Cloudy",
-        "temp": "62",
-        "wind": "11 mph, In From CF"
+        "condition": "Overcast",
+        "temp": "63",
+        "wind": "9 mph, In From RF"
       },
       "away": {
         "id": 158,
@@ -147,12 +151,12 @@
     {
       "gamePk": 824709,
       "time": "2026-09-22T22:45:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Fenway Park",
       "weather": {
         "condition": "Partly Cloudy",
-        "temp": "59",
-        "wind": "12 mph, In From CF"
+        "temp": "62",
+        "wind": "5 mph, Varies"
       },
       "away": {
         "id": 114,
@@ -179,8 +183,8 @@
       "status": "Pre-Game",
       "venue": "Truist Park",
       "weather": {
-        "condition": "Overcast",
-        "temp": "80",
+        "condition": "Cloudy",
+        "temp": "83",
         "wind": "5 mph, Out To RF"
       },
       "away": {
@@ -210,7 +214,7 @@
       "weather": {
         "condition": "Partly Cloudy",
         "temp": "70",
-        "wind": "9 mph, In From CF"
+        "wind": "9 mph, L To R"
       },
       "away": {
         "id": 145,
@@ -265,11 +269,7 @@
       "time": "2026-09-23T00:05:00Z",
       "status": "Pre-Game",
       "venue": "Globe Life Field",
-      "weather": {
-        "condition": "Roof Closed",
-        "temp": "72",
-        "wind": "0 mph, None"
-      },
+      "weather": {},
       "away": {
         "id": 121,
         "name": "New York Mets",
@@ -321,9 +321,13 @@
     {
       "gamePk": 824953,
       "time": "2026-09-23T01:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Sutter Health Park",
-      "weather": {},
+      "weather": {
+        "condition": "Clear",
+        "temp": "81",
+        "wind": "7 mph, Out To CF"
+      },
       "away": {
         "id": 108,
         "name": "Los Angeles Angels",
@@ -346,9 +350,13 @@
     {
       "gamePk": 823089,
       "time": "2026-09-23T01:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "T-Mobile Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "65",
+        "wind": "3 mph, Out To RF"
+      },
       "away": {
         "id": 117,
         "name": "Houston Astros",
@@ -371,9 +379,13 @@
     {
       "gamePk": 823166,
       "time": "2026-09-23T01:45:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Oracle Park",
-      "weather": {},
+      "weather": {
+        "condition": "Clear",
+        "temp": "61",
+        "wind": "14 mph, Out To CF"
+      },
       "away": {
         "id": 142,
         "name": "Minnesota Twins",
@@ -396,9 +408,13 @@
     {
       "gamePk": 823897,
       "time": "2026-09-23T02:10:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "UNIQLO Field at Dodger Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Clear",
+        "temp": "71",
+        "wind": "7 mph, Out To CF"
+      },
       "away": {
         "id": 135,
         "name": "San Diego Padres",
@@ -412,7 +428,10 @@
         "id": 119,
         "name": "Los Angeles Dodgers",
         "abbr": "LAD",
-        "probable": null
+        "probable": {
+          "id": 592779,
+          "name": "Brock Stewart"
+        }
       }
     },
     {
