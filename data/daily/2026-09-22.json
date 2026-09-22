@@ -1,12 +1,12 @@
 {
   "date": "2026-09-22",
-  "generatedAt": "2026-09-22T18:17:03.116Z",
+  "generatedAt": "2026-09-22T21:07:40.506Z",
   "games": 16,
   "slate": [
     {
       "gamePk": 823543,
       "time": "2026-09-22T17:05:00Z",
-      "status": "In Progress",
+      "status": "Final",
       "venue": "Yankee Stadium",
       "weather": {
         "condition": "Cloudy",
@@ -60,9 +60,13 @@
     {
       "gamePk": 824222,
       "time": "2026-09-22T22:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Comerica Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "63",
+        "wind": "14 mph, L To R"
+      },
       "away": {
         "id": 120,
         "name": "Washington Nationals",
@@ -85,9 +89,13 @@
     {
       "gamePk": 823328,
       "time": "2026-09-22T22:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "PNC Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "59",
+        "wind": "14 mph, In From CF"
+      },
       "away": {
         "id": 138,
         "name": "St. Louis Cardinals",
@@ -110,9 +118,13 @@
     {
       "gamePk": 823412,
       "time": "2026-09-22T22:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Citizens Bank Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "62",
+        "wind": "11 mph, In From CF"
+      },
       "away": {
         "id": 158,
         "name": "Milwaukee Brewers",
@@ -135,9 +147,13 @@
     {
       "gamePk": 824709,
       "time": "2026-09-22T22:45:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Fenway Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "59",
+        "wind": "12 mph, In From CF"
+      },
       "away": {
         "id": 114,
         "name": "Cleveland Guardians",
@@ -160,9 +176,13 @@
     {
       "gamePk": 824867,
       "time": "2026-09-22T23:15:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Truist Park",
-      "weather": {},
+      "weather": {
+        "condition": "Overcast",
+        "temp": "80",
+        "wind": "5 mph, Out To RF"
+      },
       "away": {
         "id": 113,
         "name": "Cincinnati Reds",
@@ -185,9 +205,13 @@
     {
       "gamePk": 824061,
       "time": "2026-09-22T23:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Kauffman Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "70",
+        "wind": "9 mph, In From CF"
+      },
       "away": {
         "id": 145,
         "name": "Chicago White Sox",
@@ -210,9 +234,13 @@
     {
       "gamePk": 824624,
       "time": "2026-09-22T23:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Wrigley Field",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "61",
+        "wind": "14 mph, In From CF"
+      },
       "away": {
         "id": 146,
         "name": "Miami Marlins",
@@ -235,9 +263,13 @@
     {
       "gamePk": 822840,
       "time": "2026-09-23T00:05:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Globe Life Field",
-      "weather": {},
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
       "away": {
         "id": 121,
         "name": "New York Mets",
