@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "generatedAt": "2026-09-22T17:07:36.130Z",
+  "generatedAt": "2026-09-22T17:33:39.510Z",
   "games": 16,
   "slate": [
     {
@@ -11,7 +11,7 @@
       "weather": {
         "condition": "Cloudy",
         "temp": "69",
-        "wind": "15 mph, In From LF"
+        "wind": "15 mph, L To R"
       },
       "away": {
         "id": 139,
