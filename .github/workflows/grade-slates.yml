@@ -13,8 +13,6 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
-      - name: Run grade-slates
-        run: |
-          echo '```json' >> "$GITHUB_STEP_SUMMARY"
-          npx tsx scripts/grade-slates.ts >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+            - name: Run grade-slates
+        run: npx tsx scripts/grade-slates.ts
+
