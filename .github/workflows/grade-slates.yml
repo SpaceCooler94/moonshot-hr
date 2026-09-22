@@ -13,6 +13,5 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
-            - name: Run grade-slates
+      - name: Run grade-slates
         run: npx tsx scripts/grade-slates.ts
-
