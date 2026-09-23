@@ -1,6 +1,6 @@
-import { loadBoard } from "../src/lib/mlb/board.server";
-import { shiftISODate, todayISODateET } from "../src/lib/mlb/format";
-import { publishPHr, STARTER_HR_RATE } from "../src/lib/mlb/model";
+import { loadBoard } from "../src/lib/mlb/board.server.ts";
+import { shiftISODate, todayISODateET } from "../src/lib/mlb/format.ts";
+import { publishPHr, STARTER_HR_RATE } from "../src/lib/mlb/model.ts";
 
 type Row = {
   date: string;
