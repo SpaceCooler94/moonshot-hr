@@ -1,4 +1,4 @@
-import type { AirShot } from "./parks";
+import type { AirShot } from "./parks.ts";
 import { fetchOk } from "./http.ts";
 
 export type SavantBatter = {

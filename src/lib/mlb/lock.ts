@@ -1,8 +1,8 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { MODEL_VERSION } from "./model";
-import { todayISODateET } from "./format";
-import type { BoardPayload, LockLook, LockRecord, LockState } from "./types";
+import { MODEL_VERSION } from "./model.ts";
+import { todayISODateET } from "./format.ts";
+import type { BoardPayload, LockLook, LockRecord, LockState } from "./types.ts";
 
 const mem = new Map<string, LockRecord>();
 const DATA_DIR = join(process.cwd(), "data", "locks");

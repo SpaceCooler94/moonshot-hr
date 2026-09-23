@@ -1,8 +1,8 @@
-import type { Forecast } from "./intel";
-import type { BookStudy } from "./book-study";
-import type { SplitBoard } from "./splits";
-import type { StuffCheck } from "./stuff";
-import type { PenCard } from "./bullpen";
+import type { Forecast } from "./intel.ts";
+import type { BookStudy } from "./book-study.ts";
+import type { SplitBoard } from "./splits.ts";
+import type { StuffCheck } from "./stuff.ts";
+import type { PenCard } from "./bullpen.ts";
 export type { Forecast, BookStudy, SplitBoard, StuffCheck, PenCard };
 
 export type PaSim = {

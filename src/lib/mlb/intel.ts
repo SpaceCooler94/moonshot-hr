@@ -1,5 +1,5 @@
-import { clamp, DAMPING, GAME_HR_RATE, pAtLeastTwo, pGameHr, publishPHr } from "./prob";
-import type { PlayerPrediction } from "./types";
+import { clamp, DAMPING, GAME_HR_RATE, pAtLeastTwo, pGameHr, publishPHr } from "./prob.ts";
+import type { PlayerPrediction } from "./types.ts";
 
 export type IntelBar = {
   key: string;

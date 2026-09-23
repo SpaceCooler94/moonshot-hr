@@ -1,5 +1,5 @@
 import { givesUp, hrsOnMix, juiceCall } from "./bvp.ts";
-import type { PlayerPrediction, WalkForward } from "./types";
+import type { PlayerPrediction, WalkForward } from "./types.ts";
 
 export type NightRead = {
   call: "play" | "sit" | "wait";

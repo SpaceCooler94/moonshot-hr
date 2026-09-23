@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { isISODate } from "./http.ts";
 import { gradeLook } from "./look.ts";
-import type { BoardPayload, PlayerOdds, PlayerPrediction, WalkForward } from "./types";
+import type { BoardPayload, PlayerOdds, PlayerPrediction, WalkForward } from "./types.ts";
 
 export const ODDS_KEY_LS = "moonshot.oddsKey";
 export const SGO_KEY_LS = "moonshot.sgoKey";

@@ -1,4 +1,4 @@
-import type { PitchMixRow, PlayerPrediction } from "./types";
+import type { PitchMixRow, PlayerPrediction } from "./types.ts";
 import { sprayOverlapFrom } from "./parks.ts";
 import { pitchCluster, poolByCluster } from "./savant.ts";
 

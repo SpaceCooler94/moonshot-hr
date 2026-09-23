@@ -1,7 +1,7 @@
 import { juiceCall } from "./bvp.ts";
 import { clamp, shrinkRate } from "./prob.ts";
 import { fetchOk, pruneMap } from "./http.ts";
-import type { BookId, BookLine, PlayerOdds, PlayerPrediction } from "./types";
+import type { BookId, BookLine, PlayerOdds, PlayerPrediction } from "./types.ts";
 
 const API = "https://api.the-odds-api.com/v4";
 const BOOKS = [

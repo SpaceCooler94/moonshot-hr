@@ -1,4 +1,4 @@
-import type { HrCheck, HrSignal, KeyPitchMatch, PitchMixRow, PlayerPrediction } from "./types";
+import type { HrCheck, HrSignal, KeyPitchMatch, PitchMixRow, PlayerPrediction } from "./types.ts";
 import { studyBvp, mixUniverse } from "./bvp.ts";
 import { pitchCluster, poolByCluster } from "./savant.ts";
 

@@ -1,5 +1,5 @@
-import type { GameCard, PlayerPrediction, VulnerablePitcher } from "./types";
-import { both20Line, findBoth20 } from "./bvp";
+import type { GameCard, PlayerPrediction, VulnerablePitcher } from "./types.ts";
+import { both20Line, findBoth20 } from "./bvp.ts";
 
 export type IntelFinding = {
   id: string;

@@ -1,6 +1,6 @@
-import type { GameCard, PitcherTarget, PlayerPrediction, VulnerablePitcher } from "./types";
-import type { SavantPitcher } from "./savant";
-import { clamp } from "./prob";
+import type { GameCard, PitcherTarget, PlayerPrediction, VulnerablePitcher } from "./types.ts";
+import type { SavantPitcher } from "./savant.ts";
+import { clamp } from "./prob.ts";
 
 const TOP_N = 8;
 const TARGETS = 4;

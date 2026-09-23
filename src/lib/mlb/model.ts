@@ -1,7 +1,7 @@
-import { dailyParkAir, sprayPark } from "./parks";
-import type { SavantBatter, SavantLeague, SavantPitcher, SideContact, WeekContact } from "./savant";
-import { barrelPct, ev100Flags, pitchFamily, tankFlags, trendShape, weekShape } from "./savant";
-import type { ArsenalPitch, ConfidenceBand, Factor, LineupSource, MixFamily, PitchMixRow } from "./types";
+import { dailyParkAir, sprayPark } from "./parks.ts";
+import type { SavantBatter, SavantLeague, SavantPitcher, SideContact, WeekContact } from "./savant.ts";
+import { barrelPct, ev100Flags, pitchFamily, tankFlags, trendShape, weekShape } from "./savant.ts";
+import type { ArsenalPitch, ConfidenceBand, Factor, LineupSource, MixFamily, PitchMixRow } from "./types.ts";
 export {
   CAL_BANDS,
   DAMPING,
@@ -22,8 +22,8 @@ export {
   trustWeight,
   calibInLarge,
   reliabilityBands,
-} from "./prob";
-import { clamp, DAMPING, expectedPa, GAME_HR_RATE, pGameHr, paVsStarter, publishPHr, shrinkRate, shrinkBarrelPct, starterTbf } from "./prob";
+} from "./prob.ts";
+import { clamp, DAMPING, expectedPa, GAME_HR_RATE, pGameHr, paVsStarter, publishPHr, shrinkRate, shrinkBarrelPct, starterTbf } from "./prob.ts";
 
 export function platoonFactor(bats: string, throws: string | null): Factor {
   if (!throws) return { value: 1, label: "Pitcher TBD" };

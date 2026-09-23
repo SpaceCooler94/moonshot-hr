@@ -1,5 +1,5 @@
 import { clamp } from "./prob.ts";
-import type { PaSim, PlayerPrediction } from "./types";
+import type { PaSim, PlayerPrediction } from "./types.ts";
 
 const N = 4000;
 const PEN_HR_PA = 0.026;

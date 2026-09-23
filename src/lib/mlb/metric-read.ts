@@ -1,6 +1,6 @@
 import { givesUp, hrsOnMix, juiceCall, mixIso } from "./bvp.ts";
 import { bookDelta } from "./book-study.ts";
-import type { PlayerPrediction } from "./types";
+import type { PlayerPrediction } from "./types.ts";
 
 export type Tone = "loud" | "live" | "quiet" | "na";
 export type Call = "best" | "yes" | "no";
