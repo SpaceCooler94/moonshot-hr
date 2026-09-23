@@ -12,6 +12,8 @@ jobs:
   train:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,3 +30,10 @@ jobs:
             data/model/priors.json
             data/model/logs.json
           if-no-files-found: error
+      - name: Commit trained model
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/model/current.json data/model/priors.json data/model/logs.json
+          git diff --cached --quiet || git commit -m "Retrain HR model: $(date -u +%F)"
+          git push
