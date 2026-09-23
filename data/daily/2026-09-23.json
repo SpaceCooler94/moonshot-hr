@@ -1,12 +1,12 @@
 {
   "date": "2026-09-23",
-  "generatedAt": "2026-09-23T18:49:53.906Z",
+  "generatedAt": "2026-09-23T21:13:43.341Z",
   "games": 16,
   "slate": [
     {
       "gamePk": 824223,
       "time": "2026-09-23T17:10:00Z",
-      "status": "In Progress",
+      "status": "Final",
       "venue": "Comerica Park",
       "weather": {
         "condition": "Sunny",
@@ -35,7 +35,7 @@
     {
       "gamePk": 824785,
       "time": "2026-09-23T17:35:00Z",
-      "status": "In Progress",
+      "status": "Final",
       "venue": "Oriole Park at Camden Yards",
       "weather": {
         "condition": "Overcast",
@@ -77,18 +77,21 @@
         "id": 110,
         "name": "Baltimore Orioles",
         "abbr": "BAL",
-        "probable": null
+        "probable": {
+          "id": 694346,
+          "name": "Trey Gibson"
+        }
       }
     },
     {
       "gamePk": 823168,
       "time": "2026-09-23T19:45:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Oracle Park",
       "weather": {
         "condition": "Sunny",
         "temp": "68",
-        "wind": "6 mph, Varies"
+        "wind": "7 mph, Varies"
       },
       "away": {
         "id": 142,
@@ -141,9 +144,13 @@
     {
       "gamePk": 823410,
       "time": "2026-09-23T22:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Citizens Bank Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "64",
+        "wind": "15 mph, In From CF"
+      },
       "away": {
         "id": 158,
         "name": "Milwaukee Brewers",
@@ -166,9 +173,13 @@
     {
       "gamePk": 823492,
       "time": "2026-09-23T23:05:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Yankee Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "63",
+        "wind": "15 mph, In From LF"
+      },
       "away": {
         "id": 139,
         "name": "Tampa Bay Rays",
@@ -191,9 +202,13 @@
     {
       "gamePk": 824710,
       "time": "2026-09-23T23:10:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Fenway Park",
-      "weather": {},
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "56",
+        "wind": "13 mph, In From CF"
+      },
       "away": {
         "id": 114,
         "name": "Cleveland Guardians",
@@ -216,9 +231,13 @@
     {
       "gamePk": 824868,
       "time": "2026-09-23T23:15:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Truist Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "74",
+        "wind": "12 mph, L To R"
+      },
       "away": {
         "id": 113,
         "name": "Cincinnati Reds",
@@ -241,9 +260,13 @@
     {
       "gamePk": 824060,
       "time": "2026-09-23T23:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Kauffman Stadium",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "71",
+        "wind": "9 mph, In From RF"
+      },
       "away": {
         "id": 145,
         "name": "Chicago White Sox",
@@ -266,9 +289,13 @@
     {
       "gamePk": 824625,
       "time": "2026-09-23T23:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Wrigley Field",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "63",
+        "wind": "12 mph, In From CF"
+      },
       "away": {
         "id": 146,
         "name": "Miami Marlins",
@@ -291,9 +318,13 @@
     {
       "gamePk": 822841,
       "time": "2026-09-24T00:05:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Globe Life Field",
-      "weather": {},
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
       "away": {
         "id": 121,
         "name": "New York Mets",
