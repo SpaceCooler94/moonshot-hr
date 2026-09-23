@@ -92,7 +92,7 @@ for (const base of [0.1, 0.108, 0.112, 0.116, 0.12]) {
       let actual = 0;
       for (const r of rows) {
         const trust = intercept + slope * Math.min(0.97, Math.max(0.3, r.conf));
-        const p = Math.min(0.28, Math.max(0.028, base + (r.pHrRaw - base) * trust));
+        const p = Math.min(0.18, Math.max(0.028, base + (r.pHrRaw - base) * trust));
         brier += (p - r.y) ** 2;
         meanP += p;
         actual += r.y;

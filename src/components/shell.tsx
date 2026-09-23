@@ -34,7 +34,7 @@ export function Shell({
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/55 to-bg/20" />
         <Starfield />
       </div>
-      <header className="sticky top-0 z-40 border-b border-border bg-bg/55 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-border bg-bg/55 pt-[env(safe-area-inset-top)] backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-6">
           <div className="flex items-center justify-between gap-2 sm:gap-3">
             <Link to="/" className="flex min-h-11 min-w-0 items-center gap-2 sm:gap-2.5">
@@ -74,9 +74,7 @@ export function Shell({
       <main className="relative z-10 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       <footer className="relative z-10 mx-auto max-w-6xl px-4 pb-10 sm:px-6">
         <p className="text-xs leading-relaxed text-subtle">
-          Moonshot models P(HR) from season rates, pitcher HR/BF, park factor, platoon,
-          weather, and recent form. Live data via MLB Stats API. For research — not a wagering
-          product.
+          Moonshot is a look — power, mix, park. Sit is the default. Not a ticket, not a price.
         </p>
       </footer>
     </div>
@@ -203,16 +201,8 @@ function seedStars(n: number) {
 
 function MoonMark() {
   return (
-    <svg viewBox="0 0 32 32" className="moon-mark size-7 shrink-0 text-gold sm:size-8" aria-hidden="true">
-      <g className="moon-orbit">
-        <circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" strokeWidth="1.15" opacity="0.7" />
-        <circle cx="22.6" cy="8.8" r="1.15" fill="currentColor" />
-      </g>
-      <circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" strokeWidth="0.45" opacity="0.35" />
-      <path
-        fill="currentColor"
-        d="M18.5 6.6a9 9 0 1 0 6.6 15.8 7.2 7.2 0 0 1-6.6-15.8Z"
-      />
-    </svg>
+    <span className="relative size-9 shrink-0 overflow-hidden rounded-[10px] shadow-[0_0_14px_rgba(232,196,112,0.4)] ring-1 ring-[#e8c470]/55 sm:size-11">
+      <img src="/brand/mark.jpg" alt="" className="size-full object-cover" />
+    </span>
   );
 }

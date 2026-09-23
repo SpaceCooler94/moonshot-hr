@@ -5,22 +5,25 @@ import type { ArsenalPitch, ConfidenceBand, Factor, LineupSource, MixFamily, Pit
 export {
   CAL_BANDS,
   DAMPING,
+  GAME_HR_RATE,
   LEAGUE_TBF_PER_START,
   MODEL_VERSION,
   P_HR_CAP,
   STARTER_HR_RATE,
-  TAIL_CUT,
-  TAIL_KEEP,
   clamp,
   expectedPa,
   pAtLeastOne,
+  pGameHr,
   paVsStarter,
   publishPHr,
   shrinkRate,
+  shrinkBarrelPct,
   starterTbf,
   trustWeight,
+  calibInLarge,
+  reliabilityBands,
 } from "./prob";
-import { clamp, DAMPING, expectedPa, LEAGUE_TBF_PER_START, pAtLeastOne, paVsStarter, publishPHr, shrinkRate, starterTbf } from "./prob";
+import { clamp, DAMPING, expectedPa, GAME_HR_RATE, pGameHr, paVsStarter, publishPHr, shrinkRate, shrinkBarrelPct, starterTbf } from "./prob";
 
 export function platoonFactor(bats: string, throws: string | null): Factor {
   if (!throws) return { value: 1, label: "Pitcher TBD" };
@@ -121,6 +124,7 @@ export function scoreMatchup(input: {
   condition?: string | null;
   humidity?: number | null;
   dewpoint?: number | null;
+  leaguePrior?: number | null;
 }): {
   pHr: number;
   pHrRaw: number;
@@ -223,11 +227,9 @@ export function scoreMatchup(input: {
     conf *= 0.78;
     notes.push("Starter HR sample thin · using Statcast air");
   } else {
-    // Missing probable: treat as opener / committee, not a league-average starter.
-    // Staffs run a bit gassier than a full start; shorten the look, don't invent an ace.
-    pitcher = { value: 1.08, label: "Staff / opener prior" };
-    conf *= 0.68;
-    notes.push("No established starter · staff mix prior");
+    pitcher = { value: 1, label: "Pitcher TBD / thin sample" };
+    conf *= 0.6;
+    notes.push("No established starter");
   }
 
   const env = dailyParkAir(
@@ -276,11 +278,7 @@ export function scoreMatchup(input: {
   const form = weekForm(input.week, input.savant, lg?.barrel || 7.1, input.recentHr, input.recentPa, batterRate);
   if (input.week && input.week.bbe >= 10) conf = clamp(conf * 1.06, 0, 0.97);
 
-  const missingArm =
-    !input.throws && (input.pitcherBf == null || input.pitcherBf < 40) && !input.pitcherSavant;
-  const tbf = missingArm
-    ? clamp(LEAGUE_TBF_PER_START * 0.72, 15, 18)
-    : starterTbf(input.pitcherBf, input.pitcherGs);
+  const tbf = starterTbf(input.pitcherBf, input.pitcherGs);
   const pa = paVsStarter(input.order, tbf);
   const gamePa = expectedPa(input.order);
   if (input.pitcherGs != null && input.pitcherGs > 0 && input.pitcherGs < 5) {
@@ -298,10 +296,12 @@ export function scoreMatchup(input: {
   const rawMult =
     batter.value * pitcher.value * park.value * platoon.value * weather.value * form.value;
   const damped = Math.pow(rawMult, DAMPING);
-  const pHrPa = clamp(lgHrPa * damped, 0.003, 0.07);
-  const pHrRaw = pAtLeastOne(pHrPa, pa);
-  const pHr = publishPHr(pHrRaw, conf);
-  const xHr = pa * (1 - Math.pow(1 - pHr, 1 / pa));
+  const pHrPa = clamp(lgHrPa * damped, 0.003, 0.085);
+  const leftover = Math.max(0, gamePa - pa);
+  const pPenPa = clamp(lgHrPa, 0.003, 0.07);
+  const pHrRaw = pGameHr(pHrPa, pa, gamePa, pPenPa);
+  const pHr = publishPHr(pHrRaw, conf, input.leaguePrior ?? GAME_HR_RATE);
+  const xHr = pa * pHrPa + leftover * pPenPa;
 
   const ev100 = ev100Flags(input.week);
   return {
@@ -348,7 +348,8 @@ function contactQuality(
   const lsw = lg?.sweetSpot || 33.2;
   const lbl = lg?.blast || 12.5;
   const lp = ((lg?.pull || 40) / 100) * ((lg?.flyBall || 25) / 100);
-  const barrelMult = clamp(s.barrel / lb, 0.4, 2.6);
+  const barrelPct = shrinkBarrelPct(s.barrel, s.barrels, s.pa, lb);
+  const barrelMult = clamp(barrelPct / lb, 0.4, 2.6);
   const evMult = s.ev != null ? clamp(1 + (s.ev - le) * 0.028, 0.72, 1.4) : 1;
   const xIsoMult = s.xIso != null ? clamp(s.xIso / lx, 0.45, 2.3) : 1;
   const pullAir =

@@ -1,4 +1,4 @@
-import { clamp, DAMPING, pAtLeastOne, pAtLeastTwo, publishPHr } from "./prob";
+import { clamp, DAMPING, GAME_HR_RATE, pAtLeastTwo, pGameHr, publishPHr } from "./prob";
 import type { PlayerPrediction } from "./types";
 
 export type IntelBar = {
@@ -33,9 +33,9 @@ function unit(v: number | null | undefined, lo: number, hi: number): number {
   return clamp((100 * (v - lo)) / (hi - lo), 0, 100);
 }
 
-function layerP(mult: number, pa: number, conf: number): number {
+function layerP(mult: number, pa: number, gamePa: number, conf: number): number {
   const pPa = clamp(LG_HR_PA * Math.pow(Math.max(0.45, mult), DAMPING), 0.003, 0.07);
-  return publishPHr(pAtLeastOne(pPa, pa), conf);
+  return publishPHr(pGameHr(pPa, pa, gamePa, LG_HR_PA), conf, GAME_HR_RATE);
 }
 
 function mean(xs: number[]): number {
@@ -193,15 +193,18 @@ export function buildForecast(p: PlayerPrediction): Forecast {
   if (w?.windKind === "pull-in") risks.push(w.windLine || "Wind in to the pull side");
   if (w?.barrelDelta != null && w.barrelDelta <= -4) risks.push(`Barrels ${w.barrelDelta.toFixed(1)} vs season`);
   if (p.gamePa > p.expectedPa + 0.2) {
-    risks.push(`${(p.gamePa - p.expectedPa).toFixed(1)} PA after he exits — not in P`);
+    risks.push(`${(p.gamePa - p.expectedPa).toFixed(1)} PA after he exits — priced at league`);
   }
   if (!key?.loud && d.mixHr < 1) risks.push("No loud pitch match");
   if (p.confidenceNotes.some((n) => /weather/i.test(n))) risks.push("Weather not posted");
 
-  const pContact = layerP(f.batter.value, pa, conf);
-  const pMatch = layerP(f.batter.value * f.pitcher.value, pa, conf);
-  const pPark = layerP(f.batter.value * f.pitcher.value * f.park.value * f.platoon.value, pa, conf);
-  const pRaw = layerP(1, pa, conf);
+  const pContact = layerP(f.batter.value, pa, p.gamePa, conf);
+  const pMatch = layerP(f.batter.value * f.pitcher.value, pa, p.gamePa, conf);
+  const pPark = layerP(f.batter.value * f.pitcher.value * f.park.value * f.platoon.value, pa, p.gamePa, conf);
+  const pRaw = layerP(1, pa, p.gamePa, conf);
+
+  const leftover = Math.max(0, p.gamePa - pa);
+  const pBlend = p.gamePa > 0 ? (p.pHrPa * pa + LG_HR_PA * leftover) / p.gamePa : p.pHrPa;
 
   return {
     score,
@@ -211,7 +214,7 @@ export function buildForecast(p: PlayerPrediction): Forecast {
     pMatch,
     pPark,
     pGame: p.pHr,
-    p2plus: publishPHr(pAtLeastTwo(p.pHrPa, pa), conf),
+    p2plus: publishPHr(pAtLeastTwo(pBlend, p.gamePa), conf, GAME_HR_RATE),
     xHr: p.xHr,
     bars,
     driver,

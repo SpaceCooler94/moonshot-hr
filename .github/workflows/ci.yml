@@ -16,4 +16,4 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: node --experimental-strip-types --test src/lib/mlb/model.test.ts
+      - run: node --experimental-strip-types --test src/lib/mlb/model.test.ts src/lib/mlb/look.test.ts src/lib/mlb/logit.test.ts src/lib/mlb/hr-features.test.ts

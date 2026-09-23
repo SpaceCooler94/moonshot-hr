@@ -1,4 +1,5 @@
 import type { AirShot } from "./parks";
+import { fetchOk } from "./http.ts";
 
 export type SavantBatter = {
   id: number;
@@ -120,6 +121,7 @@ export type WeekContact = {
   loudOuts: number;
   maxEv: number;
   maxDist: number;
+  pullHr: number;
 };
 
 export function rateBarrelPa(s: SavantBatter | null | undefined): number | null {
@@ -490,7 +492,7 @@ async function fetchBatTracking(
     const url =
       `https://baseballsavant.mlb.com/leaderboard/bat-tracking?seasonStart=${season}` +
       `&seasonEnd=${season}&type=batter&csv=true`;
-    const res = await fetch(url, { headers: SAVANT_HEADERS });
+    const res = await fetchOk(url, { headers: SAVANT_HEADERS }, 15_000);
     if (!res.ok) return out;
     const rows = parseCsv(await res.text());
     for (const r of rows) {
@@ -517,9 +519,7 @@ async function savantCsv(season: number, type: "batter" | "pitcher", selections:
   const url =
     `https://baseballsavant.mlb.com/leaderboard/custom?year=${season}` +
     `&type=${type}&min=1&selections=${encodeURIComponent(selections)}&csv=true`;
-  const res = await fetch(url, {
-    headers: SAVANT_HEADERS,
-  });
+  const res = await fetchOk(url, { headers: SAVANT_HEADERS }, 15_000);
   if (!res.ok) throw new Error(`Savant ${res.status}`);
   return res.text();
 }
@@ -629,7 +629,7 @@ export async function fetchWeekContact(
     `&game_date_gt=${from}&game_date_lt=${toExclusive}` +
     `&min_pitches=0&min_results=0&type=details`;
   try {
-    const res = await fetch(url, { headers: SAVANT_HEADERS });
+    const res = await fetchOk(url, { headers: SAVANT_HEADERS }, 15_000);
     if (!res.ok) throw new Error(`Savant week ${res.status}`);
     const text = await res.text();
     return aggregateWeek(text, toExclusive);
@@ -681,6 +681,7 @@ function emptyWeek(): WeekContact {
     loudOuts: 0,
     maxEv: 0,
     maxDist: 0,
+    pullHr: 0,
   };
 }
 
@@ -751,9 +752,7 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
     const pitch = iPitch >= 0 ? (cols[iPitch] ?? "").toUpperCase() : "";
     const fam = pitchFamily(pitch);
     if (fam) {
-      if (fam === "hard") bump(row.vsHard, barrel);
-      else if (fam === "break") bump(row.vsBreak, barrel);
-      else bump(row.vsOff, barrel);
+      fam === "hard" ? bump(row.vsHard, barrel) : fam === "break" ? bump(row.vsBreak, barrel) : bump(row.vsOff, barrel);
     }
     if (pitch) {
       let bp = row.byPitch[pitch];
@@ -802,6 +801,7 @@ function aggregateWeek(text: string, beforeDate?: string): Map<number, WeekConta
     const evnt = iEvents >= 0 ? (cols[iEvents] ?? "").toLowerCase() : "";
     const isHr = evnt === "home_run";
     if (isHr) row.nHr += 1;
+    if (isHr && pulled) row.pullHr += 1;
     if (barrel && isBattedOut(evnt)) row.loudOuts += 1;
     if (ev > row.maxEv) row.maxEv = ev;
     if (Number.isFinite(dist) && dist > row.maxDist) row.maxDist = dist;
@@ -896,10 +896,70 @@ function sprayDeg(hcX: number, hcY: number): number | null {
 export function pitchFamily(code: string): "hard" | "break" | "off" | null {
   const c = code.toUpperCase();
   if (!c) return null;
-  if (c === "FF" || c === "SI" || c === "FC" || c === "FA") return "hard";
+  if (c === "FF" || c === "SI" || c === "FC" || c === "FA" || c === "FT") return "hard";
   if (c === "SL" || c === "ST" || c === "CU" || c === "KC" || c === "SV" || c === "CS") return "break";
   if (c === "CH" || c === "FS" || c === "KN" || c === "EP" || c === "FO") return "off";
   return null;
+}
+
+/** HR-aware clusters. Cutter ≠ 4-seam; sweeper ≠ gyro slider; sinker ≠ ride. */
+export type PitchCluster = "ride" | "sink" | "cut" | "slide" | "sweep" | "curve" | "off";
+
+export function pitchCluster(code: string): PitchCluster | null {
+  const c = code.toUpperCase();
+  if (c === "FF" || c === "FA") return "ride";
+  if (c === "SI" || c === "FT") return "sink";
+  if (c === "FC") return "cut";
+  if (c === "SL") return "slide";
+  if (c === "ST" || c === "SV") return "sweep";
+  if (c === "CU" || c === "KC" || c === "CS") return "curve";
+  if (c === "CH" || c === "FS" || c === "KN" || c === "EP" || c === "FO") return "off";
+  return null;
+}
+
+export function clusterLabel(cluster: PitchCluster): string {
+  switch (cluster) {
+    case "ride":
+      return "4-seam";
+    case "sink":
+      return "sinker";
+    case "cut":
+      return "cutter";
+    case "slide":
+      return "slider";
+    case "sweep":
+      return "sweeper";
+    case "curve":
+      return "curve";
+    case "off":
+      return "offspeed";
+  }
+}
+
+export function poolByCluster(rows: PitchSlice[], cluster: PitchCluster): PitchSlice | null {
+  const xs = rows.filter((r) => pitchCluster(r.code) === cluster && r.n > 0);
+  if (xs.length === 0) return null;
+  if (xs.length === 1) return xs[0];
+  const n = xs.reduce((s, r) => s + r.n, 0);
+  const hr = xs.reduce((s, r) => s + r.hr, 0);
+  const brl = xs.reduce((s, r) => s + (r.barrelPct != null ? (r.n * r.barrelPct) / 100 : 0), 0);
+  const evW = xs.reduce((s, r) => s + (r.ev != null ? r.n * r.ev : 0), 0);
+  const evN = xs.reduce((s, r) => s + (r.ev != null ? r.n : 0), 0);
+  const isoW = xs.reduce((s, r) => s + (r.iso != null ? r.n * r.iso : 0), 0);
+  const wobaW = xs.reduce((s, r) => s + (r.woba != null ? r.n * r.woba : 0), 0);
+  const wobaN = xs.reduce((s, r) => s + (r.woba != null ? r.n : 0), 0);
+  return {
+    code: xs[0].code,
+    name: clusterLabel(cluster),
+    n,
+    pct: xs.reduce((s, r) => s + r.pct, 0),
+    barrelPct: (100 * brl) / n,
+    ev: evN ? evW / evN : null,
+    iso: isoW / n,
+    woba: wobaN ? wobaW / wobaN : null,
+    hr,
+    hrPct: (100 * hr) / n,
+  };
 }
 
 export type PitchSlice = {
@@ -912,6 +972,14 @@ export type PitchSlice = {
   iso: number | null;
   woba: number | null;
   hr: number;
+  hrPct: number | null;
+};
+
+export type PitcherSpray = {
+  lf: number;
+  cf: number;
+  rf: number;
+  n: number;
 };
 
 export type PitchMatrixBundle = {
@@ -919,6 +987,7 @@ export type PitchMatrixBundle = {
   to: string;
   batters: Map<number, PitchSlice[]>;
   pitchers: Map<number, PitchSlice[]>;
+  pitcherSpray: Map<number, PitcherSpray>;
 };
 
 type PitchAcc = {
@@ -996,7 +1065,13 @@ function emptyAcc(): PitchAcc {
 }
 
 export async function fetchPitchMatrix(from: string, toExclusive: string, season: number): Promise<PitchMatrixBundle> {
-  const empty: PitchMatrixBundle = { from, to: toExclusive, batters: new Map(), pitchers: new Map() };
+  const empty: PitchMatrixBundle = {
+    from,
+    to: toExclusive,
+    batters: new Map(),
+    pitchers: new Map(),
+    pitcherSpray: new Map(),
+  };
   const url =
     `https://baseballsavant.mlb.com/statcast_search/csv?all=true` +
     `&hfSea=${season}%7C&hfGT=R%7C&player_type=batter` +
@@ -1004,7 +1079,7 @@ export async function fetchPitchMatrix(from: string, toExclusive: string, season
     `&game_date_gt=${from}&game_date_lt=${toExclusive}` +
     `&min_pitches=0&min_results=0&type=details`;
   try {
-    const res = await fetch(url, { headers: SAVANT_HEADERS });
+    const res = await fetchOk(url, { headers: SAVANT_HEADERS }, 15_000);
     if (!res.ok) throw new Error(`Savant matrix ${res.status}`);
     const text = await res.text();
     return aggregatePitchMatrix(text, from, toExclusive);
@@ -1013,11 +1088,18 @@ export async function fetchPitchMatrix(from: string, toExclusive: string, season
   }
 }
 
+function emptySpray(): PitcherSpray {
+  return { lf: 0, cf: 0, rf: 0, n: 0 };
+}
+
 function aggregatePitchMatrix(text: string, from: string, to: string): PitchMatrixBundle {
   const batters = new Map<number, Record<string, PitchAcc>>();
   const pitchers = new Map<number, Record<string, PitchAcc>>();
+  const pitcherSpray = new Map<number, PitcherSpray>();
   const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/);
-  if (lines.length < 2) return { from, to, batters: new Map(), pitchers: new Map() };
+  if (lines.length < 2) {
+    return { from, to, batters: new Map(), pitchers: new Map(), pitcherSpray: new Map() };
+  }
   const header = splitCsvLine(lines[0]).map((h) => h.replace(/^"|"$/g, ""));
   const iType = header.indexOf("pitch_type");
   const iName = header.indexOf("pitch_name");
@@ -1029,7 +1111,11 @@ function aggregatePitchMatrix(text: string, from: string, to: string): PitchMatr
   const iWoba = header.indexOf("woba_value");
   const iXwoba = header.indexOf("estimated_woba_using_speedangle");
   const iEvents = header.indexOf("events");
-  if (iBatter < 0 || iEv < 0) return { from, to, batters: new Map(), pitchers: new Map() };
+  const iHcX = header.indexOf("hc_x");
+  const iHcY = header.indexOf("hc_y");
+  if (iBatter < 0 || iEv < 0) {
+    return { from, to, batters: new Map(), pitchers: new Map(), pitcherSpray: new Map() };
+  }
 
   const bump = (store: Map<number, Record<string, PitchAcc>>, id: number, code: string, row: string[]) => {
     if (!id || !code) return;
@@ -1074,7 +1160,24 @@ function aggregatePitchMatrix(text: string, from: string, to: string): PitchMatr
     const code = canonPitch(type && CODE_LABEL[canonPitch(type)] ? type : codeFromName(name) || type);
     if (!code) continue;
     bump(batters, int(cols[iBatter]), code, cols);
-    if (iPitcher >= 0) bump(pitchers, int(cols[iPitcher]), code, cols);
+    const pitId = iPitcher >= 0 ? int(cols[iPitcher]) : 0;
+    if (pitId) bump(pitchers, pitId, code, cols);
+    if (pitId && iEvents >= 0 && (cols[iEvents] ?? "").toLowerCase() === "home_run") {
+      let sp = pitcherSpray.get(pitId);
+      if (!sp) {
+        sp = emptySpray();
+        pitcherSpray.set(pitId, sp);
+      }
+      sp.n += 1;
+      const spray = sprayDeg(
+        iHcX >= 0 ? Number(cols[iHcX]) : NaN,
+        iHcY >= 0 ? Number(cols[iHcY]) : NaN,
+      );
+      if (spray == null) continue;
+      if (spray <= -15) sp.lf += 1;
+      else if (spray >= 15) sp.rf += 1;
+      else sp.cf += 1;
+    }
   }
 
   return {
@@ -1082,6 +1185,7 @@ function aggregatePitchMatrix(text: string, from: string, to: string): PitchMatr
     to,
     batters: finalizeSlices(batters),
     pitchers: finalizeSlices(pitchers),
+    pitcherSpray,
   };
 }
 
@@ -1100,6 +1204,7 @@ function finalizeSlices(store: Map<number, Record<string, PitchAcc>>): Map<numbe
         iso: a.n ? a.isoSum / a.n : null,
         woba: a.wobaN ? a.wobaSum / a.wobaN : null,
         hr: a.hr,
+        hrPct: a.n ? (100 * a.hr) / a.n : null,
       }))
       .sort((a, b) => b.n - a.n);
     out.set(id, rows);
@@ -1140,7 +1245,7 @@ async function fetchOnePitcher(
     `&game_date_gt=${from}&game_date_lt=${toExclusive}` +
     `&min_pitches=0&min_results=0&type=details`;
   try {
-    const res = await fetch(url, { headers: SAVANT_HEADERS });
+    const res = await fetchOk(url, { headers: SAVANT_HEADERS }, 15_000);
     if (!res.ok) return [];
     const text = await res.text();
     const bundle = aggregatePitchMatrix(text, from, toExclusive);
@@ -1177,6 +1282,7 @@ export function alignPitchRows(
               iso: null,
               woba: null,
               hr: 0,
+              hrPct: null,
             },
       );
       used.add(code);

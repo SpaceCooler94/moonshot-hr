@@ -19,7 +19,8 @@ export type IntelFinding = {
     | "bvp"
     | "both"
     | "mixhr"
-    | "loud";
+    | "loud"
+    | "yards";
   weight: number;
   headline: string;
   body: string;
@@ -42,8 +43,9 @@ const KIND_LABEL: Record<IntelFinding["kind"], string> = {
   true: "Tonight's park",
   bvp: "BvP study",
   both: "20×20",
-  mixhr: "HR off mix",
+  mixhr: "HR on types",
   loud: "Loud outs",
+  yards: "Going yards",
 };
 
 export function findingLabel(kind: IntelFinding["kind"]): string {
@@ -84,6 +86,27 @@ export function buildFindings(
       weight: 138 - i * 4,
       headline: `${p.name} vs ${arm} · ${b.name} ${b.hitBrl.toFixed(0)}×${b.pitBrl.toFixed(0)}`,
       body: both20Line(b, arm, p.lastName || p.name),
+      playerId: p.playerId,
+      gamePk: p.gamePk,
+    });
+  }
+
+  const yardHits = preds
+    .filter((p) => p.signal.decision.yards && p.pitcher && (p.pHr <= 0.12 || !p.signal.decision.pass || p.battingOrder <= 4))
+    .sort(
+      (a, b) =>
+        (b.week?.nHr ?? 0) - (a.week?.nHr ?? 0) ||
+        (b.recent?.hr ?? 0) - (a.recent?.hr ?? 0) ||
+        b.signal.decision.bvp - a.signal.decision.bvp,
+    );
+  for (const [i, p] of yardHits.slice(0, 3).entries()) {
+    const n = p.week?.nHr ?? p.recent?.hr ?? 0;
+    out.push({
+      id: `yards:${p.playerId}:${p.gamePk}`,
+      kind: "yards",
+      weight: 132 - i * 5,
+      headline: `${p.name} · ${n} HR last 10 · ${formatP(p.pHr)} P`,
+      body: `Already going yards. Published P is ${formatP(p.pHr)} — size is not the tell. Last-10 HR + mix vs ${lastWord(p.pitcher!.name)} is.`,
       playerId: p.playerId,
       gamePk: p.gamePk,
     });
@@ -271,12 +294,13 @@ export function buildFindings(
     const top = preds.find((p) => p.playerId === targets[0].playerId && p.gamePk === targets[0].gamePk);
     if (!top) continue;
     const k = arm.kPct != null ? `${arm.kPct.toFixed(0)}% K` : "thin K sample";
+    const intel = arm.intel ?? Math.round(arm.score);
     out.push({
       id: `arm:${arm.pitcherId}:${arm.gamePk}`,
       kind: "arm",
-      weight: 58 + (arm.grade === "loud" ? 12 : 4) + targets.length * 3,
-      headline: `${lastWord(arm.name)} is the hole · ${k}`,
-      body: `${arm.why} Cut looks against him: ${targets
+      weight: 50 + intel * 0.35 + (arm.both20n ?? 0) * 4 + targets.length * 3,
+      headline: `${lastWord(arm.name)} is the hole · ${intel} intel · ${k}`,
+      body: `${arm.why} Cut looks: ${targets
         .slice(0, 3)
         .map((t) => t.lastName || t.name)
         .join(", ")}.`,
@@ -444,6 +468,7 @@ export function buildFindings(
     mixhr: 2,
     loud: 1,
     bvp: 2,
+    yards: 3,
   };
   out
     .sort((a, b) => b.weight - a.weight)

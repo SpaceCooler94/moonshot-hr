@@ -43,4 +43,16 @@ export const MOONSHOT_FOLLOWS: FollowAccount[] = [
     handle: "DrivelineBB",
     why: "Bat speed to EV to carry. The engine, not the box.",
   },
+  {
+    order: 7,
+    name: "Ballpark Pal",
+    handle: "BallparkPal",
+    why: "Game sims. 2026 HR environment — park, weather, how pitchers are actually attacking.",
+  },
+  {
+    order: 8,
+    name: "Dan Szymborski",
+    handle: "DSzymborski",
+    why: "ZiPS. In-season projection, not a daily cheat sheet.",
+  },
 ];

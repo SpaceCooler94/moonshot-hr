@@ -2,10 +2,8 @@ name: Daily slate
 
 on:
   schedule:
-    # 09:00 America/New_York during EDT — lock day games before first pitch
-    - cron: "0 13 * * *"
-    # 16:00 America/New_York during EDT — refresh night temps / nines, keep locked P
-    - cron: "0 20 * * *"
+    # 10:00 America/New_York (14:00 UTC during EDT)
+    - cron: "0 14 * * *"
   workflow_dispatch:
     inputs:
       date:
@@ -34,28 +32,18 @@ jobs:
     name: Daily MLB brief
     runs-on: ubuntu-latest
     needs: check
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-      - run: npm ci
       - name: Fetch today's slate
         run: node scripts/daily-slate.mjs ${{ github.event.inputs.date }}
-      - name: Fetch today's HR board
-        run: npx tsx scripts/daily-board.ts ${{ github.event.inputs.date }}
+      - name: Score frozen logistic
+        run: node --experimental-strip-types scripts/daily-hr.ts ${{ github.event.inputs.date }}
+        continue-on-error: true
       - uses: actions/upload-artifact@v4
         with:
           name: moonshot-daily-${{ github.event.inputs.date || 'today' }}
           path: data/daily/
           if-no-files-found: error
-      - name: Commit daily JSON
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/daily/*.json
-          git diff --cached --quiet || git commit -m "Daily slate + board: $(date -u +%F)"
-          git push

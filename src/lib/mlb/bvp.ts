@@ -1,4 +1,130 @@
-import type { PlayerPrediction } from "./types";
+import type { PitchMixRow, PlayerPrediction } from "./types";
+import { sprayOverlapFrom } from "./parks.ts";
+import { pitchCluster, poolByCluster } from "./savant.ts";
+
+/** Twin Picks cheat-sheet pitch order. */
+export const MIX_GRID = ["FF", "SI", "CH", "FC", "SL", "CU", "ST", "FS", "KN", "SV"] as const;
+
+export type JuiceCall = "yes" | "lean" | "no";
+
+export function mixGrid(p: PlayerPrediction): Array<{ code: string; pct: number }> {
+  const pit = p.pitchMatrix?.pitcher ?? [];
+  return MIX_GRID.map((code) => {
+    const row = pit.find((r) => r.code === code);
+    return { code, pct: row?.pct ?? 0 };
+  });
+}
+
+export function juiceCall(p: PlayerPrediction): { call: JuiceCall; line: string } {
+  const hr = p.season?.hr ?? 0;
+  const pa = p.season?.pa ?? 0;
+  const rate = pa >= 40 ? hr / pa : 0;
+  const brl = p.statcast?.barrel ?? p.statcast?.barrelPa ?? 0;
+  const xiso = p.statcast?.xIso ?? 0;
+  const tanks = p.week?.tanks ?? 0;
+  const weekHr = p.week?.nHr ?? 0;
+  const bits = [
+    hr ? `${hr} HR` : null,
+    brl ? `${brl.toFixed(1)}% BRL` : null,
+    xiso ? `xISO ${xiso.toFixed(3)}` : null,
+  ].filter(Boolean);
+  if (hr >= 18 || (brl >= 11 && xiso >= 0.19) || tanks >= 3 || rate >= 0.04) {
+    return { call: "yes", line: `Juice · ${bits.join(" · ") || "power"}` };
+  }
+  if (hr >= 10 || brl >= 8 || xiso >= 0.16 || weekHr >= 2 || tanks >= 2) {
+    return { call: "lean", line: `Some juice · ${bits.join(" · ") || "fringe"}` };
+  }
+  return { call: "no", line: bits.length ? `No juice · ${bits.join(" · ")}` : "No juice" };
+}
+export function givesUp(
+  p: PlayerPrediction,
+  codes?: string[],
+): {
+  byPitch: Array<{
+    code: string;
+    name: string;
+    pct: number;
+    hr: number;
+    iso: number | null;
+    hrPct: number | null;
+    barrelPct: number | null;
+  }>;
+  spray: { lf: number; cf: number; rf: number; n: number } | null;
+} {
+  const pit = p.pitchMatrix?.pitcher ?? [];
+  const want = codes?.length
+    ? new Set(codes)
+    : new Set(mixUniverse(pit).map((r) => r.code));
+  const byPitch = pit
+    .filter((r) => want.has(r.code) && r.pct >= 0.08)
+    .map((r) => ({
+      code: r.code,
+      name: r.name,
+      pct: r.pct,
+      hr: r.hr || 0,
+      iso: r.iso,
+      hrPct: r.hrPct,
+      barrelPct: r.barrelPct,
+    }))
+    .sort((a, b) => b.hr - a.hr || (b.iso ?? 0) - (a.iso ?? 0));
+  return { byPitch, spray: p.pitchMatrix?.pitcherSpray ?? null };
+}
+
+export function vsArmSplit(p: PlayerPrediction): { hr: number; pa: number; slg: string } | null {
+  const throws = p.pitcher?.throws;
+  if (!throws || throws === "S") return p.handSplit?.vsR ?? p.handSplit?.vsL ?? null;
+  const s = throws === "L" ? p.handSplit?.vsL : p.handSplit?.vsR;
+  if (!s || s.pa < 15) return null;
+  return s;
+}
+
+export function hrsOnMix(p: PlayerPrediction, codes?: string[]): number {
+  const hit = p.pitchMatrix?.hitter ?? [];
+  const want = new Set(
+    codes?.length ? codes : mixUniverse(p.pitchMatrix?.pitcher ?? []).map((r) => r.code),
+  );
+  if (want.size === 0) return p.signal.decision.mixHr ?? 0;
+  return hit.filter((r) => want.has(r.code)).reduce((s, r) => s + (r.hr || 0), 0);
+}
+
+/** Usage-weighted ISO vs the pitches he'll see. Ghetteaux highlight. */
+export function mixIso(p: PlayerPrediction, codes?: string[]): number | null {
+  const pit = p.pitchMatrix?.pitcher ?? [];
+  const hit = p.pitchMatrix?.hitter ?? [];
+  const want = codes?.length ? new Set(codes) : new Set(mixUniverse(pit).map((r) => r.code));
+  let w = 0;
+  let s = 0;
+  for (const r of pit) {
+    if (!want.has(r.code) || r.pct < 0.08) continue;
+    const h = hit.find((x) => x.code === r.code);
+    if (h?.iso == null) continue;
+    s += h.iso * r.pct;
+    w += r.pct;
+  }
+  return w > 0 ? s / w : null;
+}
+
+export function cardPitches<T extends { pct: number }>(rows: T[]): T[] {
+  const sorted = [...rows].sort((a, b) => b.pct - a.pct);
+  const main = sorted.filter((r) => r.pct >= 0.12).slice(0, 3);
+  if (main.length >= 2) return main;
+  return sorted.slice(0, Math.min(2, sorted.length));
+}
+
+/** Card plus a 12%+ hole that gets barreled even if it's not top-3 volume. */
+export function mixUniverse<T extends { pct: number; code: string; barrelPct: number | null; iso: number | null }>(
+  rows: T[],
+): T[] {
+  const card = cardPitches(rows);
+  const codes = new Set(card.map((r) => r.code));
+  const holes = rows.filter(
+    (r) =>
+      !codes.has(r.code) &&
+      r.pct >= 0.12 &&
+      ((r.barrelPct != null && r.barrelPct >= 18) || (r.iso != null && r.iso >= 0.25)),
+  );
+  return [...card, ...holes];
+}
 
 export type Both20 = {
   code: string;
@@ -33,15 +159,22 @@ export function findBoth20(p: PlayerPrediction): Both20 | null {
     }
     return null;
   }
+  const universe = new Set(mixUniverse(mx.pitcher).map((r) => r.code));
   let best: Both20 | null = null;
   let bestScore = -1;
   for (const pit of mx.pitcher) {
-    if (pit.pct < 0.15 || pit.n < 8 || pit.barrelPct == null || pit.barrelPct < 18) continue;
-    const hit = mx.hitter.find((r) => r.code === pit.code);
+    if (pit.pct < 0.12 || pit.n < 8 || pit.barrelPct == null || pit.barrelPct < 18) continue;
+    if (!universe.has(pit.code)) continue;
+    const exact = mx.hitter.find((r) => r.code === pit.code);
+    const cluster = pitchCluster(pit.code);
+    const pooled = cluster ? poolByCluster(mx.hitter, cluster) : null;
+    const hit =
+      exact && exact.n >= 6 && exact.barrelPct != null && exact.barrelPct >= 18 ? exact : pooled;
     if (!hit || hit.n < 6 || hit.barrelPct == null || hit.barrelPct < 18) continue;
+    const clustered = hit !== exact;
     const row: Both20 = {
       code: pit.code,
-      name: pit.name,
+      name: clustered ? `${pit.name} / ${hit.name}` : pit.name,
       usage: pit.pct,
       pitN: pit.n,
       hitN: hit.n,
@@ -51,7 +184,7 @@ export function findBoth20(p: PlayerPrediction): Both20 | null {
       hitEv: hit.ev,
       strict: pit.barrelPct >= 20 && hit.barrelPct >= 20,
     };
-    const score = pit.barrelPct + hit.barrelPct + pit.pct * 50 + (row.strict ? 8 : 0);
+    const score = pit.pct * (hit.barrelPct + pit.barrelPct) + (row.strict ? 8 : 0);
     if (score > bestScore) {
       best = row;
       bestScore = score;
@@ -90,9 +223,9 @@ export function studyBvp(p: PlayerPrediction): BvpStudy {
   const layers: BvpLayer[] = [];
   let pts = 0;
 
-  const { cover, line: mixLine, hits } = mixCoverage(p);
+  const { cover, line: mixLine, hits, cardLine, cardPass } = mixCoverage(p);
   const both = findBoth20(p);
-  const mixPass = cover >= 0.18 || !!key?.loud || !!both;
+  const mixPass = cardPass || cover >= 0.18 || !!key?.loud || !!both;
   if (both?.strict) pts += 26;
   else if (both) pts += 18;
   else if (cover >= 0.4) pts += 34;
@@ -107,6 +240,11 @@ export function studyBvp(p: PlayerPrediction): BvpStudy {
       : "No 20×20 pitch — pitcher allowed BRL and hitter BRL both under 18% on the same offering",
   });
   layers.push({ key: "mix", pass: mixPass, line: mixLine });
+  layers.push({
+    key: "card",
+    pass: cardPass,
+    line: cardLine,
+  });
 
   const mixHr = mixHrCount(p);
   if (mixHr.n >= 3) pts += 14;
@@ -121,6 +259,14 @@ export function studyBvp(p: PlayerPrediction): BvpStudy {
         : `0 HR on ${arm}'s pitch types in this window`,
   });
 
+  const slug = slugHole(p);
+  if (slug) pts += 8;
+  layers.push({
+    key: "slug",
+    pass: !!slug,
+    line: slug ? slug.line : "No slug-without-barrels pitch on this card",
+  });
+
   const lo = w?.loudOuts ?? 0;
   if (lo >= 6) pts += 8;
   else if (lo >= 4) pts += 5;
@@ -129,7 +275,7 @@ export function studyBvp(p: PlayerPrediction): BvpStudy {
     pass: lo >= 4,
     line:
       lo > 0
-        ? `${lo} loud outs last 10 — barreled, not HR. Crushed and caught.`
+        ? `${lo} loud outs last 10 — barreled and caught.`
         : "No loud outs last 10",
   });
 
@@ -270,6 +416,10 @@ export function studyBvp(p: PlayerPrediction): BvpStudy {
           : p.park.airLabel,
   });
 
+  const spray = sprayOverlap(p);
+  if (spray.pass) pts += 8;
+  layers.push({ key: "spray", pass: spray.pass, line: spray.line });
+
   const order = p.battingOrder <= 4;
   if (p.battingOrder <= 2) pts += 8;
   else if (order) pts += 4;
@@ -337,18 +487,89 @@ export function studyBvp(p: PlayerPrediction): BvpStudy {
   };
 }
 
+export function sprayOverlap(p: PlayerPrediction): { pass: boolean; line: string } {
+  const sp = p.pitchMatrix?.pitcherSpray;
+  return sprayOverlapFrom({
+    bats: p.bats,
+    throws: p.pitcher?.throws ?? null,
+    venueId: p.park.id,
+    pullPct: p.week?.pullPct ?? null,
+    pullHr: p.week?.pullHr ?? 0,
+    parkTrue: p.week?.parkTrue ?? 0,
+    windKind: p.week?.windKind ?? "none",
+    windLine: p.week?.windLine ?? "",
+    homeHr: p.park.homeHr,
+    roadHr: p.park.roadHr,
+    pitcherName: p.pitcher?.name ?? "SP",
+    lfHr: sp?.lf ?? 0,
+    rfHr: sp?.rf ?? 0,
+  });
+}
+
+export function mixShape(r: {
+  n: number;
+  barrelPct: number | null;
+  iso: number | null;
+  woba: number | null;
+  hr: number;
+  name: string;
+}): { kind: "barrel" | "slug" | "quiet" | "thin"; line: string } {
+  if (r.n < 6) return { kind: "thin", line: `${r.name} · sample thin` };
+  const brl = r.barrelPct ?? 0;
+  const iso = r.iso ?? 0;
+  const woba = r.woba ?? 0;
+  const process = brl >= 10;
+  const result = iso >= 0.2 || woba >= 0.38 || r.hr >= 2;
+  if (process && result) {
+    return {
+      kind: "barrel",
+      line: `${r.name} barrels and extra bases (${brl.toFixed(0)}% BRL · ISO ${iso.toFixed(2)})`,
+    };
+  }
+  if (result && !process) {
+    return {
+      kind: "slug",
+      line: `${r.name} slug hole — ISO ${iso.toFixed(2)} / wOBA ${woba.toFixed(2)} on ${brl.toFixed(1)}% BRL. Extra bases, not 98+ barrels.`,
+    };
+  }
+  if (process && !result) {
+    return { kind: "quiet", line: `${r.name} barrels without extra bases — process ahead of the box` };
+  }
+  return { kind: "quiet", line: `${r.name} neither barrels nor slugs` };
+}
+
+function slugHole(p: PlayerPrediction): { line: string } | null {
+  const mx = p.pitchMatrix;
+  if (!mx) return null;
+  let best: { line: string; iso: number } | null = null;
+  for (const row of mx.pitcher) {
+    if (row.pct < 0.12 || row.n < 8) continue;
+    const shape = mixShape(row);
+    if (shape.kind !== "slug") continue;
+    const iso = row.iso ?? 0;
+    if (!best || iso > best.iso) best = { line: shape.line, iso };
+  }
+  return best ? { line: best.line } : null;
+}
+
 function mixHrCount(p: PlayerPrediction): { n: number; bits: string[] } {
   const mx = p.pitchMatrix;
   const bits: string[] = [];
   let n = 0;
   if (mx && mx.pitcher.length) {
+    const seen = new Set<string>();
     for (const row of mx.pitcher) {
       if (row.pct < 0.08) continue;
-      const h = mx.hitter.find((x) => x.code === row.code);
-      if (h && h.hr > 0) {
-        n += h.hr;
-        bits.push(`${h.hr} on ${row.name}`);
-      }
+      const cluster = pitchCluster(row.code);
+      const h =
+        mx.hitter.find((x) => x.code === row.code) ??
+        (cluster ? poolByCluster(mx.hitter, cluster) : null);
+      if (!h || h.hr <= 0) continue;
+      const key = cluster ?? row.code;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      n += h.hr;
+      bits.push(`${h.hr} on ${row.name}`);
     }
   } else if ((p.signal.keyMatch?.hr ?? 0) > 0) {
     n = p.signal.keyMatch!.hr;
@@ -357,46 +578,76 @@ function mixHrCount(p: PlayerPrediction): { n: number; bits: string[] } {
   return { n, bits };
 }
 
-function mixCoverage(p: PlayerPrediction): { cover: number; line: string; hits: string[] } {
+function mixCoverage(p: PlayerPrediction): {
+  cover: number;
+  line: string;
+  hits: string[];
+  cardLine: string;
+  cardPass: boolean;
+} {
   const mx = p.pitchMatrix;
   const key = p.signal.keyMatch;
   const hits: string[] = [];
   let cover = 0;
-  if (mx && mx.pitcher.length) {
-    for (const row of mx.pitcher) {
-      if (row.pct < 0.08) continue;
-      const h = mx.hitter.find((x) => x.code === row.code);
+  const bits: string[] = [];
+  let cardPass = false;
+  let bestEdge = -1;
+  let bestName = "";
+  const rows = mx?.pitcher?.length ? mixUniverse(mx.pitcher) : [];
+  const card = mx?.pitcher?.length ? cardPitches(mx.pitcher) : [];
+  if (rows.length) {
+    for (const row of rows) {
+      const cluster = pitchCluster(row.code);
+      const h =
+        mx!.hitter.find((x) => x.code === row.code) ??
+        (cluster ? poolByCluster(mx!.hitter, cluster) : null);
+      const hitBrl = h?.barrelPct ?? null;
+      const pitBrl = row.barrelPct;
       const loud =
         !!h &&
         h.n >= 4 &&
-        ((h.barrelPct != null && h.barrelPct >= 12) || (h.iso != null && h.iso >= 0.2));
+        ((hitBrl != null && hitBrl >= 12) || (h.iso != null && h.iso >= 0.2));
+      const onCard = card.some((c) => c.code === row.code);
+      const edge = row.pct * ((hitBrl ?? 0) + (pitBrl ?? 0));
+      const tag =
+        hitBrl != null && pitBrl != null
+          ? `${row.name} ${Math.round(row.pct * 100)}% ${hitBrl.toFixed(0)}×${pitBrl.toFixed(0)}`
+          : `${row.name} ${Math.round(row.pct * 100)}%`;
+      if (onCard) bits.push(tag);
       if (loud && h) {
         cover += row.pct;
-        const two =
-          row.barrelPct != null &&
-          row.barrelPct >= 18 &&
-          h.barrelPct != null &&
-          h.barrelPct >= 18;
-        const brl = h.barrelPct != null ? `${h.barrelPct.toFixed(0)}% BRL` : `${h.iso?.toFixed(2)} ISO`;
+        if (onCard) cardPass = true;
+        if (edge > bestEdge) {
+          bestEdge = edge;
+          bestName = row.name;
+        }
+        const two = pitBrl != null && pitBrl >= 18 && hitBrl != null && hitBrl >= 18;
+        const brl = hitBrl != null ? `${hitBrl.toFixed(0)}% BRL` : `${h.iso?.toFixed(2)} ISO`;
         hits.push(
           two
-            ? `${row.name} ${h.barrelPct!.toFixed(0)}×${row.barrelPct!.toFixed(0)} (${Math.round(row.pct * 100)}%)`
+            ? `${row.name} ${hitBrl!.toFixed(0)}×${pitBrl!.toFixed(0)} (${Math.round(row.pct * 100)}%)`
             : `${row.name} ${brl} (${Math.round(row.pct * 100)}%)`,
         );
       }
     }
   } else if (key?.loud) {
     cover = key.usage;
+    cardPass = key.usage >= 0.12;
     hits.push(
       `${key.name} ${key.barrelPct != null ? `${key.barrelPct.toFixed(0)}% BRL` : "loud"} (${Math.round(key.usage * 100)}%)`,
     );
+    bits.push(`${key.name} ${Math.round(key.usage * 100)}%`);
+    bestName = key.name;
   }
   const line = hits.length
     ? `Damages ${Math.round(cover * 100)}% of the card · ${hits.join(" · ")}`
     : key
       ? `${key.name} ${Math.round(key.usage * 100)}% mix · ${key.barrelPct == null ? "no sample" : `${key.barrelPct.toFixed(0)}% BRL`} — not a loud match`
       : "No mix card";
-  return { cover, line, hits };
+  const cardLine = bits.length
+    ? `Card ${bits.slice(0, 3).join(" · ")}${bestName ? ` · edge ${bestName}` : ""}`
+    : "No top-2/3 mix card";
+  return { cover, line, hits, cardLine, cardPass };
 }
 
 function lastWord(name: string): string {

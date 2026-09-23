@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { existsSync, mkdtempSync, symlinkSync } from "node:fs";
+import { mkdtempSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -12,13 +12,7 @@ import {
   compareAuthInvariant,
   probeDevAuthEnabled,
 } from "./check-auth-invariant.mjs";
-import { APP_ENV_REL_PATH, projectRoot } from "./with-app-env.mjs";
-
-// .grok/app-env.json is gitignored — the platform bakes it into a project's
-// workspace, it's never committed. A bare `git clone` of this repo won't have
-// it, so the assertion below only holds inside a platform-provisioned
-// workspace; elsewhere it skips rather than false-failing on a normal checkout.
-const SHIPS_APP_ENV = existsSync(join(projectRoot(), APP_ENV_REL_PATH));
+import { projectRoot } from "./with-app-env.mjs";
 
 /**
  * The JSON body `/__app-env` would serve. Do not start a real Vite server —
@@ -96,8 +90,7 @@ test("only a divergence warns the smoke verdict", () => {
   }
 });
 
-test("the build side resolves the template's shipped app-env", (t) => {
-  if (!SHIPS_APP_ENV) return t.skip(`${APP_ENV_REL_PATH} not present (gitignored, platform-baked)`);
+test("the build side resolves the template's shipped app-env", () => {
   assert.equal(buildAuthEnabled(projectRoot(), {}), false);
   assert.equal(buildAuthEnabled(projectRoot(), { VITE_AUTH_ENABLED: "true" }), true);
 });

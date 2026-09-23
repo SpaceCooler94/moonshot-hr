@@ -2,6 +2,7 @@
 /**
  * Headless daily brief — no Vite, no Grok.
  * Fetches today's MLB slate (ET) and writes data/daily/YYYY-MM-DD.json
+ * Exits 1 on fetch failure or an empty slate so Actions cannot upload a silent blank.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -20,15 +21,34 @@ function todayET() {
 }
 
 async function get(path) {
-  const res = await fetch(`${MLB}${path}`, {
-    headers: { "User-Agent": "moonshot-hr daily-slate" },
-  });
-  if (!res.ok) throw new Error(`${path} ${res.status}`);
-  return res.json();
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 12_000);
+  try {
+    const res = await fetch(`${MLB}${path}`, {
+      headers: { "User-Agent": "moonshot-hr daily-slate", Accept: "application/json" },
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(`${path} ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(t);
+  }
 }
 
 const date = process.argv[2] || todayET();
-const sched = await get(`/schedule?sportId=1&date=${date}&hydrate=probablePitcher,venue,weather,team`);
+if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  console.error(`bad date ${date}`);
+  process.exit(1);
+}
+
+let sched;
+try {
+  sched = await get(`/schedule?sportId=1&date=${date}&hydrate=probablePitcher,venue,weather,team`);
+} catch (err) {
+  console.error(err instanceof Error ? err.message : err);
+  process.exit(1);
+}
+
 const dates = sched.dates ?? [];
 const games = [];
 for (const d of dates) {
@@ -59,6 +79,11 @@ for (const d of dates) {
       },
     });
   }
+}
+
+if (games.length === 0) {
+  console.error(`empty slate ${date} — not writing`);
+  process.exit(1);
 }
 
 const brief = {

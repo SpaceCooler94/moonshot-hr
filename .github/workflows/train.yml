@@ -1,0 +1,30 @@
+name: Train HR logistic
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run train
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moonshot-hr-model
+          path: |
+            data/model/current.json
+            data/model/priors.json
+            data/model/logs.json
+          if-no-files-found: error

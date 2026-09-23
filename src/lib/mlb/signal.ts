@@ -1,5 +1,6 @@
 import type { HrCheck, HrSignal, KeyPitchMatch, PitchMixRow, PlayerPrediction } from "./types";
-import { studyBvp } from "./bvp";
+import { studyBvp, mixUniverse } from "./bvp.ts";
+import { pitchCluster, poolByCluster } from "./savant.ts";
 
 /** Public research bars. League barrels sit ~7%; 12% is the power cut. */
 export const BARREL_CUT = 12;
@@ -23,11 +24,20 @@ export const TREND_CUT = 3;
 export const HARD_BARREL_CUT = 2;
 export const HEART_CUT = 12;
 
+/** Last-10 production, not season profile. 2 HR in the window is "going yards." */
+export function goingYards(p: PlayerPrediction): boolean {
+  const w = p.week;
+  return (w?.nHr ?? 0) >= 2 || (p.recent?.hr ?? 0) >= 3 || (w?.pullHr ?? 0) >= 2;
+}
+
 export function buildHrSignal(p: PlayerPrediction): HrSignal {
   const s = p.statcast;
   const w = p.week;
   const keyMatch = findKeyMatch(p);
   const weekBarrel = w && w.bbe >= 10 ? w.barrelPct : null;
+  const tanks = w?.tanks ?? 0;
+  const tankPass = tanks >= FORM_TANK_CUT || w?.tanksLast1 === true;
+  const yards = goingYards(p);
   const formHot =
     (weekBarrel != null && weekBarrel >= FORM_BARREL_CUT) ||
     (w?.tanks ?? 0) >= FORM_TANK_CUT ||
@@ -35,19 +45,17 @@ export function buildHrSignal(p: PlayerPrediction): HrSignal {
     w?.ev100Last1 === true ||
     (w?.brl105 ?? 0) >= HARD_BARREL_CUT ||
     (w?.pullAirPct != null && w.pullAirPct >= FORM_PULL_AIR_CUT && (w.pullPct ?? 0) >= 40) ||
-    w?.trendUp === true;
+    w?.trendUp === true ||
+    yards;
   const barrelPass = (s?.barrel ?? 0) >= BARREL_CUT;
   const mixHit = !!keyMatch?.loud;
   const formRef = formValue(w, weekBarrel, formHot);
-
   const kPct = p.pitcher?.kPct ?? null;
   const sweet = s?.sweetSpot ?? null;
   const ev = s?.ev ?? null;
   const fly = s?.flyBall ?? null;
   const bat = s?.swingSpeed ?? null;
   const hard = s?.hardHit ?? null;
-  const tanks = w?.tanks ?? 0;
-  const tankPass = tanks >= FORM_TANK_CUT || w?.tanksLast1 === true;
   const pullAir = pullAirRef(p);
   const trendBar = trendValueOf(w);
 
@@ -286,9 +294,11 @@ export function findKeyMatch(p: PlayerPrediction): KeyPitchMatch | null {
   const mx = p.pitchMatrix;
   if (!mx || mx.pitcher.length === 0) return null;
   let best: { score: number; match: KeyPitchMatch } | null = null;
-  for (const pit of mx.pitcher) {
-    if (pit.pct < 0.08) continue;
-    const hit = mx.hitter.find((r) => r.code === pit.code) ?? null;
+  for (const pit of mixUniverse(mx.pitcher)) {
+    const exact = mx.hitter.find((r) => r.code === pit.code) ?? null;
+    const cluster = pitchCluster(pit.code);
+    const pooled = cluster ? poolByCluster(mx.hitter, cluster) : null;
+    const hit = exact && exact.n >= PITCH_N_CUT ? exact : pooled ?? exact;
     const match = toMatch(pit, hit);
     const damage =
       match.barrelPct != null && match.n >= PITCH_N_CUT
@@ -377,6 +387,7 @@ function formLine(p: PlayerPrediction): string {
     bits.push(`${w.tanks} tank${w.tanks === 1 ? "" : "s"} last 10`);
     if (w.tanksLast1) bits.push("one last game");
   }
+  if ((w.nHr ?? 0) >= 2) bits.push(`${w.nHr} HR last 10`);
   if (w.barrelPct >= 12) bits.push(`${w.barrelPct.toFixed(0)}% barrels last 10`);
   if (w.ev100Last1 && w.maxEvLast1 != null) bits.push(`${w.maxEvLast1.toFixed(0)} last game`);
   else if (w.n100Last3 >= 3) bits.push(`${w.n100Last3}× 100+ last 3`);
@@ -489,7 +500,12 @@ function writeWhy(
   misses: HrCheck[],
 ): string {
   const vs = p.pitcher ? ` vs ${lastWord(p.pitcher.name)}` : "";
-  if (grade === "fade") return `${p.lastName || p.name}${vs}: no research bar is lit.`;
+  if (grade === "fade") {
+    const n = hits.length;
+    return n === 0
+      ? `${p.lastName || p.name}${vs}: research is cold — 0 bars. Sit. Cold bats still go yard.`
+      : `${p.lastName || p.name}${vs}: research is cold — ${n} of ${hits.length + misses.length} bars. Sit, not a ban. Cold bats still go yard.`;
+  }
 
   const gradeWord = grade === "loud" ? "Loud" : grade === "live" ? "Live" : "Thin";
   let lead: string;
@@ -573,28 +589,30 @@ function buildDecision(
   grade: HrSignal["grade"],
   key: KeyPitchMatch | null,
 ): HrSignal["decision"] {
-  const mix = onCheck(checks, "pitch") || !!key?.loud;
+  const yards = goingYards(p);
+  const mix = onCheck(checks, "pitch") || !!key?.loud || (yards && (key?.hr ?? 0) >= 1);
   const tanks = onCheck(checks, "tanks");
   const trend = onCheck(checks, "trend");
   const form = onCheck(checks, "form");
-  const heat = tanks || trend || form;
+  const heat = tanks || trend || form || yards;
   const barrel = onCheck(checks, "barrel");
   const ev = onCheck(checks, "ev");
   const xiso = onCheck(checks, "xiso");
   const fly = onCheck(checks, "fly");
-  const profile = barrel || (ev && fly) || (xiso && ev);
+  const profile = barrel || (ev && fly) || (xiso && ev) || yards;
   const live = grade === "loud" || grade === "live";
   const order = onCheck(checks, "order");
   const cooled = p.week?.cooled === true;
   const softened = p.week?.softened === true;
   const dead = cooled || softened;
-  const pass = mix && heat && profile && live && order && !dead;
+  const pass = mix && heat && profile && order && !dead && (live || yards);
   const tags: string[] = [];
   if (mix && key?.name) tags.push(key.name);
   else if (mix) tags.push("Mix");
   if (tanks) tags.push("Tanks");
   if (trend) tags.push("Trend");
   if (form && !tanks && !trend) tags.push("Form");
+  if (yards) tags.push("Yards");
   if (barrel) tags.push("Barrels");
   else if (ev) tags.push("EV");
   if (p.week?.parkTrue && p.week.parkTrue >= 3) tags.push("Park-true");
@@ -608,10 +626,10 @@ function buildDecision(
     : !mix
       ? "mix"
       : !heat
-        ? "heat (trend / tanks / form)"
+        ? "heat (trend / tanks / form / yards)"
         : !profile
           ? "profile (barrels / EV)"
-          : !live
+          : !live && !yards
             ? "grade"
             : !order
               ? "order (1–4)"
@@ -623,11 +641,26 @@ function buildDecision(
     (form ? 1 : 0) +
     (barrel ? 1 : 0) +
     (ev ? 1 : 0) +
-    (order ? 1 : 0);
+    (order ? 1 : 0) +
+    (yards ? 2 : 0);
   const { push, line, tonight } = tonightPush(p, checks, key);
   const bvp = studyBvp({ ...p, signal: { ...p.signal, keyMatch: key, checks } });
   if (bvp.grade === "best" && !tags.includes("BvP")) tags.push("BvP");
   if (bvp.mixHr >= 2) tags.push(`${bvp.mixHr} mix HR`);
+  const lastHr = (p.week?.lastGameHr ?? 0) >= 1;
+  if (lastHr) tags.push("Last game");
+  const kasper = kasperLine(p);
+  const hh = p.statcast?.hardHit;
+  const fb = p.statcast?.flyBall;
+  const kasperHit = hh != null && fb != null && hh >= 40 && fb >= 20;
+  if (kasperHit && !tags.includes("HH/FB")) tags.push("HH/FB");
+  const sprayOn = bvp.layers.some((l) => l.key === "spray" && l.pass);
+  const parkOn = bvp.layers.some((l) => l.key === "park" && l.pass) || p.park.airIndex >= 108;
+  const bvpOn = bvp.grade === "best" || bvp.grade === "strong";
+  const converge = [mix, yards || lastHr || tanks, kasperHit || barrel || (ev && fly), bvpOn, sprayOn, parkOn, order].filter(
+    Boolean,
+  ).length;
+  const env = envScore(p);
   return {
     pass,
     score,
@@ -642,7 +675,35 @@ function buildDecision(
     bvpLayers: bvp.layers,
     both20: bvp.both20,
     mixHr: bvp.mixHr,
+    yards,
+    converge,
+    env,
+    kasper,
   };
+}
+
+export function kasperLine(p: PlayerPrediction): string {
+  const hh = p.statcast?.hardHit;
+  const fb = p.statcast?.flyBall;
+  const bits: string[] = [];
+  if (hh != null) bits.push(`${hh.toFixed(0)}% HH`);
+  if (fb != null) bits.push(`${fb.toFixed(0)}% FB`);
+  const last = p.week?.lastGameHr ?? 0;
+  if (last >= 1) bits.push(`${last} last game`);
+  else if ((p.week?.nHr ?? 0) >= 2) bits.push(`${p.week!.nHr} HR last 10`);
+  return bits.join(" · ");
+}
+
+function envScore(p: PlayerPrediction): number {
+  let e = 42;
+  e += Math.min(28, Math.max(-14, p.park.airIndex - 100));
+  if (p.park.homeHr != null) e += Math.round((p.park.homeHr - 1) * 70);
+  if (p.week?.windKind === "pull-out") e += 12;
+  if ((p.week?.parkTrue ?? 0) >= 3) e += 8;
+  const hr9 = p.pitcher?.hr9;
+  if (hr9 != null && hr9 >= 1.35) e += 8;
+  if (p.park.leagueCarry != null) e += Math.round((p.park.leagueCarry - 1) * 30);
+  return Math.min(100, Math.max(0, Math.round(e)));
 }
 
 function tonightPush(
@@ -670,12 +731,23 @@ function tonightPush(
   if (w?.tanksLast1) {
     pts += 16;
     tonight.push("tank last game");
+  } else if ((w?.lastGameHr ?? 0) >= 1) {
+    pts += 12;
+    tonight.push(`${w!.lastGameHr} HR last game`);
   } else if ((w?.tanksLast3 ?? 0) >= 2) {
     pts += 10;
     tonight.push(`${w!.tanksLast3} tanks last 3`);
   } else if ((w?.tanks ?? 0) >= FORM_TANK_CUT) {
     pts += 7;
     tonight.push(`${w!.tanks} tanks last 10`);
+  }
+
+  if ((w?.nHr ?? 0) >= 2) {
+    pts += 12;
+    tonight.push(`${w!.nHr} HR last 10`);
+  } else if ((p.recent?.hr ?? 0) >= 3) {
+    pts += 8;
+    tonight.push(`${p.recent!.hr} HR last ${p.recent!.games}`);
   }
 
   if (w?.last3vs10 != null && w.last3vs10 >= 4) {

@@ -1,8 +1,9 @@
-import { dailyParkAir, parkHrFactor, parkTrueCount, PARK_HR_FACTOR, shrinkYearPark, TEAM_VENUE, windSprayMatch } from "./parks";
-import { CAL_BANDS, MODEL_VERSION, scoreMatchup } from "./model";
+import { dailyParkAir, parkHomeRoad, parkHrFactor, parkTrueCount, PARK_HR_FACTOR, shrinkYearPark, TEAM_VENUE, windSprayMatch, type YearParkSplit } from "./parks";
+import { CAL_BANDS, GAME_HR_RATE, MODEL_VERSION, scoreMatchup } from "./model";
 import { buildHrSignal } from "./signal";
 import { buildForecast, EMPTY_FORECAST } from "./intel";
 import { rankVulnerablePitchers } from "./vulnerable";
+import { markTickets } from "./odds";
 import { shiftISODate, todayISODateET } from "./format";
 import { canLock, lockFromBoard, lockState, readLock, writeLock } from "./lock";
 import { fetchSavant, fetchWeekContact, fetchPitchMatrix, fetchPitchersMatrix, alignPitchRows, barrelPct, ev100Flags, filterShape, pitchFamily, rateBarrelPa, rateHrFb, tankFlags, trendShape, weekShape } from "./savant";
@@ -18,56 +19,41 @@ import type {
   PlayerPrediction,
   WeatherInfo,
 } from "./types";
+import { buildSplits, logsBefore, type GameLogRow } from "./splits";
+import { fetchStuffMap, overlayLiveStuff } from "./stuff";
+import { buildPen } from "./bullpen";
+import { simPa } from "./sim";
+import { overlayLogit } from "./hr-serve";
+import { fetchJson, isISODate, pruneMap, asArray, asRecord } from "./http.ts";
 
 const MLB = "https://statsapi.mlb.com";
 
 type CacheEntry<T> = { exp: number; val: T };
 const cache = new Map<string, CacheEntry<unknown>>();
+const inflight = new Map<string, Promise<unknown>>();
 
 function cached<T>(key: string, ttlMs: number, fn: () => Promise<T>): Promise<T> {
+  pruneMap(cache, 120);
   const hit = cache.get(key);
   if (hit && hit.exp > Date.now()) return Promise.resolve(hit.val as T);
-  return fn().then((val) => {
-    cache.set(key, { exp: Date.now() + ttlMs, val });
-    return val;
-  });
+  const flying = inflight.get(key);
+  if (flying) return flying as Promise<T>;
+  const p = fn()
+    .then((val) => {
+      cache.set(key, { exp: Date.now() + ttlMs, val });
+      return val;
+    })
+    .finally(() => inflight.delete(key));
+  inflight.set(key, p);
+  return p;
 }
 
 /** Drop date-specific live keys so a user refresh can pick up posted cards. Locks stay. */
 export function bustBoardCache(date: string) {
+  if (!isISODate(date)) return;
   for (const key of [...cache.keys()]) {
     if (
-      key === `sked:${date}` ||
-      key === `recentLu:${date}` ||
-      key === `board:${MODEL_VERSION}:${date}` ||
-      key === `board:${MODEL_VERSION}:sig2:${date}` ||
-      key === `board:${MODEL_VERSION}:sig3:${date}` ||
-      key === `board:${MODEL_VERSION}:sig4:${date}` ||
-      key === `board:${MODEL_VERSION}:sig5:${date}` ||
-      key === `board:${MODEL_VERSION}:sig6:${date}` ||
-      key === `board:${MODEL_VERSION}:sig7:${date}` ||
-      key === `board:${MODEL_VERSION}:sig8:${date}` ||
-      key === `board:${MODEL_VERSION}:sig9:${date}` ||
-      key === `board:${MODEL_VERSION}:sig10:${date}` ||
-      key === `board:${MODEL_VERSION}:sig11:${date}` ||
-      key === `board:${MODEL_VERSION}:sig12:${date}` ||
-      key === `board:${MODEL_VERSION}:sig13:${date}` ||
-      key === `board:${MODEL_VERSION}:sig14:${date}` ||
-      key === `board:${MODEL_VERSION}:sig15:${date}` ||
-      key === `board:${MODEL_VERSION}:sig16:${date}` ||
-      key === `board:${MODEL_VERSION}:sig17:${date}` ||
-      key === `board:${MODEL_VERSION}:sig18:${date}` ||
-      key === `board:${MODEL_VERSION}:sig19:${date}` ||
-      key === `board:${MODEL_VERSION}:sig20:${date}` ||
-      key === `board:${MODEL_VERSION}:sig21:${date}` ||
-      key === `board:${MODEL_VERSION}:sig22:${date}` ||
-      key === `board:${MODEL_VERSION}:sig23:${date}` ||
-      key === `board:${MODEL_VERSION}:sig24:${date}` ||
-      key === `board:${MODEL_VERSION}:sig25:${date}` ||
-      key === `board:${MODEL_VERSION}:sig26:${date}` ||
-      key === `board:${MODEL_VERSION}:sig27:${date}` ||
-      key === `board:${MODEL_VERSION}:sig28:${date}` ||
-      key === `board:${MODEL_VERSION}:sig29:${date}` ||
+      key.includes(date) ||
       key.startsWith("box:") ||
       key.startsWith("people:") ||
       key.startsWith("humid:") ||
@@ -82,13 +68,7 @@ export function bustBoardCache(date: string) {
 
 async function mlb<T>(path: string): Promise<T> {
   const url = path.startsWith("http") ? path : `${MLB}${path}`;
-  const res = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
-  if (!res.ok) {
-    throw new Error(`MLB Stats API ${res.status} for ${path}`);
-  }
-  return (await res.json()) as T;
+  return fetchJson<T>(url, { headers: { Accept: "application/json" } }, 12_000);
 }
 
 type Hand = "L" | "R" | "S";
@@ -287,10 +267,13 @@ function isPitcherPos(abbr?: string): boolean {
 }
 
 async function fetchSchedule(date: string): Promise<MlbGame[]> {
-  const data = await mlb<{ dates?: Array<{ games?: MlbGame[] }> }>(
+  const data = await mlb<unknown>(
     `/api/v1/schedule?sportId=1&date=${date}&hydrate=probablePitcher,venue,weather,lineups,team`,
   );
-  return data.dates?.[0]?.games ?? [];
+  const dates = asArray(asRecord(data)?.dates);
+  const first = dates?.[0] ? asRecord(dates[0]) : null;
+  const games = asArray(first?.games);
+  return (games ?? []) as MlbGame[];
 }
 
 async function fetchRecentLineups(date: string): Promise<Map<number, MlbLineupPlayer[]>> {
@@ -318,7 +301,7 @@ async function fetchRecentLineups(date: string): Promise<Map<number, MlbLineupPl
   return latest;
 }
 
-async function fetchLeagueRates(season: number): Promise<{ hrPa: number; hrBf: number }> {
+async function fetchLeagueRates(season: number): Promise<{ hrPa: number; hrBf: number; hrG: number }> {
   const [hit, pit] = await Promise.all([
     mlb<{ stats?: Array<{ splits?: Array<{ stat?: Record<string, unknown> }> }> }>(
       `/api/v1/teams/stats?season=${season}&group=hitting&stats=season&sportIds=1`,
@@ -329,9 +312,11 @@ async function fetchLeagueRates(season: number): Promise<{ hrPa: number; hrBf: n
   ]);
   let hr = 0;
   let pa = 0;
+  let gp = 0;
   for (const s of hit.stats?.[0]?.splits ?? []) {
     hr += num(s.stat?.homeRuns);
     pa += num(s.stat?.plateAppearances);
+    gp += num(s.stat?.gamesPlayed);
   }
   let phr = 0;
   let bf = 0;
@@ -342,7 +327,27 @@ async function fetchLeagueRates(season: number): Promise<{ hrPa: number; hrBf: n
   return {
     hrPa: pa > 0 ? hr / pa : 0.031,
     hrBf: bf > 0 ? phr / bf : 0.028,
+    hrG: gp > 0 ? (2 * hr) / gp : 2.2,
   };
+}
+
+async function fetchRangeHrG(season: number, from: string, to: string): Promise<number | null> {
+  try {
+    const data = await mlb<{
+      stats?: Array<{ splits?: Array<{ stat?: Record<string, unknown> }> }>;
+    }>(
+      `/api/v1/teams/stats?season=${season}&group=hitting&stats=byDateRange&startDate=${from}&endDate=${to}&sportIds=1`,
+    );
+    let hr = 0;
+    let gp = 0;
+    for (const s of data.stats?.[0]?.splits ?? []) {
+      hr += num(s.stat?.homeRuns);
+      gp += num(s.stat?.gamesPlayed);
+    }
+    return gp > 20 ? (2 * hr) / gp : null;
+  } catch {
+    return null;
+  }
 }
 
 async function fetchLastXGames(
@@ -371,6 +376,59 @@ async function fetchLastXGames(
   return map;
 }
 
+async function fetchGameLogs(ids: number[], season: number): Promise<Map<number, GameLogRow[]>> {
+  const unique = [...new Set(ids.filter((id) => Number.isFinite(id) && id > 0))];
+  const map = new Map<number, GameLogRow[]>();
+  if (unique.length === 0) return map;
+  const chunkSize = 15;
+  const chunks: number[][] = [];
+  for (let i = 0; i < unique.length; i += chunkSize) chunks.push(unique.slice(i, i + chunkSize));
+  const pages = await Promise.all(
+    chunks.map((chunk) =>
+      mlb<{
+        people?: Array<{
+          id: number;
+          stats?: Array<{
+            type?: { displayName?: string };
+            splits?: Array<{
+              date?: string;
+              opponent?: { id?: number };
+              stat?: Record<string, unknown>;
+            }>;
+          }>;
+        }>;
+      }>(
+        `/api/v1/people?personIds=${chunk.join(",")}&hydrate=stats(group=[hitting],type=[gameLog],season=${season})`,
+      ).catch(() => ({ people: [] })),
+    ),
+  );
+  const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : Number(v) || 0);
+  for (const page of pages) {
+    for (const p of page.people ?? []) {
+      const block = (p.stats ?? []).find((s) => (s.type?.displayName ?? "").toLowerCase().includes("gamelog"));
+      const rows: GameLogRow[] = [];
+      for (const sp of block?.splits ?? []) {
+        if (!sp.date) continue;
+        const st = sp.stat ?? {};
+        rows.push({
+          date: sp.date,
+          oppId: sp.opponent?.id ?? 0,
+          hr: num(st.homeRuns),
+          ab: num(st.atBats),
+          pa: num(st.plateAppearances),
+          h: num(st.hits),
+          tb: num(st.totalBases),
+          bb: num(st.baseOnBalls),
+          hbp: num(st.hitByPitch),
+          sf: num(st.sacFlies),
+        });
+      }
+      if (rows.length) map.set(p.id, rows);
+    }
+  }
+  return map;
+}
+
 async function fetchPeople(ids: number[], season: number): Promise<Map<number, MlbPerson>> {
   const unique = [...new Set(ids.filter((id) => Number.isFinite(id) && id > 0))];
   const map = new Map<number, MlbPerson>();
@@ -395,37 +453,42 @@ async function fetchPeople(ids: number[], season: number): Promise<Map<number, M
   return map;
 }
 
+type BoxArm = import("./bullpen").BoxArm;
+
 type BoxBits = {
   order: number[];
   hr: Map<number, number>;
   teamHr: { home: number; away: number };
+  awayArms: BoxArm[];
+  homeArms: BoxArm[];
 };
 
 async function fetchBoxscore(gamePk: number): Promise<BoxBits | null> {
   try {
     const box = await mlb<{
       teams?: {
-        home?: {
-          battingOrder?: number[];
-          teamStats?: { batting?: { homeRuns?: number } };
-          players?: Record<
-            string,
-            { person?: { id?: number }; stats?: { batting?: { homeRuns?: number } } }
-          >;
-        };
-        away?: {
-          battingOrder?: number[];
-          teamStats?: { batting?: { homeRuns?: number } };
-          players?: Record<
-            string,
-            { person?: { id?: number }; stats?: { batting?: { homeRuns?: number } } }
-          >;
-        };
+        home?: BoxSide;
+        away?: BoxSide;
       };
     }>(`/api/v1/game/${gamePk}/boxscore`);
     const hr = new Map<number, number>();
     const collect = (side: "home" | "away") => {
       const team = box.teams?.[side];
+      const arms: BoxArm[] = [];
+      const seen = new Set<number>();
+      for (const id of team?.pitchers ?? []) {
+        const p = team?.players?.[`ID${id}`] ?? team?.players?.[String(id)];
+        const personId = p?.person?.id ?? id;
+        if (!personId || seen.has(personId)) continue;
+        seen.add(personId);
+        const pit = p?.stats?.pitching;
+        arms.push({
+          id: personId,
+          name: p?.person?.fullName ?? "Pitcher",
+          pitches: num(pit?.numberOfPitches ?? pit?.pitchesThrown),
+          outs: num(pit?.outs),
+        });
+      }
       for (const p of Object.values(team?.players ?? {})) {
         const id = p.person?.id;
         const h = p.stats?.batting?.homeRuns;
@@ -434,6 +497,7 @@ async function fetchBoxscore(gamePk: number): Promise<BoxBits | null> {
       return {
         order: team?.battingOrder ?? [],
         teamHr: num(team?.teamStats?.batting?.homeRuns),
+        arms,
       };
     };
     const home = collect("home");
@@ -442,11 +506,52 @@ async function fetchBoxscore(gamePk: number): Promise<BoxBits | null> {
       order: [...away.order, ...home.order],
       hr,
       teamHr: { home: home.teamHr, away: away.teamHr },
+      awayArms: away.arms,
+      homeArms: home.arms,
     };
   } catch {
     return null;
   }
 }
+
+async function fetchYdayArms(date: string): Promise<Map<number, BoxArm[]>> {
+  const y = shiftISODate(date, -1);
+  const out = new Map<number, BoxArm[]>();
+  try {
+    const games = await fetchSchedule(y);
+    const boxes = await Promise.all(
+      games.map((g) => cached(`box:${g.gamePk}`, 6 * 60 * 60_000, () => fetchBoxscore(g.gamePk))),
+    );
+    for (let i = 0; i < games.length; i++) {
+      const box = boxes[i];
+      const g = games[i];
+      if (!box || !g) continue;
+      const awayId = g.teams?.away?.team?.id;
+      const homeId = g.teams?.home?.team?.id;
+      if (awayId) out.set(awayId, box.awayArms);
+      if (homeId) out.set(homeId, box.homeArms);
+    }
+  } catch {
+    /* yesterday optional */
+  }
+  return out;
+}
+
+type BoxSide = {
+  battingOrder?: number[];
+  pitchers?: number[];
+  teamStats?: { batting?: { homeRuns?: number } };
+  players?: Record<
+    string,
+    {
+      person?: { id?: number; fullName?: string };
+      stats?: {
+        batting?: { homeRuns?: number };
+        pitching?: { numberOfPitches?: number; pitchesThrown?: number; outs?: number };
+      };
+    }
+  >;
+};
 
 function weatherOf(
   game: MlbGame,
@@ -505,21 +610,17 @@ async function nwsHumidity(lat: number, lon: number, gameIso: string | null): Pr
   const key = `${lat.toFixed(2)},${lon.toFixed(2)}`;
   try {
     const points = await cached(`nws:pt:${key}`, 24 * 60 * 60_000, async () => {
-      const res = await fetch(`https://api.weather.gov/points/${lat.toFixed(4)},${lon.toFixed(4)}`, {
-        headers: { Accept: "application/geo+json", "User-Agent": "MoonshotHR/1.0" },
-      });
-      if (!res.ok) throw new Error(`nws points ${res.status}`);
-      const data = (await res.json()) as { properties?: { forecastHourly?: string } };
+      const data = await fetchJson<{ properties?: { forecastHourly?: string } }>(
+        `https://api.weather.gov/points/${lat.toFixed(4)},${lon.toFixed(4)}`,
+        { headers: { Accept: "application/geo+json", "User-Agent": "MoonshotHR/1.0" } },
+        8_000,
+      );
       const url = data.properties?.forecastHourly;
       if (!url) throw new Error("no hourly");
       return url;
     });
     const hourly = await cached(`nws:hr:${points}`, 45 * 60_000, async () => {
-      const res = await fetch(points, {
-        headers: { Accept: "application/geo+json", "User-Agent": "MoonshotHR/1.0" },
-      });
-      if (!res.ok) throw new Error(`nws hourly ${res.status}`);
-      return (await res.json()) as {
+      return await fetchJson<{
         properties?: {
           periods?: Array<{
             startTime?: string;
@@ -527,7 +628,7 @@ async function nwsHumidity(lat: number, lon: number, gameIso: string | null): Pr
             dewpoint?: { value?: number };
           }>;
         };
-      };
+      }>(points, { headers: { Accept: "application/geo+json", "User-Agent": "MoonshotHR/1.0" } }, 8_000);
     });
     const periods = hourly.properties?.periods ?? [];
     if (periods.length === 0) return null;
@@ -585,6 +686,10 @@ function pitcherInfo(
       bits.pitching.gs != null && bits.pitching.gs > 0 && bits.pitching.bf > 0
         ? bits.pitching.bf / bits.pitching.gs
         : null,
+    stuff: null,
+    penLine: null,
+    likelyExit: false,
+    starterPitches: null,
   };
 }
 
@@ -604,6 +709,7 @@ function makePitchMatrix(
     to: shiftISODate(mx.to, -1),
     pitcher: pitcherRows,
     hitter: hitterRows,
+    pitcherSpray: pitcher ? mx.pitcherSpray.get(pitcher.id) ?? null : null,
   };
 }
 
@@ -630,11 +736,14 @@ function parseMix(person: MlbPerson | undefined): {
   let brk = 0;
   let off = 0;
   const raw: Record<string, number> = {};
+  const veloBy: Record<string, number> = {};
   for (const s of splits) {
     const code = String(s.stat?.type?.code ?? "").toUpperCase();
     const pct = Number(s.stat?.percentage ?? 0);
     if (!code || !Number.isFinite(pct) || pct <= 0) continue;
     raw[code] = (raw[code] ?? 0) + pct;
+    const spd = Number(s.stat?.averageSpeed);
+    if (Number.isFinite(spd) && spd > 50) veloBy[code] = spd;
     const fam = pitchFamily(code);
     if (fam === "hard") hard += pct;
     else if (fam === "break") brk += pct;
@@ -655,7 +764,11 @@ function parseMix(person: MlbPerson | undefined): {
   const arsenal: ArsenalPitch[] =
     sum > 0
       ? Object.entries(raw)
-          .map(([code, pct]) => ({ code, pct: pct / sum }))
+          .map(([code, pct]) => ({
+            code,
+            pct: pct / sum,
+            velo: veloBy[code] ?? null,
+          }))
           .sort((a, b) => b.pct - a.pct)
       : [];
   return {
@@ -668,8 +781,8 @@ function parseMix(person: MlbPerson | undefined): {
   };
 }
 
-async function fetchYearPark(season: number): Promise<Map<number, number>> {
-  const map = new Map<number, number>();
+async function fetchYearPark(season: number): Promise<Map<number, YearParkSplit>> {
+  const map = new Map<number, YearParkSplit>();
   try {
     const data = await mlb<{
       stats?: Array<{
@@ -684,8 +797,8 @@ async function fetchYearPark(season: number): Promise<Map<number, number>> {
     );
     type Row = { hr: number; pa: number };
     const byTeam = new Map<number, { h: Row; a: Row }>();
-    const lgH = { hr: 0, pa: 0 };
-    const lgA = { hr: 0, pa: 0 };
+    let lgH = { hr: 0, pa: 0 };
+    let lgA = { hr: 0, pa: 0 };
     for (const s of data.stats?.[0]?.splits ?? []) {
       const id = s.team?.id;
       if (!id) continue;
@@ -702,6 +815,8 @@ async function fetchYearPark(season: number): Promise<Map<number, number>> {
       }
       byTeam.set(id, row);
     }
+    const lgHome = lgH.pa > 0 ? lgH.hr / lgH.pa : 0;
+    const lgRoad = lgA.pa > 0 ? lgA.hr / lgA.pa : 0;
     const lgRatio =
       lgH.pa > 0 && lgA.pa > 0 && lgA.hr > 0 ? lgH.hr / lgH.pa / (lgA.hr / lgA.pa) : 1;
     for (const [teamId, row] of byTeam) {
@@ -712,7 +827,13 @@ async function fetchYearPark(season: number): Promise<Map<number, number>> {
       const raw = 100 * (ratio / Math.max(lgRatio, 0.5));
       const three = PARK_HR_FACTOR[venueId] ?? 100;
       const pa = Math.min(row.h.pa, row.a.pa);
-      map.set(venueId, shrinkYearPark(three, raw, pa));
+      const home = lgHome > 0 ? row.h.hr / row.h.pa / lgHome : three / 100;
+      const road = lgRoad > 0 ? row.a.hr / row.a.pa / lgRoad : 1;
+      map.set(venueId, {
+        idx: shrinkYearPark(three, raw, pa),
+        home: Math.round(home * 100) / 100,
+        road: Math.round(road * 100) / 100,
+      });
     }
   } catch {
     return map;
@@ -729,16 +850,16 @@ export async function loadBoard(dateInput?: string, opts?: { lean?: boolean }): 
   const lean = !!opts?.lean;
   const cacheKey = lean
     ? `board:${MODEL_VERSION}:lean1:${date}`
-    : `board:${MODEL_VERSION}:sig29:${date}`;
+    : `board:${MODEL_VERSION}:sig38:${date}`;
   const built = await cached(cacheKey, ttl, () => buildBoard(date, { lean }));
-  return sealBoard(built);
+  return sealBoard(built, { lean });
 }
 
-function sealBoard(built: BoardPayload): BoardPayload {
+function sealBoard(built: BoardPayload, opts?: { lean?: boolean }): BoardPayload {
   const predictions = built.predictions.map((p) => ({ ...p }));
   const games = built.games;
   let lock = readLock(built.date);
-  if (!lock && canLock(built)) {
+  if (!lock && !opts?.lean && canLock(built)) {
     lock = writeLock(
       lockFromBoard({
         ...built,
@@ -763,7 +884,23 @@ function sealBoard(built: BoardPayload): BoardPayload {
     targets: v.targets
       .map((t) => {
         const hit = byLook.get(`${t.playerId}:${t.gamePk}`);
-        return hit ? { ...t, pHr: hit.pHr, grade: hit.signal.grade } : t;
+        return hit
+          ? {
+              ...t,
+              pHr: hit.pHr,
+              grade: hit.signal.grade,
+              bvp: hit.signal.decision.bvp,
+              bvpGrade: hit.signal.decision.bvpGrade,
+              both20: hit.signal.decision.both20,
+              mixHr: hit.signal.decision.mixHr,
+              intel: hit.forecast?.score ?? t.intel,
+              keyPitch: hit.signal.decision.both20
+                ? hit.signal.keyMatch
+                  ? `${hit.signal.keyMatch.name} ${(hit.signal.keyMatch.barrelPct ?? 0).toFixed(0)}×${(hit.signal.keyMatch.pitBarrelPct ?? 0).toFixed(0)}`
+                  : t.keyPitch
+                : t.keyPitch,
+            }
+          : t;
       })
       .sort((a, b) => b.pHr - a.pHr),
   }));
@@ -818,6 +955,19 @@ function makeSummary(
   const top12Rate =
     top12Graded.length > 0 ? top12Graded.filter(hit).length / top12Graded.length : null;
   const restRate = restGraded.length > 0 ? restGraded.filter(hit).length / restGraded.length : null;
+  const hrBatters = graded.filter(hit);
+  const hrN = graded.length > 0 ? hrBatters.length : null;
+  const capture12 =
+    hrN && hrN > 0 ? top12Graded.filter(hit).length / hrN : null;
+  const cutGraded = graded.filter((p) => p.signal.decision.pass);
+  const cutHits = cutGraded.filter(hit).length;
+  const cutN = graded.length > 0 ? cutGraded.length : null;
+  const cutRate = cutGraded.length > 0 ? cutHits / cutGraded.length : null;
+  const captureCut = hrN && hrN > 0 ? cutGraded.filter(hit).length / hrN : null;
+  const yardsGraded = graded.filter((p) => p.signal.decision.yards);
+  const yardsHits = yardsGraded.filter(hit).length;
+  const yardsN = graded.length > 0 ? yardsGraded.length : null;
+  const yardsRate = yardsGraded.length > 0 ? yardsHits / yardsGraded.length : null;
   const brier =
     graded.length > 0
       ? graded.reduce((s, p) => {
@@ -825,6 +975,14 @@ function makeSummary(
           return s + (p.pHr - y) ** 2;
         }, 0) / graded.length
       : null;
+  const brierRef =
+    graded.length > 0
+      ? graded.reduce((s, p) => {
+          const y = hit(p) ? 1 : 0;
+          return s + (GAME_HR_RATE - y) ** 2;
+        }, 0) / graded.length
+      : null;
+  const brierSkill = brier != null && brierRef && brierRef > 0 ? 1 - brier / brierRef : null;
   const calibration =
     graded.length > 0
       ? CAL_BANDS.map((b) => {
@@ -853,8 +1011,18 @@ function makeSummary(
     actualRate,
     top12Rate,
     restRate,
+    hrN,
+    capture12,
+    cutN,
+    cutHits: graded.length > 0 ? cutHits : null,
+    cutRate,
+    captureCut,
+    yardsN,
+    yardsHits: graded.length > 0 ? yardsHits : null,
+    yardsRate,
     actualHrLeaders,
     brier,
+    brierSkill,
     calibration,
   };
 }
@@ -870,34 +1038,51 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
   const ttlSlow = 20 * 60_000;
 
   const weekFrom = shiftISODate(date, -10);
-  const weekTo = date;
-  const mxFrom = shiftISODate(today, -45);
-  const mxTo = shiftISODate(today, 1);
-  const [games, recentLineups, league, recentMap, savant, weekMap, handSplits, yearPark, pitchMx] =
+  const weekTo = shiftISODate(date, -1);
+  const mxFrom = shiftISODate(date, -45);
+  const mxTo = shiftISODate(date, -1);
+  const carryFrom = shiftISODate(date, -8);
+  const carryTo = shiftISODate(date, -1);
+  const [games, recentLineups, league, recentMap, savant, weekMap, handSplits, yearPark, pitchMx, last7HrG] =
     await Promise.all([
       cached(`sked:${date}`, ttlSchedule, () => fetchSchedule(date)),
       cached(`recentLu:${date}`, ttlSlow, () => fetchRecentLineups(date)),
-      cached(`league:${season}`, ttlSlow, () => fetchLeagueRates(season)),
-      cached(`l10:${season}`, ttlSlow, () => fetchLastXGames(season)),
+      cached(`league:v2:${season}`, ttlSlow, () => fetchLeagueRates(season)),
+      cached(`l10:${season}:${isPast ? date : "live"}`, ttlSlow, () =>
+        isPast ? Promise.resolve(new Map<number, { hr: number; pa: number; games: number }>()) : fetchLastXGames(season),
+      ),
       cached(`savant:v6:${season}`, 45 * 60_000, () => fetchSavant(season)),
-      cached(`week:v13:${weekFrom}:${weekTo}`, 30 * 60_000, () =>
+      cached(`week:v14:${weekFrom}:${weekTo}`, 30 * 60_000, () =>
         lean
           ? Promise.resolve(new Map() as Awaited<ReturnType<typeof fetchWeekContact>>)
           : fetchWeekContact(season, weekFrom, weekTo),
       ),
       cached(`splits:${season}`, 45 * 60_000, () => fetchHandSplits(season)),
-      cached(`parkYear:v1:${season}`, 45 * 60_000, () => fetchYearPark(season)),
-      cached(`pitchMx:v1:${mxFrom}:${mxTo}`, 60 * 60_000, () =>
+      cached(`parkYear:v2:${season}`, 45 * 60_000, () => fetchYearPark(season)),
+      cached(`pitchMx:v3:${mxFrom}:${mxTo}`, 60 * 60_000, () =>
         lean
           ? Promise.resolve({
               from: mxFrom,
               to: mxTo,
               batters: new Map(),
               pitchers: new Map(),
+              pitcherSpray: new Map(),
             } as Awaited<ReturnType<typeof fetchPitchMatrix>>)
           : fetchPitchMatrix(mxFrom, mxTo, season),
       ),
+      cached(`carry:${carryFrom}:${carryTo}`, ttlSlow, () => fetchRangeHrG(season, carryFrom, carryTo)),
     ]);
+
+  const seasonHrG = league.hrG || 2.2;
+  const last7 = last7HrG ?? seasonHrG;
+  const carry = Math.min(1.18, Math.max(0.82, seasonHrG > 0 ? last7 / seasonHrG : 1));
+  const leagueOut = {
+    hrPa: league.hrPa,
+    hrBf: league.hrBf,
+    last7HrG: last7,
+    seasonHrG,
+    carry,
+  };
 
   type ResolvedGame = {
     game: MlbGame;
@@ -948,7 +1133,8 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
   }
 
   const peopleKey = `people:ars:${season}:${[...new Set(peopleIds)].sort((a, b) => a - b).join(",")}`;
-  const [people, boxes, humidityMap] = await Promise.all([
+  const batterIds = [...new Set(resolved.flatMap((g) => [...g.awayLu, ...g.homeLu].map((p) => p.id)))];
+  const [people, boxes, humidityMap, logMap] = await Promise.all([
     cached(peopleKey, ttlSlow, () => fetchPeople(peopleIds, season)),
     Promise.all(
       liveOrFinalPks.map(async (pk) => {
@@ -959,6 +1145,9 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
     ),
     cached(`humid:v1:${date}`, isToday ? 45 * 60_000 : 30 * 60_000, () =>
       isPast || lean ? Promise.resolve(new Map<number, HumidBits>()) : fetchHumidityMap(games),
+    ),
+    cached(`logs:${date}`, ttlSlow, () =>
+      lean ? Promise.resolve(new Map<number, GameLogRow[]>()) : fetchGameLogs(batterIds, season),
     ),
   ]);
   const boxMap = new Map(boxes);
@@ -984,6 +1173,30 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
     for (const [id, rows] of extra) pitchMx.pitchers.set(id, rows);
   }
 
+  const [stuffMap, ydayArms] = lean
+    ? [new Map<number, import("./stuff").StuffCheck>(), new Map<number, BoxArm[]>()]
+    : await Promise.all([
+        cached(`stuff:${date}`, 20 * 60_000, () => fetchStuffMap(starterIds, date, season)),
+        cached(`ydaypen:${date}`, 20 * 60_000, () => fetchYdayArms(date)),
+      ]);
+  const liveStuff = new Map<string, import("./stuff").StuffCheck>();
+  if (!lean) {
+    const jobs: Promise<void>[] = [];
+    for (const g of resolved) {
+      if (g.status !== "live") continue;
+      const ids = [g.game.teams?.away?.probablePitcher?.id, g.game.teams?.home?.probablePitcher?.id];
+      for (const id of ids) {
+        if (!id) continue;
+        jobs.push(
+          overlayLiveStuff(g.game.gamePk, id, stuffMap.get(id) ?? null).then((s) => {
+            if (s) liveStuff.set(`${g.game.gamePk}:${id}`, s);
+          }),
+        );
+      }
+    }
+    await Promise.all(jobs);
+  }
+
   const predictions: PlayerPrediction[] = [];
   const gameCards: GameCard[] = [];
 
@@ -992,7 +1205,9 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
     const venueId = game.venue?.id ?? 0;
     const venueName = game.venue?.name ?? "Unknown park";
     const weather = weatherOf(game, humidityMap.get(venueId) ?? null);
-    const yearBase = yearPark.get(venueId) ?? null;
+    const split = yearPark.get(venueId) ?? null;
+    const yearBase = split?.idx ?? null;
+    const hrSplit = parkHomeRoad(venueId, split);
     const gameAir = dailyParkAir(
       venueId,
       undefined,
@@ -1010,6 +1225,9 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
       airIndex: gameAir.index,
       deltaHr: gameAir.deltaHr,
       airLabel: gameAir.label,
+      homeHr: hrSplit.home,
+      roadHr: hrSplit.road,
+      leagueCarry: carry,
     };
     const awayTeam = game.teams?.away?.team;
     const homeTeam = game.teams?.home?.team;
@@ -1035,7 +1253,39 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
       game.teams?.home?.probablePitcher?.fullName ?? "",
       homePitSavant,
     );
+    if (awayPitcher) {
+      awayPitcher.stuff =
+        liveStuff.get(`${game.gamePk}:${awayPitcher.id}`) ?? stuffMap.get(awayPitcher.id) ?? null;
+    }
+    if (homePitcher) {
+      homePitcher.stuff =
+        liveStuff.get(`${game.gamePk}:${homePitcher.id}`) ?? stuffMap.get(homePitcher.id) ?? null;
+    }
     const box = boxMap.get(game.gamePk) ?? null;
+    const penAway = buildPen({
+      starterId: awayPitcher?.id ?? null,
+      starterName: awayPitcher?.name ?? "Starter",
+      today: box?.awayArms ?? [],
+      yday: ydayArms.get(awayTeam?.id ?? 0) ?? [],
+      live: g.status === "live",
+    });
+    const penHome = buildPen({
+      starterId: homePitcher?.id ?? null,
+      starterName: homePitcher?.name ?? "Starter",
+      today: box?.homeArms ?? [],
+      yday: ydayArms.get(homeTeam?.id ?? 0) ?? [],
+      live: g.status === "live",
+    });
+    if (awayPitcher) {
+      awayPitcher.penLine = penAway.line;
+      awayPitcher.likelyExit = penAway.likelyExit;
+      awayPitcher.starterPitches = penAway.starterPitches;
+    }
+    if (homePitcher) {
+      homePitcher.penLine = penHome.line;
+      homePitcher.likelyExit = penHome.likelyExit;
+      homePitcher.starterPitches = penHome.starterPitches;
+    }
 
     const pushSide = (
       lineup: MlbLineupPlayer[],
@@ -1047,13 +1297,21 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
       lineup.forEach((lu, idx) => {
         const person = people.get(lu.id);
         const { hitting } = personStats(person);
-        const recent = recentMap.get(lu.id) ?? null;
+        const priorLogs = logsBefore(logMap.get(lu.id) ?? [], date);
+        const windows = buildSplits(priorLogs, opponent?.id, opponent?.abbreviation);
+        const fromLogs = windows.season;
+        const batterHr = fromLogs.pa > 0 ? fromLogs.hr : hitting.hr;
+        const batterPa = fromLogs.pa > 0 ? fromLogs.pa : hitting.pa;
+        const recent =
+          windows.g10.pa > 0
+            ? { hr: windows.g10.hr, pa: windows.g10.pa, games: windows.g10.games }
+            : recentMap.get(lu.id) ?? null;
         const order = idx + 1;
         const bats = asHand(person?.batSide?.code);
-        const batSavant = savant.batters.get(lu.id) ?? null;
-        const pitSavant = opposingPitcher ? savant.pitchers.get(opposingPitcher.id) ?? null : null;
+        const batSavant = isPast ? null : savant.batters.get(lu.id) ?? null;
+        const pitSavant = isPast || !opposingPitcher ? null : savant.pitchers.get(opposingPitcher.id) ?? null;
         const week = weekMap.get(lu.id) ?? null;
-        const splits = handSplits.get(lu.id) ?? null;
+        const splits = isPast ? null : handSplits.get(lu.id) ?? null;
         const ev100 = ev100Flags(week);
         const tanks = tankFlags(week);
         const shape = weekShape(week);
@@ -1076,8 +1334,8 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
           (recent?.games ?? 0) >= 5;
         const mx = makePitchMatrix(pitchMx, opposingPitcher, lu.id);
         const scored = scoreMatchup({
-          batterHr: hitting.hr,
-          batterPa: hitting.pa,
+          batterHr,
+          batterPa,
           recentHr: recent?.hr ?? null,
           recentPa: recent?.pa ?? null,
           pitcherHr: opposingPitcher?.hr ?? null,
@@ -1107,6 +1365,7 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
           hitterMatrix: mx?.hitter ?? null,
           yearPark: yearBase,
           condition: weather.condition,
+          leaguePrior: GAME_HR_RATE * carry,
           humidity: weather.humidity,
           dewpoint: weather.dewpoint,
         });
@@ -1135,12 +1394,16 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
             airIndex: Math.round(scored.factors.park.value * 100),
             deltaHr: (scored.factors.park.value * 100 - 100) / 40,
             airLabel: scored.factors.park.label,
+            homeHr: hrSplit.home,
+            roadHr: hrSplit.road,
+            leagueCarry: carry,
           },
           weather,
           lineupSource: g.lineupSource,
           ...scored,
           season: hitting,
           recent,
+          splits: windows,
           actualHr: actual == null ? null : actual,
           statcast: batSavant
             ? {
@@ -1243,6 +1506,7 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
                 batDelta: filters.batDelta,
                 airEvDelta: filters.airDelta,
                 nHr: week.nHr,
+                lastGameHr: week.games[0]?.nHr ?? 0,
                 nFly: week.nFly,
                 hrFb: week.nFly >= 8 ? (100 * week.nHr) / week.nFly : null,
                 parkTrue: parkTrue.n,
@@ -1253,6 +1517,7 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
                 loudOuts: week.loudOuts,
                 maxEv: week.maxEv,
                 maxDist: week.maxDist,
+                pullHr: week.pullHr,
                 vsPitch: Object.entries(week.byPitch)
                   .map(([code, side]) => ({
                     code,
@@ -1290,9 +1555,14 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
               bvpLayers: [],
               both20: false,
               mixHr: 0,
+              yards: false,
+              converge: 0,
+              env: 0,
+              kasper: "",
             },
           },
           forecast: EMPTY_FORECAST,
+          odds: null,
         });
       });
     };
@@ -1330,6 +1600,8 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
       lineupSource: g.lineupSource,
       combinedXhr,
       actualHr,
+      penAway,
+      penHome,
     });
   }
 
@@ -1338,14 +1610,27 @@ async function buildBoard(date: string, opts?: { lean?: boolean }): Promise<Boar
     p.signal = buildHrSignal(p);
     p.forecast = buildForecast(p);
   }
+  markTickets(predictions);
+  for (const p of predictions) {
+    p.paSim = simPa(p);
+  }
+  try {
+    const { studyPlayer } = await import("./walk-forward");
+    for (const p of predictions) {
+      p.book = studyPlayer(p.playerId, p.pitcher?.id);
+    }
+  } catch {
+    /* book optional */
+  }
   const sortedGames = gameCards.sort((a, b) => a.gameTime.localeCompare(b.gameTime));
   const vulnerable = rankVulnerablePitchers(sortedGames, predictions, savant.pitchers);
+  overlayLogit(predictions, date);
 
   return {
     date,
     season,
     generatedAt: new Date().toISOString(),
-    league,
+    league: leagueOut,
     games: sortedGames,
     predictions,
     vulnerable,

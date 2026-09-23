@@ -12,6 +12,5 @@ artifacts
 attachments
 data/walk/*.json
 !data/walk/.gitkeep
-.project_id
-.node_modules.lock
-public/__grok
+data/daily/*.json
+!data/daily/.gitkeep

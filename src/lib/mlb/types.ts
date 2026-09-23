@@ -1,5 +1,16 @@
 import type { Forecast } from "./intel";
-export type { Forecast };
+import type { BookStudy } from "./book-study";
+import type { SplitBoard } from "./splits";
+import type { StuffCheck } from "./stuff";
+import type { PenCard } from "./bullpen";
+export type { Forecast, BookStudy, SplitBoard, StuffCheck, PenCard };
+
+export type PaSim = {
+  p: number;
+  pLow: number;
+  pHigh: number;
+  line: string;
+};
 
 export type LineupSource = "official" | "projected";
 
@@ -17,6 +28,7 @@ export type Factor = {
 export type ArsenalPitch = {
   code: string;
   pct: number;
+  velo?: number | null;
 };
 
 export type PitchMixRow = {
@@ -29,6 +41,14 @@ export type PitchMixRow = {
   iso: number | null;
   woba: number | null;
   hr: number;
+  hrPct: number | null;
+};
+
+export type PitcherSpray = {
+  lf: number;
+  cf: number;
+  rf: number;
+  n: number;
 };
 
 export type PitchMatrix = {
@@ -36,6 +56,7 @@ export type PitchMatrix = {
   to: string;
   pitcher: PitchMixRow[];
   hitter: PitchMixRow[];
+  pitcherSpray?: PitcherSpray | null;
 };
 
 export type HrCheck = {
@@ -80,6 +101,10 @@ export type HrDecision = {
   bvpLayers: Array<{ key: string; pass: boolean; line: string }>;
   both20: boolean;
   mixHr: number;
+  yards: boolean;
+  converge: number;
+  env: number;
+  kasper: string;
 };
 
 export type HrSignal = {
@@ -115,6 +140,10 @@ export type PitcherInfo = {
   whip: number | null;
   gs: number | null;
   tbfPerStart: number | null;
+  stuff: StuffCheck | null;
+  penLine: string | null;
+  likelyExit: boolean;
+  starterPitches: number | null;
 };
 
 export type ParkInfo = {
@@ -124,6 +153,9 @@ export type ParkInfo = {
   airIndex: number;
   deltaHr: number;
   airLabel: string;
+  homeHr: number | null;
+  roadHr: number | null;
+  leagueCarry: number;
 };
 
 export type WeatherInfo = {
@@ -135,6 +167,31 @@ export type WeatherInfo = {
 };
 
 export type SideBarrels = { bbe: number; barrels: number; pct: number | null };
+
+export type BookId = "fd" | "dk" | "mg" | "rv" | "cz" | "eb" | "bv" | "b3" | "pn" | "cr" | "lv" | "bo" | "be" | "nv";
+
+export type BookLine = {
+  id: BookId;
+  book: string;
+  american: number;
+  implied: number;
+  point: number;
+  under: number | null;
+  fair: number | null;
+  ev: number | null;
+};
+
+export type PlayerOdds = {
+  lines: BookLine[];
+  consensus: number | null;
+  fair: number | null;
+  pBet: number | null;
+  ev: number | null;
+  edge: number | null;
+  bestId: BookId | null;
+  ticket: "play" | "lean" | null;
+  why: string | null;
+};
 
 export type PlayerPrediction = {
   playerId: number;
@@ -251,6 +308,7 @@ export type PlayerPrediction = {
     batDelta: number | null;
     airEvDelta: number | null;
     nHr: number;
+    lastGameHr: number;
     nFly: number;
     hrFb: number | null;
     parkTrue: number;
@@ -261,6 +319,7 @@ export type PlayerPrediction = {
     loudOuts: number;
     maxEv: number;
     maxDist: number;
+    pullHr: number;
     vsPitch: Array<{ code: string; bbe: number; barrels: number; pct: number | null }>;
   } | null;
   handSplit: {
@@ -270,6 +329,16 @@ export type PlayerPrediction = {
   pitchMatrix: PitchMatrix | null;
   signal: HrSignal;
   forecast: Forecast;
+  odds: PlayerOdds | null;
+  ticket?: "play" | "lean" | null;
+  ticketWhy?: string | null;
+  book?: BookStudy | null;
+  splits?: SplitBoard | null;
+  paSim?: PaSim | null;
+  lookCall?: "look" | "watch" | "sit";
+  lookWhy?: string;
+  lookBits?: { power: boolean; mix: boolean; park: boolean; order: boolean };
+  lookScore?: number;
 };
 
 export type GameCard = {
@@ -297,6 +366,8 @@ export type GameCard = {
   lineupSource: LineupSource;
   combinedXhr: number;
   actualHr: number | null;
+  penAway: PenCard | null;
+  penHome: PenCard | null;
 };
 
 export type CalibRow = {
@@ -338,9 +409,15 @@ export type WalkDay = {
   meanP: number;
   actualRate: number | null;
   brier: number | null;
+  brierSkill: number | null;
+  hrN: number | null;
+  capture12: number | null;
   lockStatus: LockState["status"];
   baselineHits: number | null;
   baselineN: number | null;
+  cutHits: number | null;
+  mixHits: number | null;
+  yardsHits: number | null;
 };
 
 export type WalkWindow = {
@@ -366,10 +443,37 @@ export type WalkWindow = {
   last10Rate: number;
   last10Hits: number;
   last10Looks: number;
+  last10Capture: number;
   cut16Rate: number;
   cut16N: number;
   brier: number;
   skill: number;
+  hrN: number;
+  capture12: number;
+  capture6: number;
+  ap: number;
+  ece: number;
+  logLossSkill: number;
+  cutLooks: number;
+  cutHits: number;
+  cutRate: number;
+  cutCapture: number;
+  yardsLooks: number;
+  yardsHits: number;
+  yardsRate: number;
+  yardsCapture: number;
+  mixLooks: number;
+  mixHits: number;
+  mixRate: number;
+  mixCapture: number;
+  convLooks: number;
+  convHits: number;
+  convRate: number;
+  convCapture: number;
+  envLooks: number;
+  envHits: number;
+  envRate: number;
+  envCapture: number;
 };
 
 export type WalkForward = {
@@ -387,11 +491,20 @@ export type WalkForward = {
   brier: number;
   skill: number;
   logLoss: number;
+  hrN: number;
+  capture12: number;
+  capture6: number;
+  ap: number;
+  ece: number;
+  logLossSkill: number;
   lift: number;
   liftLo: number;
   liftHi: number;
   lockedDays: number;
   rebuiltDays: number;
+  lockedReady: boolean;
+  cutBeatsLast10: boolean;
+  last10Capture: number;
   baselineTop12Looks: number;
   baselineTop12Hits: number;
   baselineTop12Rate: number;
@@ -400,6 +513,26 @@ export type WalkForward = {
   cut16Rate: number;
   below16N: number;
   below16Rate: number;
+  cutLooks: number;
+  cutHits: number;
+  cutRate: number;
+  cutCapture: number;
+  yardsLooks: number;
+  yardsHits: number;
+  yardsRate: number;
+  yardsCapture: number;
+  mixLooks: number;
+  mixHits: number;
+  mixRate: number;
+  mixCapture: number;
+  convLooks: number;
+  convHits: number;
+  convRate: number;
+  convCapture: number;
+  envLooks: number;
+  envHits: number;
+  envRate: number;
+  envCapture: number;
   bestDays: WalkDay[];
   worstDays: WalkDay[];
   calibration: CalibRow[];
@@ -407,6 +540,7 @@ export type WalkForward = {
   windows: WalkWindow[];
   pending: number;
   totalDays: number;
+  laneDays: number;
 };
 
 export type PitcherTarget = {
@@ -418,6 +552,11 @@ export type PitcherTarget = {
   pHr: number;
   grade: HrSignal["grade"];
   keyPitch: string | null;
+  bvp: number;
+  bvpGrade: HrDecision["bvpGrade"];
+  both20: boolean;
+  mixHr: number;
+  intel: number;
 };
 
 export type VulnerablePitcher = {
@@ -444,6 +583,11 @@ export type VulnerablePitcher = {
   pitcherFactor: number;
   combinedXhr: number;
   score: number;
+  intel: number;
+  bvpMean: number;
+  both20n: number;
+  mixHrMax: number;
+  layers: Array<{ key: string; pass: boolean; line: string }>;
   grade: "loud" | "live" | "thin";
   why: string;
   targets: PitcherTarget[];
@@ -453,7 +597,7 @@ export type BoardPayload = {
   date: string;
   season: number;
   generatedAt: string;
-  league: { hrPa: number; hrBf: number };
+  league: { hrPa: number; hrBf: number; last7HrG: number; seasonHrG: number; carry: number };
   games: GameCard[];
   predictions: PlayerPrediction[];
   vulnerable: VulnerablePitcher[];
@@ -472,6 +616,16 @@ export type BoardPayload = {
     actualRate: number | null;
     top12Rate: number | null;
     restRate: number | null;
+    hrN: number | null;
+    capture12: number | null;
+    cutN: number | null;
+    cutHits: number | null;
+    cutRate: number | null;
+    captureCut: number | null;
+    yardsN: number | null;
+    yardsHits: number | null;
+    yardsRate: number | null;
+    brierSkill: number | null;
     actualHrLeaders: Array<{
       playerId: number;
       name: string;

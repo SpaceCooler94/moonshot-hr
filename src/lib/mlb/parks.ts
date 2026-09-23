@@ -93,6 +93,22 @@ export function shrinkYearPark(threeYear: number, rawYear: number, pa: number): 
   return Math.round(Math.min(128, Math.max(80, threeYear + w * (rawYear - threeYear))));
 }
 
+export type YearParkSplit = {
+  idx: number;
+  home: number;
+  road: number;
+};
+
+export function parkHomeRoad(
+  venueId: number,
+  split?: YearParkSplit | null,
+): { home: number | null; road: number | null } {
+  if (split) return { home: split.home, road: split.road };
+  const f = PARK_HR_FACTOR[venueId];
+  if (!f) return { home: null, road: null };
+  return { home: Math.round(f) / 100, road: null };
+}
+
 export function parkHrFactor(
   venueId: number | undefined | null,
   bats?: string,
@@ -359,6 +375,52 @@ export function parkTrueCount(venueId: number, shots: AirShot[] | null | undefin
   const usable = shots.filter((s) => s.dist >= 250 || s.hr || (s.ev >= 100 && s.la >= 18));
   const n = usable.filter((s) => shotClearsPark(venueId, s)).length;
   return { n, of: usable.length };
+}
+
+export type SprayOverlapInput = {
+  bats: "L" | "R" | "S";
+  throws: "L" | "R" | "S" | null;
+  venueId: number;
+  pullPct: number | null;
+  pullHr: number;
+  parkTrue: number;
+  windKind: string;
+  windLine: string;
+  homeHr: number | null;
+  roadHr: number | null;
+  pitcherName: string;
+  lfHr: number;
+  rfHr: number;
+};
+
+export function sprayOverlapFrom(input: SprayOverlapInput): { pass: boolean; line: string } {
+  const bats = input.bats === "S" ? (input.throws === "L" ? "L" : "R") : input.bats;
+  const pullSide: "LF" | "RF" = bats === "L" ? "RF" : "LF";
+  const fence = PARK_FENCE[input.venueId];
+  const porchFt = fence ? (pullSide === "RF" ? fence.rf : fence.lf) : null;
+  const porch = porchFt != null && porchFt <= 322;
+  const allowed = pullSide === "RF" ? input.rfHr : input.lfHr;
+  const wind = input.windKind === "pull-out";
+  const parkTrue = input.parkTrue >= 2;
+  const pullOk = input.pullPct != null && input.pullPct >= 38;
+  const homeJuicy = (input.homeHr ?? 0) >= 1.15;
+  const pass =
+    pullOk && (porch || wind || homeJuicy || parkTrue) && (allowed >= 3 || input.pullHr >= 2 || parkTrue);
+  const arm = input.pitcherName.trim().split(/\s+/).pop() || "SP";
+  const bits: string[] = [`${bats}HB pull ${pullSide}`];
+  if (input.pullPct != null) bits.push(`${input.pullPct.toFixed(0)}% pull last 10`);
+  if (input.pullHr) bits.push(`${input.pullHr} pull HR`);
+  if (allowed) bits.push(`${arm} ${allowed} HR to ${pullSide}`);
+  if (porchFt) bits.push(`${porchFt} ft ${pullSide}`);
+  if (input.homeHr != null) {
+    bits.push(
+      input.roadHr != null
+        ? `${input.homeHr.toFixed(2)} home / ${input.roadHr.toFixed(2)} road`
+        : `${input.homeHr.toFixed(2)} home HR`,
+    );
+  }
+  if (wind && input.windLine) bits.push(input.windLine);
+  return { pass, line: bits.join(" · ") };
 }
 
 export function windSprayMatch(

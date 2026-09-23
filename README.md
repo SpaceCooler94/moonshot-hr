@@ -25,50 +25,18 @@ npm run daily
 
 Writes `data/daily/YYYY-MM-DD.json` — today’s games and probable pitchers (ET). Pass a date: `npm run daily 2026-08-29`.
 
-### Ranked P(HR) names
-
-```bash
-npm run phr
-npm run phr -- 2026-09-17
-npm run phr -- --n 20 --min 0.12 --json
-```
-
-Reads `data/daily/board-YYYY-MM-DD.json` and prints names + P vs the starter.
-
-### Steamer-lens WebUI
-
-Static overlay on the published board. Posted `pHr` is unchanged.
-
-- Local: after `npm run dev`, open [http://localhost:8080/moonshot-steamer.html](http://localhost:8080/moonshot-steamer.html)
-- File: [`public/moonshot-steamer.html`](public/moonshot-steamer.html)
-- Source boards: GitHub raw `data/daily/board-YYYY-MM-DD.json` (or drop a local board JSON on the header)
-
-Columns: P vs SP, park-neutral P, full-game sketch, regression weight `PA/(PA+160)`, recency (`factors.form`), platoon, park. No FanGraphs / Steamer feed is fetched.
-
-Posted P is **vs the starter**. Model `v14-cal` coefficients live in `src/lib/mlb/prob.ts`. The lock-window grade that produced them is `data/cal/v14-cal.json`.
-
-### Scriptable (iOS)
-
-[`scripts/scriptable-phr.js`](scripts/scriptable-phr.js) — paste into Scriptable.
-
-- **Widget** — compact P(HR) vs starter list.
-- **Run in the app** — Steamer-lens WebUI (park-neutral P, full-game sketch, regress-w, recency, platoon). JSON/CSV saved under Scriptable iCloud `moonshot/`.
-- Parameter examples: `n=12 min=0.12`, `grade=loud night official`, `ui=table` for the native table instead of the WebView.
-
-Same raw board URL as the HTML view.
-
 ### GitHub Actions
 
 | Workflow | When | What |
 |---|---|---|
 | **CI** | every push / PR | typecheck + model unit tests |
-| **Daily slate** | 9:00 ET lock + 4:00 PM ET weather refresh, or Run workflow | tests, then fetch the slate / board and commit `data/daily/` |
+| **Daily slate** | 10:00 ET, or Run workflow | same tests, then fetch the slate and upload it as an artifact |
 
 On GitHub: **Actions → Daily slate → Run workflow**. Download the artifact for that morning’s card.
 
 ### Backtest
 
-Season walk-forward is saved under `data/walk/`. The first fill scores completed days in chunks. After that, opening the app **does not re-score** days it already graded. Only new finals (and a model-version change) add work. Graded P is the locked P when a lock file exists.
+Season walk-forward is saved under `data/walk/`. The first fill scores completed days in chunks. After that, opening the app **does not re-score** days it already graded. Only new finals (and a model-version change) add work.
 
 Copy `data/walk/` if you move machines.
 
@@ -78,7 +46,6 @@ Copy `data/walk/` if you move machines.
 |---|---|
 | `npm run dev` | Live board |
 | `npm run daily` | Headless slate JSON |
-| `npm run phr` | Rank P(HR) names from a board file |
 | `npm run typecheck` | TypeScript |
 | `npm test` | Includes model tests (shrink, tanks, 20×20, fences) |
 

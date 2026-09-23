@@ -34,8 +34,9 @@ export function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         className={cn(
-          "fixed z-50 flex flex-col bg-surface text-fg shadow-hair",
-          "inset-x-0 bottom-0 max-h-[92vh] rounded-t-3xl",
+          "fixed z-50 flex flex-col overflow-hidden bg-surface text-fg shadow-hair",
+          "inset-0 h-[100dvh] max-h-[100dvh] rounded-none",
+          "pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]",
           "md:inset-y-0 md:right-0 md:left-auto md:h-full md:w-[min(100%,38rem)] md:max-h-none md:rounded-none md:rounded-l-3xl",
           "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -46,7 +47,7 @@ export function DialogContent({
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70">
+        <DialogPrimitive.Close className="absolute top-[max(1rem,env(safe-area-inset-top))] right-[max(1rem,env(safe-area-inset-right))] flex size-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70">
           <X className="size-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
