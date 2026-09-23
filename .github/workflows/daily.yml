@@ -41,7 +41,7 @@ jobs:
         run: node scripts/daily-slate.mjs ${{ github.event.inputs.date }}
       - name: Score frozen logistic
         run: node --experimental-strip-types scripts/daily-hr.ts ${{ github.event.inputs.date }}
-        continue-on-error: true
+    
       - uses: actions/upload-artifact@v4
         with:
           name: moonshot-daily-${{ github.event.inputs.date || 'today' }}
