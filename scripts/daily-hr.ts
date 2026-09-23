@@ -22,7 +22,7 @@ const out = {
   lambda: art.lambda,
   metrics: art.metrics,
   coefficients: coeffTable(art),
-  batters: board.predictions.map((p) => ({
+    batters: board.predictions.map((p) => ({
     id: p.playerId,
     name: p.name,
     team: p.teamAbbr,
@@ -31,6 +31,7 @@ const out = {
     p: p.pHr,
     tier: p.lookCall ?? "sit",
     why: p.lookWhy ?? "",
+    bits: p.lookBits ?? null,
   })),
 };
 const dir = join(process.cwd(), "data", "daily");
