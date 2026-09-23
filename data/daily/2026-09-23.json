@@ -1,16 +1,16 @@
 {
   "date": "2026-09-23",
-  "generatedAt": "2026-09-23T14:58:20.831Z",
+  "generatedAt": "2026-09-23T18:49:53.906Z",
   "games": 16,
   "slate": [
     {
       "gamePk": 824223,
       "time": "2026-09-23T17:10:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Comerica Park",
       "weather": {
         "condition": "Sunny",
-        "temp": "62",
+        "temp": "65",
         "wind": "14 mph, In From LF"
       },
       "away": {
@@ -35,12 +35,12 @@
     {
       "gamePk": 824785,
       "time": "2026-09-23T17:35:00Z",
-      "status": "Pre-Game",
+      "status": "In Progress",
       "venue": "Oriole Park at Camden Yards",
       "weather": {
-        "condition": "Sunny",
-        "temp": "62",
-        "wind": "12 mph, In From CF"
+        "condition": "Overcast",
+        "temp": "63",
+        "wind": "7 mph, In From CF"
       },
       "away": {
         "id": 141,
@@ -83,9 +83,13 @@
     {
       "gamePk": 823168,
       "time": "2026-09-23T19:45:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Oracle Park",
-      "weather": {},
+      "weather": {
+        "condition": "Sunny",
+        "temp": "68",
+        "wind": "6 mph, Varies"
+      },
       "away": {
         "id": 142,
         "name": "Minnesota Twins",
@@ -108,9 +112,13 @@
     {
       "gamePk": 823327,
       "time": "2026-09-23T22:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "PNC Park",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "63",
+        "wind": "12 mph, In From CF"
+      },
       "away": {
         "id": 138,
         "name": "St. Louis Cardinals",
@@ -166,8 +174,8 @@
         "name": "Tampa Bay Rays",
         "abbr": "TB",
         "probable": {
-          "id": 693855,
-          "name": "Ian Seymour"
+          "id": 669438,
+          "name": "Mason Englert"
         }
       },
       "home": {
@@ -299,15 +307,22 @@
         "id": 140,
         "name": "Texas Rangers",
         "abbr": "TEX",
-        "probable": null
+        "probable": {
+          "id": 674003,
+          "name": "Cody Bradford"
+        }
       }
     },
     {
       "gamePk": 824301,
       "time": "2026-09-24T00:40:00Z",
-      "status": "Scheduled",
+      "status": "Pre-Game",
       "venue": "Coors Field",
-      "weather": {},
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "69",
+        "wind": "7 mph, L To R"
+      },
       "away": {
         "id": 109,
         "name": "Arizona Diamondbacks",
