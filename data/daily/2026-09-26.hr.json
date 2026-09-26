@@ -1,0 +1,4090 @@
+{
+  "date": "2026-09-26",
+  "version": "v17-logit",
+  "generatedAt": "2026-09-26T17:42:12.532Z",
+  "cuts": {
+    "look": 0.16689655172413792,
+    "watch": 0.11388888888888889,
+    "lookRate": 0.20287958115183247,
+    "looksPerNight": 53.142857142857146,
+    "cap": null,
+    "capWhy": "Calibrated top bin is inside 3pts of observed — no cap."
+  },
+  "lambda": 0.3,
+  "metrics": {
+    "train": {
+      "n": 41911,
+      "brier": 0.0947220345103715,
+      "logloss": 0.34254032563581494,
+      "base": 0.1080146023716924,
+      "deciles": [
+        {
+          "lo": 0,
+          "hi": 0.061386138613861385,
+          "n": 4191,
+          "meanP": 0.05395509527741044,
+          "actual": 0.04056311142925316
+        },
+        {
+          "lo": 0.061386138613861385,
+          "hi": 0.06692531522793405,
+          "n": 4191,
+          "meanP": 0.06219759815178716,
+          "actual": 0.06442376521116679
+        },
+        {
+          "lo": 0.06692531522793405,
+          "hi": 0.06692531522793405,
+          "n": 4191,
+          "meanP": 0.0669253152279339,
+          "actual": 0.07182056788356
+        },
+        {
+          "lo": 0.06692531522793405,
+          "hi": 0.09594755661501786,
+          "n": 4191,
+          "meanP": 0.08667268750012641,
+          "actual": 0.08971605821999523
+        },
+        {
+          "lo": 0.09594755661501786,
+          "hi": 0.09594755661501786,
+          "n": 4191,
+          "meanP": 0.09594755661502648,
+          "actual": 0.08947745168217609
+        },
+        {
+          "lo": 0.09594755661501786,
+          "hi": 0.11388888888888889,
+          "n": 4191,
+          "meanP": 0.10179913853880221,
+          "actual": 0.1099976139346218
+        },
+        {
+          "lo": 0.11388888888888889,
+          "hi": 0.12031558185404335,
+          "n": 4191,
+          "meanP": 0.11949671904243528,
+          "actual": 0.1276544977332379
+        },
+        {
+          "lo": 0.12031558185404335,
+          "hi": 0.12031558185404335,
+          "n": 4191,
+          "meanP": 0.12031558185402978,
+          "actual": 0.13934621808637557
+        },
+        {
+          "lo": 0.12031558185404335,
+          "hi": 0.16689655172413792,
+          "n": 4191,
+          "meanP": 0.16656243007301563,
+          "actual": 0.1500835122882367
+        },
+        {
+          "lo": 0.16689655172413792,
+          "hi": 1,
+          "n": 4192,
+          "meanP": 0.20571565737468456,
+          "actual": 0.19704198473282442
+        }
+      ]
+    },
+    "calib": {
+      "n": 7638,
+      "brier": 0.09460727159273567,
+      "logloss": 0.33319817767780385,
+      "base": 0.10879811468970935,
+      "deciles": [
+        {
+          "lo": 0,
+          "hi": 0.061386138613861385,
+          "n": 763,
+          "meanP": 0.05534173338696972,
+          "actual": 0.05504587155963303
+        },
+        {
+          "lo": 0.061386138613861385,
+          "hi": 0.06692531522793405,
+          "n": 764,
+          "meanP": 0.06365402801877469,
+          "actual": 0.06413612565445026
+        },
+        {
+          "lo": 0.06692531522793405,
+          "hi": 0.06692531522793405,
+          "n": 764,
+          "meanP": 0.0669253152279339,
+          "actual": 0.06544502617801047
+        },
+        {
+          "lo": 0.06692531522793405,
+          "hi": 0.09594755661501786,
+          "n": 764,
+          "meanP": 0.0942381314024265,
+          "actual": 0.10078534031413612
+        },
+        {
+          "lo": 0.09594755661501786,
+          "hi": 0.09594755661501786,
+          "n": 764,
+          "meanP": 0.09594755661501647,
+          "actual": 0.08900523560209424
+        },
+        {
+          "lo": 0.09594755661501786,
+          "hi": 0.11388888888888889,
+          "n": 763,
+          "meanP": 0.10359151912907559,
+          "actual": 0.10091743119266056
+        },
+        {
+          "lo": 0.11388888888888889,
+          "hi": 0.12031558185404335,
+          "n": 764,
+          "meanP": 0.11997069388078284,
+          "actual": 0.11910994764397906
+        },
+        {
+          "lo": 0.12031558185404335,
+          "hi": 0.12031558185404335,
+          "n": 764,
+          "meanP": 0.12031558185404377,
+          "actual": 0.12827225130890052
+        },
+        {
+          "lo": 0.12031558185404335,
+          "hi": 0.16689655172413792,
+          "n": 764,
+          "meanP": 0.1648217712451734,
+          "actual": 0.16230366492146597
+        },
+        {
+          "lo": 0.16689655172413792,
+          "hi": 1,
+          "n": 764,
+          "meanP": 0.20309803213576533,
+          "actual": 0.20287958115183247
+        }
+      ]
+    },
+    "test": {
+      "n": 48767,
+      "brier": 0.09303105185597628,
+      "logloss": 0.33227754334987,
+      "base": 0.10552217688190785,
+      "deciles": [
+        {
+          "lo": 0,
+          "hi": 0.061386138613861385,
+          "n": 4876,
+          "meanP": 0.05563961525517794,
+          "actual": 0.04552912223133716
+        },
+        {
+          "lo": 0.061386138613861385,
+          "hi": 0.06692531522793405,
+          "n": 4877,
+          "meanP": 0.06330621638215585,
+          "actual": 0.06417879844166496
+        },
+        {
+          "lo": 0.06692531522793405,
+          "hi": 0.06692531522793405,
+          "n": 4877,
+          "meanP": 0.0669253152279339,
+          "actual": 0.07545622308796392
+        },
+        {
+          "lo": 0.06692531522793405,
+          "hi": 0.09594755661501786,
+          "n": 4876,
+          "meanP": 0.09392385643627366,
+          "actual": 0.0916735028712059
+        },
+        {
+          "lo": 0.09594755661501786,
+          "hi": 0.0963855421686747,
+          "n": 4877,
+          "meanP": 0.09595032321323108,
+          "actual": 0.09575558745130203
+        },
+        {
+          "lo": 0.0963855421686747,
+          "hi": 0.12031558185404335,
+          "n": 4877,
+          "meanP": 0.1100976507486471,
+          "actual": 0.09780602829608366
+        },
+        {
+          "lo": 0.12031558185404335,
+          "hi": 0.12031558185404335,
+          "n": 4876,
+          "meanP": 0.12031558185402777,
+          "actual": 0.12571780147662018
+        },
+        {
+          "lo": 0.12031558185404335,
+          "hi": 0.16689655172413792,
+          "n": 4877,
+          "meanP": 0.13251136328765162,
+          "actual": 0.11708017223703096
+        },
+        {
+          "lo": 0.16689655172413792,
+          "hi": 0.17790262172284643,
+          "n": 4877,
+          "meanP": 0.16894566215244533,
+          "actual": 0.15316793110518762
+        },
+        {
+          "lo": 0.17790262172284643,
+          "hi": 1,
+          "n": 4877,
+          "meanP": 0.2087578777281771,
+          "actual": 0.18884560180438795
+        }
+      ]
+    }
+  },
+  "coefficients": [
+    {
+      "name": "intercept",
+      "w": -2.1950301147481612
+    },
+    {
+      "name": "barrel_prior",
+      "w": -0.027175990031899612
+    },
+    {
+      "name": "hardhit_prior",
+      "w": 0.04818416980703193
+    },
+    {
+      "name": "ev_prior",
+      "w": 0.0488789411720109
+    },
+    {
+      "name": "pullair_prior",
+      "w": 0.015813390607845607
+    },
+    {
+      "name": "xiso_prior",
+      "w": 0.2065511440484789
+    },
+    {
+      "name": "iso_l7",
+      "w": -0.014234442005472485
+    },
+    {
+      "name": "iso_l15",
+      "w": -0.012247606588710673
+    },
+    {
+      "name": "iso_l30",
+      "w": 0.0314205708091195
+    },
+    {
+      "name": "hrpa_l7",
+      "w": -0.004821323791396895
+    },
+    {
+      "name": "hrpa_l15",
+      "w": 0.023647110107788076
+    },
+    {
+      "name": "hrpa_l30",
+      "w": 0.13007303535770695
+    },
+    {
+      "name": "p_hr9_prior",
+      "w": 0.014285265152503184
+    },
+    {
+      "name": "p_barrel_prior",
+      "w": 0.021551220856622085
+    },
+    {
+      "name": "p_fb_prior",
+      "w": 0.05045627832984308
+    },
+    {
+      "name": "p_ev_prior",
+      "w": 0.02222088702324773
+    },
+    {
+      "name": "p_hr9_l5",
+      "w": -0.024717330150189107
+    },
+    {
+      "name": "air_fb",
+      "w": 0.01755799132900808
+    },
+    {
+      "name": "platoon",
+      "w": 0.014094253584544953
+    },
+    {
+      "name": "park",
+      "w": 0.08918163108871095
+    },
+    {
+      "name": "wind_out",
+      "w": 0.06593770424953165
+    },
+    {
+      "name": "temp",
+      "w": 0.09754025398289816
+    },
+    {
+      "name": "exp_pa",
+      "w": 0.14335111558937044
+    }
+  ],
+  "batters": [
+    {
+      "id": 656941,
+      "name": "Kyle Schwarber",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 1,
+      "p": 0.2839506172839506,
+      "tier": "look",
+      "why": "Calibrated 28.4% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 660271,
+      "name": "Shohei Ohtani",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 2,
+      "p": 0.2037037037037037,
+      "tier": "look",
+      "why": "Calibrated 20.4% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 695600,
+      "name": "Carter Jensen",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 1,
+      "p": 0.2037037037037037,
+      "tier": "look",
+      "why": "Calibrated 20.4% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 701398,
+      "name": "Sal Stewart",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 3,
+      "p": 0.2037037037037037,
+      "tier": "look",
+      "why": "Calibrated 20.4% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 666018,
+      "name": "Jonathan Aranda",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 2,
+      "p": 0.1875,
+      "tier": "look",
+      "why": "Calibrated 18.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 665742,
+      "name": "Juan Soto",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 2,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 664040,
+      "name": "Brandon Lowe",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 2,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 660670,
+      "name": "Ronald Acuña Jr.",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 2,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 670541,
+      "name": "Yordan Alvarez",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 2,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 696100,
+      "name": "Hunter Goodman",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 3,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 691406,
+      "name": "Junior Caminero",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 3,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 687263,
+      "name": "Zach Neto",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 1,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 553993,
+      "name": "Eugenio Suárez",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 4,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 608369,
+      "name": "Corey Seager",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 3,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 665487,
+      "name": "Fernando Tatis Jr.",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 1,
+      "p": 0.17790262172284643,
+      "tier": "look",
+      "why": "Calibrated 17.8% · hrpa_l30 lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 682829,
+      "name": "Elly De La Cruz",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 2,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · hrpa_l30 lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 545341,
+      "name": "Randal Grichuk",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 7,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · hrpa_l30 lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 641343,
+      "name": "Jake Bauers",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 4,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 671056,
+      "name": "Iván Herrera",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 2,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 668227,
+      "name": "Randy Arozarena",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 1,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · hrpa_l30 lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 665833,
+      "name": "Oneil Cruz",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 4,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 666160,
+      "name": "Mickey Moniak",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 6,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 669257,
+      "name": "Will Smith",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 3,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 621566,
+      "name": "Matt Olson",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 3,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 650490,
+      "name": "Yandy Díaz",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 1,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · exp_pa lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 695657,
+      "name": "Colson Montgomery",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 8,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 682985,
+      "name": "Riley Greene",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 5,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 672960,
+      "name": "Kazuma Okamoto",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 5,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · hrpa_l30 lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": true,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 547180,
+      "name": "Bryce Harper",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 3,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 669127,
+      "name": "Shea Langeliers",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 3,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 701538,
+      "name": "Jackson Merrill",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 5,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 592518,
+      "name": "Manny Machado",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 3,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 661388,
+      "name": "William Contreras",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 3,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · hrpa_l30 lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 672386,
+      "name": "Alejandro Kirk",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 4,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 666176,
+      "name": "Jo Adell",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 4,
+      "p": 0.16689655172413792,
+      "tier": "look",
+      "why": "Calibrated 16.7% · xiso_prior lifts. Cut is 16.7% (20% hit on calib).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 671739,
+      "name": "Michael Harris II",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 686948,
+      "name": "Drake Baldwin",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 4,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 808959,
+      "name": "Munetaka Murakami",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 4,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 691023,
+      "name": "Jordan Walker",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 665161,
+      "name": "Jeremy Peña",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 673237,
+      "name": "Yainer Diaz",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 680869,
+      "name": "Zack Gelof",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 545361,
+      "name": "Mike Trout",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 694671,
+      "name": "Wyatt Langford",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 671732,
+      "name": "Lawrence Butler",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 686469,
+      "name": "Vinnie Pasquantino",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 663586,
+      "name": "Austin Riley",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 521692,
+      "name": "Salvador Perez",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 6,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 605141,
+      "name": "Mookie Betts",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 686527,
+      "name": "Dominic Canzone",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 678246,
+      "name": "Miguel Vargas",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 669394,
+      "name": "Jake Burger",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 4,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 596019,
+      "name": "Francisco Lindor",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 670623,
+      "name": "Isaac Paredes",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 656811,
+      "name": "Ryan O'Hearn",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 668723,
+      "name": "Ryan Vilade",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 4,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 681715,
+      "name": "Heriberto Hernández",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 682998,
+      "name": "Corbin Carroll",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 677951,
+      "name": "Bobby Witt Jr.",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 703607,
+      "name": "Henry Bolte",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 703601,
+      "name": "Max Clark",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 695578,
+      "name": "James Wood",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 699024,
+      "name": "Leo Bernal",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 4,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 701678,
+      "name": "Hao-Yu Lee",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 679529,
+      "name": "Spencer Torkelson",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 7,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 805808,
+      "name": "Kevin McGonigle",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 691019,
+      "name": "Kyle Teel",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 664770,
+      "name": "Nathan Lukes",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 668930,
+      "name": "Brice Turang",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 672515,
+      "name": "Gabriel Moreno",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 665019,
+      "name": "Kody Clemens",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 668901,
+      "name": "Mark Vientos",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 606466,
+      "name": "Ketel Marte",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 2,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 643217,
+      "name": "Andrew Benintendi",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 606192,
+      "name": "Teoscar Hernández",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 4,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 573262,
+      "name": "Mike Yastrzemski",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 6,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 663457,
+      "name": "Lars Nootbaar",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 663656,
+      "name": "Kyle Tucker",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 668804,
+      "name": "Bryan Reynolds",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 669003,
+      "name": "Garrett Mitchell",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 592885,
+      "name": "Christian Yelich",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 5,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 703520,
+      "name": "Brett Bateman",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 1,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 665489,
+      "name": "Vladimir Guerrero Jr.",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 3,
+      "p": 0.12031558185404335,
+      "tier": "watch",
+      "why": "Calibrated 12.0% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 572233,
+      "name": "Christian Walker",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 6,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 677594,
+      "name": "Julio Rodríguez",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 3,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 815873,
+      "name": "Sean Keys",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 6,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 687093,
+      "name": "Vaughn Grissom",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 4,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 802139,
+      "name": "JJ Wetherholt",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 1,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 691002,
+      "name": "Yohandy Morales",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 7,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 803011,
+      "name": "Sam Antonacci",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 1,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 663886,
+      "name": "Tyler Stephenson",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 6,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 680664,
+      "name": "Eduardo Valencia",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 4,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 681198,
+      "name": "TJ Rumfield",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 4,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 682663,
+      "name": "Agustín Ramírez",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 5,
+      "p": 0.11388888888888889,
+      "tier": "watch",
+      "why": "Calibrated 11.4% — below the LOOK cut (16.7%).",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 699115,
+      "name": "Carlos Jorge",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 1,
+      "p": 0.0963855421686747,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 607208,
+      "name": "Trea Turner",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 2,
+      "p": 0.0963855421686747,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 664034,
+      "name": "Ty France",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 4,
+      "p": 0.0963855421686747,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 605137,
+      "name": "Josh Bell",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 4,
+      "p": 0.0963855421686747,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 805300,
+      "name": "Jakob Marsee",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 3,
+      "p": 0.0963855421686747,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 682928,
+      "name": "CJ Abrams",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 4,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 693307,
+      "name": "Dillon Dingler",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 701358,
+      "name": "Cam Smith",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 695734,
+      "name": "Daylen Lile",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 805805,
+      "name": "Walker Jenkins",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 5,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 571448,
+      "name": "Nolan Arenado",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 695506,
+      "name": "Jac Caglianone",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 3,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 682626,
+      "name": "Francisco Alvarez",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 691182,
+      "name": "Adael Amador",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 2,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 699302,
+      "name": "Héctor Rodríguez",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 682674,
+      "name": "Victor Bericoto",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 3,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 669016,
+      "name": "Brandon Marsh",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 683953,
+      "name": "Travis Bazzana",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 695336,
+      "name": "Thomas Saggese",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 664983,
+      "name": "Jake McCarthy",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 1,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 664761,
+      "name": "Alec Bohm",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 4,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 608070,
+      "name": "José Ramírez",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 2,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 666126,
+      "name": "Carlos Cortes",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 668709,
+      "name": "JJ Bleday",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 5,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 622268,
+      "name": "Donovan Walton",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 701807,
+      "name": "Carson Benge",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 4,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 683146,
+      "name": "Brett Baty",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 686797,
+      "name": "Brooks Lee",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 2,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 686611,
+      "name": "Dylan Crews",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 3,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 694673,
+      "name": "Abimelec Ortiz",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 2,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 672640,
+      "name": "Otto Lopez",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 1,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 666182,
+      "name": "Bo Bichette",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 3,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 800050,
+      "name": "Chase DeLauter",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 3,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 666139,
+      "name": "Josh Lowe",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 6,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 703197,
+      "name": "Michael Arroyo",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 5,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 678662,
+      "name": "Ezequiel Tovar",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 9,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 607043,
+      "name": "Brandon Nimmo",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 1,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 514888,
+      "name": "Jose Altuve",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 4,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 685133,
+      "name": "Wade Meckler",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 3,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 702222,
+      "name": "Justin Crawford",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 694208,
+      "name": "Moisés Ballesteros",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 5,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 669701,
+      "name": "Josh Smith",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 804606,
+      "name": "Konnor Griffin",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 5,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 592663,
+      "name": "J.T. Realmuto",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 8,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 643446,
+      "name": "Jeff McNeil",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 4,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 695720,
+      "name": "Tommy White",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 8,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 687859,
+      "name": "Troy Johnston",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 800325,
+      "name": "Luis Lara",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 7,
+      "p": 0.09594755661501786,
+      "tier": "sit",
+      "why": "Calibrated 9.6% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 828599,
+      "name": "Lucas Spence",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 682657,
+      "name": "Angel Martínez",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 5,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 694374,
+      "name": "Tim Tawa",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 7,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 681624,
+      "name": "Andy Pages",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 7,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 656976,
+      "name": "Pavin Smith",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 691720,
+      "name": "Kyle Karros",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 5,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 681082,
+      "name": "Bryson Stott",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 5,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 680779,
+      "name": "Henry Davis",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 9,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 681807,
+      "name": "David Fry",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 6,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 691728,
+      "name": "Zac Veen",
+      "team": "COL",
+      "opp": "CWS",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 647304,
+      "name": "Josh Naylor",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 4,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 665052,
+      "name": "Griffin Conine",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 7,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 624641,
+      "name": "Edmundo Sosa",
+      "team": "PHI",
+      "opp": "TB",
+      "order": 9,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 810938,
+      "name": "Ben Williamson",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 7,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 676356,
+      "name": "Jonny DeLuca",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 5,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 671976,
+      "name": "Tristan Peters",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 6,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 571771,
+      "name": "Enrique Hernández",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 694378,
+      "name": "Jacob Gonzalez",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 593428,
+      "name": "Xander Bogaerts",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 6,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 642086,
+      "name": "Dominic Smith",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 682877,
+      "name": "Juan Brito",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 695731,
+      "name": "Braden Montgomery",
+      "team": "CWS",
+      "opp": "COL",
+      "order": 9,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 663743,
+      "name": "Nick Fortes",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 630105,
+      "name": "Jake Cronenworth",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 645277,
+      "name": "Ozzie Albies",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 7,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 813841,
+      "name": "Jonah Cox",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 1,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 687462,
+      "name": "Spencer Horwitz",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 6,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 518595,
+      "name": "Travis d'Arnaud",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 691594,
+      "name": "Javier Sanoja",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 4,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 642215,
+      "name": "Weston Wilson",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 680574,
+      "name": "Matt McLain",
+      "team": "CIN",
+      "opp": "TOR",
+      "order": 9,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 665877,
+      "name": "José Fermín",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 5,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 815589,
+      "name": "Bo Davidson",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 4,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 691277,
+      "name": "Deyvison De Los Santos",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 8,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 687401,
+      "name": "Joey Ortiz",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 6,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 672580,
+      "name": "Maikel Garcia",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 4,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 806367,
+      "name": "Turner Hill",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 2,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 643376,
+      "name": "Danny Jansen",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 7,
+      "p": 0.06692531522793405,
+      "tier": "sit",
+      "why": "Calibrated 6.7% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 670231,
+      "name": "John Rave",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 8,
+      "p": 0.06521739130434782,
+      "tier": "sit",
+      "why": "Calibrated 6.5% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 695681,
+      "name": "Christian Moore",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 7,
+      "p": 0.06521739130434782,
+      "tier": "sit",
+      "why": "Calibrated 6.5% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 691781,
+      "name": "Brady House",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 5,
+      "p": 0.06521739130434782,
+      "tier": "sit",
+      "why": "Calibrated 6.5% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 691858,
+      "name": "Jared Serna",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 9,
+      "p": 0.06521739130434782,
+      "tier": "sit",
+      "why": "Calibrated 6.5% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 672695,
+      "name": "Geraldo Perdomo",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 4,
+      "p": 0.06329113924050633,
+      "tier": "sit",
+      "why": "Calibrated 6.3% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 641680,
+      "name": "Jonah Heim",
+      "team": "ATH",
+      "opp": "HOU",
+      "order": 9,
+      "p": 0.06329113924050633,
+      "tier": "sit",
+      "why": "Calibrated 6.3% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 595879,
+      "name": "Javier Báez",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 9,
+      "p": 0.06329113924050633,
+      "tier": "sit",
+      "why": "Calibrated 6.3% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 686681,
+      "name": "Michael Massey",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 7,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 687957,
+      "name": "Dustin Harris",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 2,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 677649,
+      "name": "Ezequiel Duran",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 5,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 665926,
+      "name": "Andrés Giménez",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 8,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 807712,
+      "name": "Luke Keaschall",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 1,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 500743,
+      "name": "Miguel Rojas",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 6,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 669242,
+      "name": "Tommy Edman",
+      "team": "LAD",
+      "opp": "SF",
+      "order": 9,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 682927,
+      "name": "Ronny Simon",
+      "team": "PIT",
+      "opp": "DET",
+      "order": 7,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 622761,
+      "name": "Jorge Mateo",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 9,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 691783,
+      "name": "Jordan Lawlar",
+      "team": "AZ",
+      "opp": "SD",
+      "order": 9,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 686780,
+      "name": "Pedro Pagés",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 8,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 702284,
+      "name": "Cole Young",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 6,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 640902,
+      "name": "Jhonny Pereda",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 7,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 668904,
+      "name": "Royce Lewis",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 7,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 805999,
+      "name": "A.J. Ewing",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 8,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 678489,
+      "name": "Jorge Barrosa",
+      "team": "HOU",
+      "opp": "ATH",
+      "order": 9,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": true,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 665923,
+      "name": "Esteury Ruiz",
+      "team": "MIA",
+      "opp": "ATL",
+      "order": 6,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 691026,
+      "name": "Masyn Winn",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 7,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": true,
+        "order": false
+      }
+    },
+    {
+      "id": 680757,
+      "name": "Steven Kwan",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 1,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 666152,
+      "name": "David Hamilton",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 9,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 673490,
+      "name": "Ha-Seong Kim",
+      "team": "ATL",
+      "opp": "MIA",
+      "order": 9,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 686217,
+      "name": "Sal Frelick",
+      "team": "MIL",
+      "opp": "STL",
+      "order": 8,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 656716,
+      "name": "Zach McKinstry",
+      "team": "DET",
+      "opp": "PIT",
+      "order": 8,
+      "p": 0.061386138613861385,
+      "tier": "sit",
+      "why": "Calibrated 6.1% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 677595,
+      "name": "Ronny Mauricio",
+      "team": "NYM",
+      "opp": "WSH",
+      "order": 9,
+      "p": 0.05970149253731343,
+      "tier": "sit",
+      "why": "Calibrated 6.0% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 595978,
+      "name": "Austin Hedges",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 8,
+      "p": 0.05970149253731343,
+      "tier": "sit",
+      "why": "Calibrated 6.0% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 676391,
+      "name": "Ernie Clement",
+      "team": "TOR",
+      "opp": "CIN",
+      "order": 9,
+      "p": 0.05970149253731343,
+      "tier": "sit",
+      "why": "Calibrated 6.0% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 701785,
+      "name": "Kaelen Culpepper",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 9,
+      "p": 0.05970149253731343,
+      "tier": "sit",
+      "why": "Calibrated 6.0% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 694497,
+      "name": "Evan Carter",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 8,
+      "p": 0.05970149253731343,
+      "tier": "sit",
+      "why": "Calibrated 6.0% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 814154,
+      "name": "Scott Bandura",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 8,
+      "p": 0.05970149253731343,
+      "tier": "sit",
+      "why": "Calibrated 6.0% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 669134,
+      "name": "Luis Campusano",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 7,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 802415,
+      "name": "Chandler Simpson",
+      "team": "TB",
+      "opp": "PHI",
+      "order": 6,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": true,
+        "order": true
+      }
+    },
+    {
+      "id": 694376,
+      "name": "Shay Whitcomb",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 7,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 687363,
+      "name": "Victor Scott II",
+      "team": "STL",
+      "opp": "MIL",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 695391,
+      "name": "Brett Harris",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 5,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 660688,
+      "name": "Keibert Ruiz",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 8,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 668800,
+      "name": "Andrew Knizner",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 6,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 660844,
+      "name": "Leo Rivas",
+      "team": "SEA",
+      "opp": "LAA",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 702176,
+      "name": "Alan Roden",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 6,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 669326,
+      "name": "Bryce Teodosio",
+      "team": "LAA",
+      "opp": "SEA",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 677587,
+      "name": "Brayan Rocchio",
+      "team": "CLE",
+      "opp": "KC",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 664728,
+      "name": "Kyle Isbel",
+      "team": "KC",
+      "opp": "CLE",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 605170,
+      "name": "Victor Caratini",
+      "team": "MIN",
+      "opp": "TEX",
+      "order": 8,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 670032,
+      "name": "Nicky Lopez",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 6,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": true
+      }
+    },
+    {
+      "id": 696030,
+      "name": "Alejandro Osuna",
+      "team": "TEX",
+      "opp": "MIN",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 683766,
+      "name": "Christian Koss",
+      "team": "SF",
+      "opp": "LAD",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 683083,
+      "name": "Nasim Nuñez",
+      "team": "WSH",
+      "opp": "NYM",
+      "order": 9,
+      "p": 0.05384615384615386,
+      "tier": "sit",
+      "why": "Calibrated 5.4% · sit.",
+      "bits": {
+        "power": false,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    },
+    {
+      "id": 669392,
+      "name": "Samad Taylor",
+      "team": "SD",
+      "opp": "AZ",
+      "order": 9,
+      "p": 0.03125,
+      "tier": "sit",
+      "why": "Calibrated 3.1% · sit.",
+      "bits": {
+        "power": true,
+        "mix": false,
+        "park": false,
+        "order": false
+      }
+    }
+  ]
+}
