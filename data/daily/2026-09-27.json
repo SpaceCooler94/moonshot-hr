@@ -1,0 +1,442 @@
+{
+  "date": "2026-09-27",
+  "generatedAt": "2026-09-27T18:10:51.917Z",
+  "games": 15,
+  "slate": [
+    {
+      "gamePk": 822679,
+      "time": "2026-09-27T17:05:00Z",
+      "status": "In Progress",
+      "venue": "Nationals Park",
+      "weather": {
+        "condition": "Rain",
+        "temp": "62",
+        "wind": "14 mph, L To R"
+      },
+      "away": {
+        "id": 121,
+        "name": "New York Mets",
+        "abbr": "NYM",
+        "probable": {
+          "id": 640455,
+          "name": "Sean Manaea"
+        }
+      },
+      "home": {
+        "id": 120,
+        "name": "Washington Nationals",
+        "abbr": "WSH",
+        "probable": {
+          "id": 687792,
+          "name": "DJ Herz"
+        }
+      }
+    },
+    {
+      "gamePk": 823490,
+      "time": "2026-09-27T17:05:00Z",
+      "status": "Delayed Start",
+      "venue": "Yankee Stadium",
+      "weather": {
+        "condition": "Overcast",
+        "temp": "65",
+        "wind": "17 mph, In From LF"
+      },
+      "away": {
+        "id": 110,
+        "name": "Baltimore Orioles",
+        "abbr": "BAL",
+        "probable": {
+          "id": 669358,
+          "name": "Shane Baz"
+        }
+      },
+      "home": {
+        "id": 147,
+        "name": "New York Yankees",
+        "abbr": "NYY",
+        "probable": {
+          "id": 695684,
+          "name": "Elmer Rodríguez"
+        }
+      }
+    },
+    {
+      "gamePk": 823408,
+      "time": "2026-09-27T18:30:00Z",
+      "status": "Warmup",
+      "venue": "Citizens Bank Park",
+      "weather": {
+        "condition": "Overcast",
+        "temp": "65",
+        "wind": "19 mph, In From CF"
+      },
+      "away": {
+        "id": 139,
+        "name": "Tampa Bay Rays",
+        "abbr": "TB",
+        "probable": {
+          "id": 607259,
+          "name": "Nick Martinez"
+        }
+      },
+      "home": {
+        "id": 143,
+        "name": "Philadelphia Phillies",
+        "abbr": "PHI",
+        "probable": {
+          "id": 554430,
+          "name": "Zack Wheeler"
+        }
+      }
+    },
+    {
+      "gamePk": 824705,
+      "time": "2026-09-27T19:05:00Z",
+      "status": "Pre-Game",
+      "venue": "Tropicana Field",
+      "weather": {
+        "condition": "Dome",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
+      "away": {
+        "id": 112,
+        "name": "Chicago Cubs",
+        "abbr": "CHC",
+        "probable": {
+          "id": 684007,
+          "name": "Shota Imanaga"
+        }
+      },
+      "home": {
+        "id": 111,
+        "name": "Boston Red Sox",
+        "abbr": "BOS",
+        "probable": {
+          "id": 656557,
+          "name": "Tanner Houck"
+        }
+      }
+    },
+    {
+      "gamePk": 824948,
+      "time": "2026-09-27T19:05:00Z",
+      "status": "Pre-Game",
+      "venue": "Sutter Health Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "70",
+        "wind": "6 mph, Out To CF"
+      },
+      "away": {
+        "id": 117,
+        "name": "Houston Astros",
+        "abbr": "HOU",
+        "probable": {
+          "id": 663567,
+          "name": "Peter Lambert"
+        }
+      },
+      "home": {
+        "id": 133,
+        "name": "Athletics",
+        "abbr": "ATH",
+        "probable": {
+          "id": 686751,
+          "name": "Seth Johnson"
+        }
+      }
+    },
+    {
+      "gamePk": 823164,
+      "time": "2026-09-27T19:05:00Z",
+      "status": "Pre-Game",
+      "venue": "Oracle Park",
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "62",
+        "wind": "8 mph, Out To CF"
+      },
+      "away": {
+        "id": 119,
+        "name": "Los Angeles Dodgers",
+        "abbr": "LAD",
+        "probable": {
+          "id": 676263,
+          "name": "Jack Dreyer"
+        }
+      },
+      "home": {
+        "id": 137,
+        "name": "San Francisco Giants",
+        "abbr": "SF",
+        "probable": {
+          "id": 693313,
+          "name": "Carson Seymour"
+        }
+      }
+    },
+    {
+      "gamePk": 822761,
+      "time": "2026-09-27T19:07:00Z",
+      "status": "Pre-Game",
+      "venue": "Rogers Centre",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "73",
+        "wind": "13 mph, In From CF"
+      },
+      "away": {
+        "id": 113,
+        "name": "Cincinnati Reds",
+        "abbr": "CIN",
+        "probable": {
+          "id": 682227,
+          "name": "Brandon Williamson"
+        }
+      },
+      "home": {
+        "id": 141,
+        "name": "Toronto Blue Jays",
+        "abbr": "TOR",
+        "probable": {
+          "id": 453286,
+          "name": "Max Scherzer"
+        }
+      }
+    },
+    {
+      "gamePk": 824055,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Kauffman Stadium",
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "73",
+        "wind": "6 mph, L To R"
+      },
+      "away": {
+        "id": 114,
+        "name": "Cleveland Guardians",
+        "abbr": "CLE",
+        "probable": {
+          "id": 800048,
+          "name": "Parker Messick"
+        }
+      },
+      "home": {
+        "id": 118,
+        "name": "Kansas City Royals",
+        "abbr": "KC",
+        "probable": {
+          "id": 663738,
+          "name": "Daniel Lynch IV"
+        }
+      }
+    },
+    {
+      "gamePk": 824217,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Comerica Park",
+      "weather": {
+        "condition": "Sunny",
+        "temp": "74",
+        "wind": "11 mph, Out To RF"
+      },
+      "away": {
+        "id": 134,
+        "name": "Pittsburgh Pirates",
+        "abbr": "PIT",
+        "probable": {
+          "id": 683003,
+          "name": "Jared Jones"
+        }
+      },
+      "home": {
+        "id": 116,
+        "name": "Detroit Tigers",
+        "abbr": "DET",
+        "probable": {
+          "id": 689981,
+          "name": "River Ryan"
+        }
+      }
+    },
+    {
+      "gamePk": 823246,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Petco Park",
+      "weather": {
+        "condition": "Cloudy",
+        "temp": "75",
+        "wind": "7 mph, L To R"
+      },
+      "away": {
+        "id": 109,
+        "name": "Arizona Diamondbacks",
+        "abbr": "AZ",
+        "probable": {
+          "id": 647336,
+          "name": "Michael Soroka"
+        }
+      },
+      "home": {
+        "id": 135,
+        "name": "San Diego Padres",
+        "abbr": "SD",
+        "probable": {
+          "id": 681190,
+          "name": "Randy Vásquez"
+        }
+      }
+    },
+    {
+      "gamePk": 823084,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "T-Mobile Park",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "57",
+        "wind": "10 mph, In From LF"
+      },
+      "away": {
+        "id": 108,
+        "name": "Los Angeles Angels",
+        "abbr": "LAA",
+        "probable": {
+          "id": 579328,
+          "name": "Yusei Kikuchi"
+        }
+      },
+      "home": {
+        "id": 136,
+        "name": "Seattle Mariners",
+        "abbr": "SEA",
+        "probable": {
+          "id": 669302,
+          "name": "Logan Gilbert"
+        }
+      }
+    },
+    {
+      "gamePk": 823650,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Target Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "62",
+        "wind": "2 mph, In From LF"
+      },
+      "away": {
+        "id": 140,
+        "name": "Texas Rangers",
+        "abbr": "TEX",
+        "probable": {
+          "id": 669022,
+          "name": "MacKenzie Gore"
+        }
+      },
+      "home": {
+        "id": 142,
+        "name": "Minnesota Twins",
+        "abbr": "MIN",
+        "probable": {
+          "id": 665152,
+          "name": "Dean Kremer"
+        }
+      }
+    },
+    {
+      "gamePk": 824542,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "Rate Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "66",
+        "wind": "7 mph, L To R"
+      },
+      "away": {
+        "id": 115,
+        "name": "Colorado Rockies",
+        "abbr": "COL",
+        "probable": {
+          "id": 607536,
+          "name": "Kyle Freeland"
+        }
+      },
+      "home": {
+        "id": 145,
+        "name": "Chicago White Sox",
+        "abbr": "CWS",
+        "probable": {
+          "id": 641743,
+          "name": "Anthony Kay"
+        }
+      }
+    },
+    {
+      "gamePk": 823814,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "loanDepot park",
+      "weather": {
+        "condition": "Roof Closed",
+        "temp": "72",
+        "wind": "0 mph, None"
+      },
+      "away": {
+        "id": 144,
+        "name": "Atlanta Braves",
+        "abbr": "ATL",
+        "probable": {
+          "id": 702275,
+          "name": "JR Ritchie"
+        }
+      },
+      "home": {
+        "id": 146,
+        "name": "Miami Marlins",
+        "abbr": "MIA",
+        "probable": {
+          "id": 676083,
+          "name": "Janson Junk"
+        }
+      }
+    },
+    {
+      "gamePk": 823731,
+      "time": "2026-09-27T19:10:00Z",
+      "status": "Pre-Game",
+      "venue": "American Family Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "67",
+        "wind": "5 mph, L To R"
+      },
+      "away": {
+        "id": 138,
+        "name": "St. Louis Cardinals",
+        "abbr": "STL",
+        "probable": {
+          "id": 669467,
+          "name": "Andre Pallante"
+        }
+      },
+      "home": {
+        "id": 158,
+        "name": "Milwaukee Brewers",
+        "abbr": "MIL",
+        "probable": {
+          "id": 694819,
+          "name": "Jacob Misiorowski"
+        }
+      }
+    }
+  ]
+}
