@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-01",
+  "generatedAt": "2026-10-01T19:21:20.376Z",
+  "games": 1,
+  "slate": [
+    {
+      "gamePk": 849844,
+      "time": "2026-10-02T00:00:00Z",
+      "status": "Scheduled",
+      "venue": "Truist Park",
+      "weather": {},
+      "away": {
+        "id": 143,
+        "name": "Philadelphia Phillies",
+        "abbr": "PHI",
+        "probable": {
+          "id": 605400,
+          "name": "Aaron Nola"
+        }
+      },
+      "home": {
+        "id": 144,
+        "name": "Atlanta Braves",
+        "abbr": "ATL",
+        "probable": {
+          "id": 678061,
+          "name": "Ray Kerr"
+        }
+      }
+    }
+  ]
+}
