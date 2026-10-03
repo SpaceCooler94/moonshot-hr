@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-03",
+  "generatedAt": "2026-10-03T17:51:07.617Z",
+  "games": 4,
+  "slate": [
+    {
+      "gamePk": 849829,
+      "time": "2026-10-03T17:00:00Z",
+      "status": "In Progress",
+      "venue": "Progressive Field",
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temp": "61",
+        "wind": "9 mph, Out To LF"
+      },
+      "away": {
+        "id": 145,
+        "name": "Chicago White Sox",
+        "abbr": "CWS",
+        "probable": {
+          "id": 696146,
+          "name": "Hagen Smith"
+        }
+      },
+      "home": {
+        "id": 114,
+        "name": "Cleveland Guardians",
+        "abbr": "CLE",
+        "probable": {
+          "id": 800048,
+          "name": "Parker Messick"
+        }
+      }
+    },
+    {
+      "gamePk": 849828,
+      "time": "2026-10-03T20:00:00Z",
+      "status": "Pre-Game",
+      "venue": "UNIQLO Field at Dodger Stadium",
+      "weather": {
+        "condition": "Sunny",
+        "temp": "94",
+        "wind": "2 mph, Varies"
+      },
+      "away": {
+        "id": 144,
+        "name": "Atlanta Braves",
+        "abbr": "ATL",
+        "probable": {
+          "id": 689266,
+          "name": "Dylan Dodd"
+        }
+      },
+      "home": {
+        "id": 119,
+        "name": "Los Angeles Dodgers",
+        "abbr": "LAD",
+        "probable": {
+          "id": 669373,
+          "name": "Tarik Skubal"
+        }
+      }
+    },
+    {
+      "gamePk": 849835,
+      "time": "2026-10-03T22:30:00Z",
+      "status": "Scheduled",
+      "venue": "Tropicana Field",
+      "weather": {},
+      "away": {
+        "id": 147,
+        "name": "New York Yankees",
+        "abbr": "NYY",
+        "probable": {
+          "id": 543037,
+          "name": "Gerrit Cole"
+        }
+      },
+      "home": {
+        "id": 139,
+        "name": "Tampa Bay Rays",
+        "abbr": "TB",
+        "probable": {
+          "id": 656876,
+          "name": "Drew Rasmussen"
+        }
+      }
+    },
+    {
+      "gamePk": 849830,
+      "time": "2026-10-04T00:30:00Z",
+      "status": "Scheduled",
+      "venue": "American Family Field",
+      "weather": {},
+      "away": {
+        "id": 135,
+        "name": "San Diego Padres",
+        "abbr": "SD",
+        "probable": {
+          "id": 592662,
+          "name": "Robbie Ray"
+        }
+      },
+      "home": {
+        "id": 158,
+        "name": "Milwaukee Brewers",
+        "abbr": "MIL",
+        "probable": {
+          "id": 694819,
+          "name": "Jacob Misiorowski"
+        }
+      }
+    }
+  ]
+}
